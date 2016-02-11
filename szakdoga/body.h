@@ -34,7 +34,6 @@ namespace approx{
 		Face& faces(size_t i){ return faces->operator[](i); }
 		const Face& faces(size_t i) const { return faces->operator[](i); }
 
-
 		FaceIterator begin() { return FaceIterator(faces, &inds, 0); }
 		FaceIterator end() { return FaceIterator(faces, &inds, inds.size()); }
 
