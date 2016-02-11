@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="body.h" />
+    <ClInclude Include="convexatom.h" />
     <ClInclude Include="face.h" />
     <ClInclude Include="indexiterator.h" />
     <ClInclude Include="planes.h" />

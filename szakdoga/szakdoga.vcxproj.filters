@@ -48,6 +48,9 @@
     <ClInclude Include="targetbody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="convexatom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
