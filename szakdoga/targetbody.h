@@ -12,6 +12,7 @@ namespace approx{
 		Body<T> body;
 	pubilc:
 		TargetBody(const TargetBody&) = default;
+		TargetBody(TargetBody&&) = default;
 	};
 
 }
