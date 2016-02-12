@@ -10,7 +10,7 @@ namespace approx{
 		T dist;
 	public:
 		HyperPlane(const Vector& _normal, const Vector& _point) : n(_normal.normalized()),dist(dot(n,_point)){}
-		HyperPlane(const Vector& _normal, T distance) : n(_normal.normalized()), dist(distance);
+		HyperPlane(const Vector& _normal, T distance) : n(_normal.normalized()), dist(distance){}
 		HyperPlane(const HyperPlane&) = default;
 
 		HyperPlane& operator = (const HyperPlane&) = default;
@@ -21,15 +21,15 @@ namespace approx{
 		Vector example_point() const{
 			return n*dist;
 		}
-		T classify_point(const Vector& p){
-			return dot(p, n) - T;
+		T classify_point(const Vector& p) const {
+			return dot(p, n) - dist;
 		}
 
 	};
 
 
-	template <class T> using Plane = HyperPlane < Vector2<T>,T >;
-	template <class T> using Line = HyperPlane < Vector3<T>, T > ;
+	template <class T> using Plane = HyperPlane < Vector3<T>,T >;
+	template <class T> using Line = HyperPlane < Vector2<T>, T > ;
 }
 
 #endif
