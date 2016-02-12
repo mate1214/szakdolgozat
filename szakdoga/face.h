@@ -79,6 +79,11 @@ namespace approx{
 		VertexIterator begin() const { return VertexIterator(vecs, &inds, 0); }
 		VertexIterator end() const { return VertexIterator(vecs, &inds, inds.size()); }
 
+		void reverse_order(){
+			std::reverse(inds.begin(), inds.end());
+		}
+
+
 		Polygon2<T> to_2d(const Vector3<T>& x, const Vector3<T>& y) const {
 			std::vector<Vector2<T>> pts;
 			for (const Vector3<T>& v : *this){

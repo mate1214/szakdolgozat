@@ -11,51 +11,51 @@ namespace approx{
 		const std::vector<int>* inds;
 		size_t pos;
 	public:
-		IndexIterator(const std::vector<T>* v, const std::vector<int>* i, size_t p) : vecs(v), inds(i), pos(p){}
+		ConstIndexIterator(const std::vector<T>* v, const std::vector<int>* i, size_t p) : vecs(v), inds(i), pos(p){}
 		typedef std::random_access_iterator_tag iterator_category;
 		typedef typename std::iterator<std::random_access_iterator_tag, const Vector3<T>, int>::value_type value_type;
 		typedef typename std::iterator<std::random_access_iterator_tag, const Vector3<T>, int>::difference_type difference_type;
 		typedef typename std::iterator<std::random_access_iterator_tag, const Vector3<T>, int>::reference reference;
 		typedef typename std::iterator<std::random_access_iterator_tag, const Vector3<T>, int>::pointer pointer;
-		IndexIterator(){}
-		IndexIterator(const IndexIterator&) = default;
-		IndexIterator& operator = (const IndexIterator&) = default;
-		IndexIterator operator ++() {
+		ConstIndexIterator(){}
+		ConstIndexIterator(const ConstIndexIterator&) = default;
+		ConstIndexIterator& operator = (const ConstIndexIterator&) = default;
+		ConstIndexIterator operator ++() {
 			++pos;
 			return *this;
 		}
-		IndexIterator operator ++(int){
+		ConstIndexIterator operator ++(int){
 			IndexIterator t = *this;
 			++pos;
 			return t;
 		}
-		IndexIterator operator --() {
+		ConstIndexIterator operator --() {
 			--pos;
 			return *this;
 		}
-		IndexIterator operator --(int){
+		ConstIndexIterator operator --(int){
 			IndexIterator t = *this;
 			--pos;
 			return t;
 		}
-		IndexIterator operator +=(difference_type cnt){
+		ConstIndexIterator operator +=(difference_type cnt){
 			pos += cnt;
 			return *this;
 		}
-		IndexIterator operator -=(difference_type cnt){
+		ConstIndexIterator operator -=(difference_type cnt){
 			pos -= cnt;
 			return *this;
 		}
-		IndexIterator operator +(difference_type cnt) const {
+		ConstIndexIterator operator +(difference_type cnt) const {
 			return IndexIterator(vecs, inds, pos + cnt);
 		}
-		IndexIterator operator -(difference_type cnt) const {
+		ConstIndexIterator operator -(difference_type cnt) const {
 			return IndexIterator(vecs, inds, pos - cnt);
 		}
-		difference_type operator -(const IndexIterator& other) const {
+		difference_type operator -(const ConstIndexIterator& other) const {
 			return pos - other.pos;
 		}
-		bool operator !=(const IndexIterator& other) const {
+		bool operator !=(const ConstIndexIterator& other) const {
 			return other.pos != pos || vecs != other.vecs || inds != other.inds;
 		}
 		const T& operator * () const {

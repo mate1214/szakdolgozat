@@ -7,8 +7,38 @@ namespace approx{
 
 	template <class T> struct Vector2{
 		T x, y;
-		Vector2(T x, T y) : x(x), y(y){}
+		Vector2(T _x=0, T _y=0) : x(_x), y(_y){}
 		Vector2& operator =(const Vector2&) = default;
+
+		Vector2& operator +=(const Vector2& other){
+			x += other.x;
+			y += other.y;
+			return *this;
+		}
+		Vector2& operator -=(const Vector2& other){
+			x -= other.x;
+			y -= other.y;
+			return *this;
+		}
+		Vector2& operator *=(T num){
+			x *= num;
+			y *= num;
+			return *this;
+		}
+		Vector2& operator /=(T num){
+			x /= num;
+			y /= num;
+			return *this;
+		}
+
+		Vector2 operator + (const Vector2& other) const{ return Vector2(x + other.x, y + other.y); }
+		Vector2 operator - (const Vector2& other) const{ return Vector2(x - other.x, y - other.y); }
+		Vector2 operator * (T num) const{ return Vector2(x*num, y*num); }
+		Vector2 operator / (T num) const{ return Vector2(x/num, y/num); }
+		T length() const { return sqrt(x*x+y*y); }
+		Vector2 normalized() const { T len = length(); return Vector2(x / len, y / len); }
+
+		void normalize(){ *this /= length(); }
 	};
 
 	template <class T> struct Vector3{
@@ -59,10 +89,7 @@ namespace approx{
 		T length() const { return sqrt(x*x+y*y+z*z); }
 
 		void normalize(){
-			T len = length();
-			x /= len;
-			y /= len;
-			z /= len;
+			*this /= length();
 		}
 
 		Vector3 normalized() const {
@@ -70,6 +97,10 @@ namespace approx{
 			return Vector3(x / len, y / len, z / len);
 		}
 	};
+
+	template <class T> Vector2<T> operator* (T num, const Vector2<T>& vec){
+		return vec*num;
+	}
 
 	template <class T> Vector3<T> operator* (T num,const Vector3<T>& vec){
 		return vec*num;

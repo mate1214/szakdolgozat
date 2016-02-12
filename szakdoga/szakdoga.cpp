@@ -18,15 +18,13 @@ template <class T> std::ostream& operator << (std::ostream& o, const approx::Vec
 	return o;
 }
 
-template <class T> class asd{};
-
-
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	vector<approx::Vector3<float>> verts { { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { 1.0f, 5.0f, 0.0f } },
-								   normals { {0.0f,0.0f,1.0f} };
-	approx::Face<float> f(&verts, {0,1,2}, &normals,0);
+	vector<approx::Vector3<float>> verts { { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f },
+											{ 3.0f, 1.0f, 0.0f }, {2.0f,3.0f,0.0f} },
+								   normals { {0.0f,0.0f,-1.0f} };
+	approx::Face<float> f(&verts, {0,1,2,3,4}, &normals,0);
 	for (const approx::Vector3<float>& v : f){
 		cout << v << '\n';
 	}
@@ -35,6 +33,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		cout << v << "\n";
 	}
 	cout << f2.area();
+	approx::Vector3<float> v{ 1.0, 0, 0 };
+	cout << '\n'<< v.x << ',' << v.y << ',' << v.z;
 	cin.get();
 	return 0;
 }

@@ -15,7 +15,14 @@ namespace approx{
 
 	template <class T> class ConvexAtom : public Body < T > {
 	public:
+		ConvexAtom(std::vector<Face<T>>* f, const std::vector<int>& i): Body<T>(f,i){}
+		ConvexAtom(std::vector<Face<T>>* f, std::vector<int>&& i) : Body<T>(f, i){}
+
 		CutResult<T> cut_by(const Plane<T>& p){
+			//TODO
+		}
+
+		T intersection_volume(const Body<T>& b){
 			//TODO
 		}
 	};
