@@ -17,7 +17,7 @@ namespace approx{
 
 		T signed_distance() const { return dist; }
 		Vector& normal() { return normal; }
-		const Vector normal() const{ return normal; }
+		const Vector normal() const{ return n; }
 		Vector example_point() const{
 			return n*dist;
 		}

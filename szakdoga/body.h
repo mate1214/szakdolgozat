@@ -8,6 +8,7 @@
 namespace approx{
 
 	template <class T> class Body{
+	protected:
 		std::vector<Face<T>>* faces;
 		std::vector<int> ids;
 
@@ -17,7 +18,7 @@ namespace approx{
 		Body(std::vector<Face<T>>* f, const std::vector<int>& i) : faces(f), ids(i){}
 		Body(std::vector<Face<T>>* f, std::vector<int>&& i) : faces(f), ids(i){}
 		Body(const Body&) = default;
-		Body(Body&& b) : faces(b.faces), ids(std::move(b.ids));
+		Body(Body&& b) : faces(b.faces), ids(std::move(b.ids)){}
 
 		Body& operator = (const Body&) = default;
 		Body& operator =(Body&& b){
@@ -28,14 +29,12 @@ namespace approx{
 		}
 
 		int size() const { return ids.size(); }
-		const std::vector<int>& indicies() const { return ids; }
-		std::vector<int>& indicies() { return ids; }
-		
-		Face& faces(size_t i){ return faces->operator[](i); }
-		const Face& faces(size_t i) const { return faces->operator[](i); }
+	    int indicies(size_t i) const { return ids[i]; }
+		Face<T>& face(size_t i){ return faces->operator[](i); }
+		const Face<T>& face(size_t i) const { return faces->operator[](i); }
 
-		FaceIterator begin() { return FaceIterator(faces, &inds, 0); }
-		FaceIterator end() { return FaceIterator(faces, &inds, inds.size()); }
+		FaceIterator begin() { return FaceIterator(faces, &ids, 0); }
+		FaceIterator end() { return FaceIterator(faces, &ids, ids.size()); }
 
 		ConstFaceIterator begin() const { return ConstFaceIterator(faces, &inds, 0); }
 		ConstFaceIterator end() const { return ConstFaceIterator(faces, &inds, inds.size()); }

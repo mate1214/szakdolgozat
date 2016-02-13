@@ -6,6 +6,7 @@
 #include <iostream>
 #include "vectors.h"
 #include "face.h"
+#include "convexatom.h"
 using namespace std;
 
 template <class T> std::ostream& operator << (std::ostream& o, const approx::Vector2<T>& v){
@@ -19,8 +20,9 @@ template <class T> std::ostream& operator << (std::ostream& o, const approx::Vec
 }
 
 template <class T> std::ostream& operator << (std::ostream& o, const approx::Face<T>& f){
+	o << "\n----------------------------\n";
 	for (auto vert : f){
-		cout << vert << '\n';
+		o << vert << '\n';
 	}
 	return o;
 }
@@ -29,11 +31,12 @@ template <class T> std::ostream& operator << (std::ostream& o, const approx::Fac
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	vector<approx::Vector3<float>> verts { { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f },
-											{ 3.0f, 1.0f, 0.0f }, {2.0f,3.0f,0.0f} },
+	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f },
+	{ 3.0f, 1.0f, 0.0f }, {2.0f,3.0f,0.0f} },
 								   normals { {0.0f,0.0f,-1.0f} };
-	approx::Face<float> f(&verts, {0,1,2,3,4}, &normals,0);
-	/*for (const approx::Vector3<float>& v : f){
+	vector<approx::Face<float>> faces;
+	/*approx::Face<float> f(&vertices, {0,1,2,3,4}, &normals,0);
+	for (const approx::Vector3<float>& v : f){
 		cout << v << '\n';
 	}
 	auto f2 = f.to_2d();
@@ -42,14 +45,51 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	cout << f2.area();
 	approx::Vector3<float> v{ 1.0, 0, 0 };
-	cout << '\n'<< v.x << ',' << v.y << ',' << v.z;*/
+	cout << '\n'<< v.x << ',' << v.y << ',' << v.z;
 	approx::Plane<float> p({ 1, 0, 0 }, 2.0f);
-	cout << p.classify_point(verts.front()) << " " << p.classify_point(verts.back()) << "\n";
+	cout << p.classify_point(vertices.front()) << " " << p.classify_point(vertices.back()) << "\n";
 	
-	approx::CutResult<float> result = f.split_by(p);
+	approx::Face<float>::CutResult result = f.split_by(p);
 	cout << f << "\n--------------------------\n" << result.negative << "\n--------------------------\n" << result.positive;
-	cout << "\n--------------------------\n" << verts.size() << "\n-------------------\n";
-	
+	cout << "\n--------------------------\n" << vertices.size() << "\n-------------------\n";
+	cout << result.positive.size();*/
+	vertices.clear();
+	normals.clear();
+
+	approx::Vector3<float> vmin(1,1,1), vmax(2,2,2);
+	float border = 0;
+	//TODO: CW CCW dolog egyeztet
+	vertices.push_back({ vmin.x - border, vmin.y - border, vmin.z - border });
+	vertices.push_back({ vmax.x + border, vmin.y - border, vmin.z - border });
+	vertices.push_back({ vmax.x + border, vmax.y + border, vmin.z - border });
+	vertices.push_back({ vmin.x - border, vmax.y + border, vmin.z - border });
+	vertices.push_back({ vmin.x - border, vmin.y - border, vmax.z + border });
+	vertices.push_back({ vmax.x + border, vmin.y - border, vmax.z + border });
+	vertices.push_back({ vmax.x + border, vmax.y + border, vmax.z + border });
+	vertices.push_back({ vmin.x - border, vmax.y + border, vmax.z + border });
+	normals.push_back({ 0, 0, -1 });
+	normals.push_back({ 1, 0, 0 });
+	normals.push_back({ 0, 0, 1 });
+	normals.push_back({ -1, 0, 0 });
+	normals.push_back({ 0, 1, 0 });
+	normals.push_back({ 0, -1, 0 });
+	faces.emplace_back(&vertices, std::vector<int>{ 0, 1, 2, 3 }, &normals, 0);
+	faces.emplace_back(&vertices, std::vector<int>{ 1, 5, 6, 2 }, &normals, 1);
+	faces.emplace_back(&vertices, std::vector<int>{ 5, 4, 7, 6 }, &normals, 2);
+	faces.emplace_back(&vertices, std::vector<int>{ 4, 0, 3, 7 }, &normals, 3);
+	faces.emplace_back(&vertices, std::vector<int>{ 3, 2, 6, 7 }, &normals, 4);
+	faces.emplace_back(&vertices, std::vector<int>{ 0, 4, 5, 1 }, &normals, 5);
+	approx::ConvexAtom<float> atom(&faces, std::vector < int > {0, 1, 2, 3, 4, 5});
+	auto cut = atom.cut_by(approx::Plane<float>({1,0,0},1.5f));
+	for (auto& f : *cut.negative.get()){
+		cout << f;
+	}
+	cout << "=====================================\n";
+	for (auto& f : *cut.positive.get()){
+		cout << f;
+	}
+	cout << "==========================" << faces.size()<<"\n";
+	for (auto x : vertices){ cout << x << "\n"; }
 	cin.get();
 	return 0;
 }

@@ -47,13 +47,13 @@ namespace approx{
 			normals.push_back({ -1, 0, 0 });
 			normals.push_back({ 0, 1, 0 });
 			normals.push_back({ 0, -1, 0 });
-			faces.emplace_back(&vertices, {0,1,2,3}, &normals, 0);
-			faces.emplace_back(&vertices, {1,5,6,2}, &normals, 1);
-			faces.emplace_back(&vertices, {5,4,7,6}, &normals, 2);
-			faces.emplace_back(&vertices, {4,0,3,7}, &normals, 3);
-			faces.emplace_back(&vertices, {3,2,6,7}, &normals, 4);
-			faces.emplace_back(&vertices, {0,4,5,1}, &normals, 5);
-			atoms.emplace_back(&faces, {0,1,2,3,4,5});
+			faces.emplace_back(&vertices, std::vector<int>{0, 1, 2, 3}, &normals, 0);
+			faces.emplace_back(&vertices, std::vector<int>{1, 5, 6, 2}, &normals, 1);
+			faces.emplace_back(&vertices, std::vector<int>{5, 4, 7, 6}, &normals, 2);
+			faces.emplace_back(&vertices, std::vector<int>{4, 0, 3, 7}, &normals, 3);
+			faces.emplace_back(&vertices, std::vector<int>{3, 2, 6, 7}, &normals, 4);
+			faces.emplace_back(&vertices, std::vector<int>{0, 4, 5, 1}, &normals, 5);
+			atoms.emplace_back(&faces, std::vector<int>{0, 1, 2, 3, 4, 5});
 		}
 
 	public:
@@ -69,12 +69,13 @@ namespace approx{
 		const AtomType<T>& atom(size_t ind) const {return atoms[ind];}
 		const TargetBody<T>& target_body(){return *target;}
 
-		void slice(size_t ind){
+		void slice(size_t ind, const Plane<T>& p){
 			//TODO
+			auto res = atoms[ind].cut_by(p);
 		}
 
-		void slice(Iterator pos){
-			//TODO
+		void slice(Iterator pos, const Plane<T>& p){
+			slice(pos - atoms.begin(), p);
 		}
 
 	};

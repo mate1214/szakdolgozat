@@ -61,15 +61,15 @@ namespace approx{
 			return *this;
 		}
 		Vector3& operator *=(T number){
-			x *=f;
-			y *=f;
-			z *=f;
+			x *= number;
+			y *= number;
+			z *= number;
 			return *this;
 		}
 		Vector3& operator /=(T number){
-			x /= f;
-			y /= f;
-			z /= f;
+			x /= number;
+			y /= number;
+			z /= number;
 			return *this;
 		}
 

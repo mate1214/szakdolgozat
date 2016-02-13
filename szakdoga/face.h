@@ -11,13 +11,6 @@
 
 namespace approx{
 
-	template <class T> class Face;
-
-	template <class T> struct CutResult{
-		Face<T> positive,negative;
-		int points_added;
-	};
-
 	template <class T> class Face{
 		std::vector< Vector3<T> > *vecs, *normals;
 
@@ -33,16 +26,25 @@ namespace approx{
 
 		typedef ConstIndexIterator<Vector3<T>> VertexIterator;
 
+
 	public:
+
+		struct CutResult{
+			Face<T> positive, negative;
+			std::vector<int> pt_inds;
+			int points_added;
+		};
+
+
 		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* _normals) : vecs(vertices), inds(ids), normals(_normals){ calc_normal(); }
 		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* _normals) : vecs(vertices), inds(ids), normals(_normals){ calc_normal(); }
 		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* normals, int n_id) : vecs(vertices), inds(ids), normals(normals), normal_id(n_id){}
 		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* normals, int n_id) : vecs(vertices), inds(ids), normals(normals), normal_id(n_id){}
-		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, const Vector3<T>& normal, std::vector< Vector3<T> >* _normals)
+		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* _normals, const Vector3<T>& normal)
 			: vecs(vertices), inds(ids), normals(_normals), normal_id(normals->size()){
 			normals->push_back(normal);
 		}
-		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, const Vector3<T>& normal, std::vector< Vector3<T> >* _normals)
+		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* _normals, const Vector3<T>& normal)
 			: vecs(vertices), inds(ids), normals(_normals), normal_id(normals->size()){
 			normals->push_back(normal);
 		}
@@ -69,7 +71,8 @@ namespace approx{
 		std::vector<int>& indicies(){ return inds; }
 		int normal_index() const { return normal_id; }
 		size_t size() const { return inds.size(); }
-
+		std::vector< Vector3<T> >* vertex_container() { return vecs; }
+		std::vector< Vector3<T> >* normal_container() { return normals; }
 
 		const Vector3<T>& get_normal() const { return normals->operator[](normal_id); }
 		const Vector3<T>& points(size_t ind) const { return vecs->operator[](inds[ind]); }
@@ -98,10 +101,10 @@ namespace approx{
 			return to_2d(x, y);
 		}
 
-		CutResult<T> split_by(const Plane<T>& p) {
+		CutResult split_by(const Plane<T>& p) {
 			T sign1 = p.classify_point(points(0)), sign2;
 			int n = size();
-			std::vector<int> pos, neg;
+			std::vector<int> pos, neg,cut;
 			int pts_added=0;
 			for (int i = 0; i < n; ++i){
 				sign2 = p.classify_point(points((i + 1) % n));
@@ -112,6 +115,7 @@ namespace approx{
 						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(vecs->size());
 						pos.push_back(neg.back());
+						cut.push_back(neg.back());
 						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
 						vecs->push_back(np);
 						++pts_added;
@@ -123,6 +127,7 @@ namespace approx{
 						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(vecs->size());
 						pos.push_back(neg.back());
+						cut.push_back(neg.back());
 						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
 						vecs->push_back(np);
 						++pts_added;
@@ -131,21 +136,22 @@ namespace approx{
 				else{
 					pos.push_back(inds[i]);
 					neg.push_back(inds[i]);
+					cut.push_back(inds[i]);
 				}
 				sign1 = sign2;
 			}
 			return{ Face<T>(vecs, std::move(pos), normals, normal_id),
-				Face<T>(vecs, std::move(neg), normals, normal_id), pts_added };
+				Face<T>(vecs, std::move(neg), normals, normal_id),cut, pts_added };
 		}
 
 
-		CutResult<T> split_by(const Plane<T>& p, std::vector<Vector3<T>>* target_vecs, std::vector<Vector3<T>>* target_normals) {
+		CutResult split_by(const Plane<T>& p, std::vector<Vector3<T>>* target_vecs, std::vector<Vector3<T>>* target_normals) {
 			
 			if (target_vecs == vecs && target_normals == normals) return split_by(p);
 
 			T sign1 = p.classify_point(points(0)), sign2;
 			int n = size();
-			std::vector<int> pos, neg;
+			std::vector<int> pos, neg,cut;
 			int pts_added = 0;
 			for (int i = 0; i < n; ++i){
 				sign2 = p.classify_point(points((i + 1) % n));
@@ -157,6 +163,7 @@ namespace approx{
 						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(target_vecs->size());
 						pos.push_back(neg.back());
+						cut.push_back(neg.back());
 						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
 						target_vecs->push_back(np);
 						++pts_added;
@@ -168,6 +175,7 @@ namespace approx{
 						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(target_vecs->size());
 						pos.push_back(neg.back());
+						cut.push_back(neg.back());
 						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
 						target_vecs->push_back(np);
 						++pts_added;
@@ -176,13 +184,14 @@ namespace approx{
 				else{
 					pos.push_back(target_vecs->size()-1);
 					neg.push_back(target_vecs->size()-1);
+					cut.push_back(target_vecs->size()-1);
 				}
 				sign1 = sign2;
 			}
 			target_normals->push_back(get_normal());
 			int n_id = target_normals->size() - 1;
 			return{ Face<T>(target_vecs, std::move(pos), target_normals, n_id),
-				Face<T>(target_vecs, std::move(neg), target_normals, n_id), pts_added };
+				Face<T>(target_vecs, std::move(neg), target_normals, n_id),cut, pts_added };
 		}
 
 	};
