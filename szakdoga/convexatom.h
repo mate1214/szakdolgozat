@@ -61,12 +61,14 @@ namespace approx{
 			}
 			if (pt_ids.size()){
 				avg_pt /= pt_ids.size(); //kozeppont
-				Vector3<T> v0 = vc[pt_ids.front()] - avg_pt;
-				//TODO: rossz a rendezes
+				Vector3<T> vx = vc[pt_ids.front()] - avg_pt,
+						   vy = cross(p.normal(),vx);
+
+				//TODO: rendezes cw ccw dolog atbeszel
 				std::sort(pt_ids.begin(), pt_ids.end(), [&](int a, int b){
 					Vector3<T> v1 = vc[a] - avg_pt, v2 = vc[b] - avg_pt;
-					T x1 = dot(v1, v0), y1 = cross(v1, v0).length(),
-						x2 = dot(v2, v0), y2 = cross(v2, v0).length();
+					T x1 = dot(v1, vx), y1 = dot(v1,vy),
+						x2 = dot(v2, vx), y2 = dot(v2,vy);
 					return atan2(x1, y1) < atan2(x2, y2);
 				});
 
