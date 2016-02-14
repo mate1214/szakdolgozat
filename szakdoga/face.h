@@ -145,6 +145,63 @@ namespace approx{
 		}
 
 
+		template<class MapType> CutResult split_by(const Plane<T>& p,MapType& m) {
+			T sign1 = p.classify_point(points(0)), sign2;
+			int n = size();
+			std::vector<int> pos, neg, cut;
+			int pts_added = 0;
+			for (int i = 0; i < n; ++i){
+				sign2 = p.classify_point(points((i + 1) % n));
+				float sign = sign1*sign2;
+				if (sign1 < 0){
+					neg.push_back(inds[i]);
+					if (sign2 > 0){
+						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
+						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
+						int ind;
+						if (!m.count(np)){
+							ind = vecs->size();
+							vecs->push_back(np);
+							m[np] = ind;
+							++pts_added;
+						}
+						else ind = m[np];
+						neg.push_back(ind);
+						pos.push_back(ind);
+						cut.push_back(ind);
+						
+					}
+				}
+				else if (sign1 > 0){
+					pos.push_back(inds[i]);
+					if (sign2 < 0){
+						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
+						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
+						int ind;
+						if (!m.count(np)){
+							ind = vecs->size();
+							vecs->push_back(np);
+							m[np] = ind;
+							++pts_added;
+						}
+						else ind = m[np];
+						neg.push_back(ind);
+						pos.push_back(ind);
+						cut.push_back(ind);
+					}
+				}
+				else{
+					pos.push_back(inds[i]);
+					neg.push_back(inds[i]);
+					cut.push_back(inds[i]);
+				}
+				sign1 = sign2;
+			}
+			return{ Face<T>(vecs, std::move(pos), normals, normal_id),
+				Face<T>(vecs, std::move(neg), normals, normal_id), cut, pts_added };
+		}
+
+
 		CutResult split_by(const Plane<T>& p, std::vector<Vector3<T>>* target_vecs, std::vector<Vector3<T>>* target_normals) {
 			
 			if (target_vecs == vecs && target_normals == normals) return split_by(p);

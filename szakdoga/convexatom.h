@@ -4,16 +4,22 @@
 #include <utility>
 #include <algorithm>
 #include <memory>
+#include <map>
 #include "body.h"
 #include "planes.h"
-
-#include <iostream> //TODO: debug
 
 namespace approx{
 
 
 
 	template <class T> class ConvexAtom : public Body < T > {
+		struct Less{
+			bool operator ()(const Vector3<T>& a,const Vector3<T>& b) const{
+				return a.x < b.x ||
+					(a.x == b.x && a.y < b.y) ||
+					(a.x == b.x && a.y == b.y && a.z <b.z);
+			}
+		};
 	public:
 		ConvexAtom(std::vector<Face<T>>* f, const std::vector<int>& i): Body<T>(f,i){}
 		ConvexAtom(std::vector<Face<T>>* f, std::vector<int>&& i) : Body<T>(f, i){}
@@ -30,8 +36,9 @@ namespace approx{
 			int faces_added=0,pts_added=0;
 			Vector3<T> avg_pt;
 			std::vector<Vector3<T>>& vc = *face(0).vertex_container();
+			std::map<Vector3<T>, int,Less> ptbuffer;
 			for (int i = 0; i < size();++i){
-				Face<T>::CutResult cut = face(i).split_by(p);
+				Face<T>::CutResult cut = face(i).split_by(p,ptbuffer);
 				if (cut.pt_inds.size() < cut.positive.size() && cut.pt_inds.size() < cut.negative.size()){ //valodi vagas tortent
 					pts_added += cut.points_added;
 					faces->push_back(cut.negative);
@@ -46,7 +53,6 @@ namespace approx{
 				}
 				else{
 					//TODO: a pontosan a sikon fekvo lapoknal gaz van, de a konvexitasra hivatkozva kinn a lapszambol ra lehet jonni hogy rossz a vagas
-					//TODO: ha az atomon kivuli ellel akarunk vagni akkor fart
 					if (cut.pt_inds.size()){//raeso elek
 						pt_ids.push_back(cut.pt_inds.front());
 						pt_ids.push_back(cut.pt_inds.back());
@@ -71,8 +77,6 @@ namespace approx{
 						x2 = dot(v2, vx), y2 = dot(v2,vy);
 					return atan2(x1, y1) < atan2(x2, y2);
 				});
-
-				for (int ix : pt_ids) { cout << vc[ix] << "\n"; }
 
 				vector<int> new_fc;
 				for (int i = 0; i < pt_ids.size(); i += 2){

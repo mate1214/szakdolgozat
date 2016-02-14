@@ -27,6 +27,13 @@ template <class T> std::ostream& operator << (std::ostream& o, const approx::Fac
 	return o;
 }
 
+struct Less{
+	bool operator ()(const approx::Vector3<float>& a, const approx::Vector3<float>& b) const{
+		return a.x < b.x ||
+			   (a.x==b.x && a.y < b.y) ||
+			   (a.x==b.x && a.y == b.y && a.z <b.z);
+	}
+};
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -56,22 +63,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	vertices.clear();
 	normals.clear();
 
-	approx::Vector3<float> vmin(1,1,1), vmax(2,2,2);
+	approx::Vector3<float> vmin(1,1,1), vmax(3,2,2);
 	float border = 0;
 	//TODO: CW CCW dolog egyeztet
 	vertices.push_back({ vmin.x - border, vmin.y - border, vmin.z - border });
 	vertices.push_back({ vmax.x + border, vmin.y - border, vmin.z - border });
-	vertices.push_back({ vmax.x + border, vmax.y + border, vmin.z - border });
+	vertices.push_back({ vmax.x + border, vmax.y + border+2, vmin.z - border });
 	vertices.push_back({ vmin.x - border, vmax.y + border, vmin.z - border });
 	vertices.push_back({ vmin.x - border, vmin.y - border, vmax.z + border });
 	vertices.push_back({ vmax.x + border, vmin.y - border, vmax.z + border });
-	vertices.push_back({ vmax.x + border, vmax.y + border, vmax.z + border });
+	vertices.push_back({ vmax.x + border, vmax.y + border+2, vmax.z + border });
 	vertices.push_back({ vmin.x - border, vmax.y + border, vmax.z + border });
 	normals.push_back({ 0, 0, -1 });
 	normals.push_back({ 1, 0, 0 });
 	normals.push_back({ 0, 0, 1 });
 	normals.push_back({ -1, 0, 0 });
-	normals.push_back({ 0, 1, 0 });
+	//normals.push_back({ 0, 1, 0 });
+	normals.push_back({ -sqrt(2.0f) / 2, sqrt(2.0f) / 2, 0.0f });
 	normals.push_back({ 0, -1, 0 });
 	faces.emplace_back(&vertices, std::vector<int>{ 0, 1, 2, 3 }, &normals, 0);
 	faces.emplace_back(&vertices, std::vector<int>{ 1, 5, 6, 2 }, &normals, 1);
@@ -80,8 +88,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	faces.emplace_back(&vertices, std::vector<int>{ 3, 2, 6, 7 }, &normals, 4);
 	faces.emplace_back(&vertices, std::vector<int>{ 0, 4, 5, 1 }, &normals, 5);
 	approx::ConvexAtom<float> atom(&faces, std::vector < int > {0, 1, 2, 3, 4, 5});
-	auto cut = atom.cut_by(approx::Plane<float>({1,0,0},1.5f));
-	for (auto& f : *cut.negative.get()){
+	auto cut = atom.cut_by(approx::Plane<float>({1,0,0},2.0f));
+/*	for (auto& f : *cut.negative.get()){
 		cout << f;
 	}
 	cout << "=====================================\n";
@@ -89,7 +97,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		cout << f;
 	}
 	cout << "==========================" << faces.size()<<"\n";
-	for (auto x : vertices){ cout << x << "\n"; }
+	for (auto x : vertices){ cout << x << "\n"; }*/
+	cout << atom.volume() << " " << cut.positive->volume() << " " << cut.negative->volume();
+	cout << "\n" << vertices.size();
 	cin.get();
 	return 0;
 }

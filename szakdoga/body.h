@@ -39,6 +39,16 @@ namespace approx{
 		ConstFaceIterator begin() const { return ConstFaceIterator(faces, &inds, 0); }
 		ConstFaceIterator end() const { return ConstFaceIterator(faces, &inds, inds.size()); }
 
+		T volume(){
+			T sum = 0;
+			for (const Face<T>& f : *this){
+				sum += f.to_2d().area() * dot(f.points(0), f.get_normal());
+			}
+			sum /= 3;
+			return sum;
+		}
+
+
 	};
 
 }
