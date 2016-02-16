@@ -35,7 +35,6 @@ struct Less{
 	}
 };
 
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f },

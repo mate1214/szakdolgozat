@@ -69,12 +69,14 @@ namespace approx{
 		const AtomType<T>& atom(size_t ind) const {return atoms[ind];}
 		const TargetBody<T>& target_body(){return *target;}
 
-		void slice(size_t ind, const Plane<T>& p){
-			//TODO
+		AtomType<T>::CutResult slice(size_t ind, const Plane<T>& p){
 			auto res = atoms[ind].cut_by(p);
+			atoms.push_back(*(AtomType<T>*)res.positive.get());
+			atoms.push_back(*(AtomType<T>*)res.negative.get());
+			return res;
 		}
 
-		void slice(Iterator pos, const Plane<T>& p){
+		AtomType<T>::CutResult slice(Iterator pos, const Plane<T>& p){
 			slice(pos - atoms.begin(), p);
 		}
 

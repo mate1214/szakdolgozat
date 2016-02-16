@@ -86,6 +86,14 @@ namespace approx{
 			std::reverse(inds.begin(), inds.end());
 		}
 
+		Vector3<T> center() const {
+			Vector3<T> avg;
+			for (const Vector3<T>& pt : *this){
+				avg += pt;
+			}
+			avg /= size();
+			return avg;
+		}
 
 		Polygon2<T> to_2d(const Vector3<T>& x, const Vector3<T>& y) const {
 			std::vector<Vector2<T>> pts;

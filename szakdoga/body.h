@@ -48,6 +48,15 @@ namespace approx{
 			return sum;
 		}
 
+		Vector3<T> centroid() const{
+			int cnt = 0;
+			Vector3<T> center;
+			for (const Face<T>& f : *this){
+				center += f.center();
+			}
+			center /= size();
+			return center;
+		}
 
 	};
 

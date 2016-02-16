@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <memory>
 #include <map>
+#include <set>
 #include "body.h"
 #include "planes.h"
 
@@ -96,8 +97,26 @@ namespace approx{
 					faces_added};
 		}
 
-		T intersection_volume(const Body<T>& b){
-			//TODO
+		bool point_inside(const Vector3<T>& pt) const {
+			for (const Face<T>& f : *this){
+				if (f.to_plane().classify_point(pt) > 0) return false;
+			}
+			return true;
+		}
+
+		int vertex_count(const Body<T>& b) const{
+			int cnt = 0;
+			std::set<Vector3<T>> pts;
+			for (const Face<T>& face : b){
+				for (const Vector3<T>& p : face){
+					if (point_inside(p)) pts.insert(p);
+				}
+			}
+			return pts.size();
+		}
+
+		T intersection_volume(const Body<T>& b) const {
+			//TODO: ezt itt megirni
 			return 0;
 		}
 	};
