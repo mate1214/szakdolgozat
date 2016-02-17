@@ -38,3 +38,6 @@ AppWizard uses "TODO:" comments to indicate parts of the source code you
 should add to or customize.
 
 /////////////////////////////////////////////////////////////////////////////
+
+TODO:
+	-metszetszámítást egyeztetni, mit hogy merre, ha ki kell számolni a metszetet akkor az éleket össze tudom rendezni úgy hogy kijöjjenek a részszögek mert mindennek két szomszédja van

@@ -37,11 +37,11 @@ struct Less{
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f },
-	{ 3.0f, 1.0f, 0.0f }, {2.0f,3.0f,0.0f} },
+	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f },
+	{ 3.0f, 1.0f, 3.0f }, {2.0f,3.0f,3.0f} },
 								   normals { {0.0f,0.0f,-1.0f} };
 	vector<approx::Face<float>> faces;
-	/*approx::Face<float> f(&vertices, {0,1,2,3,4}, &normals,0);
+	approx::Face<float> f(&vertices, {0,1,2,3,4}, &normals,0);
 	for (const approx::Vector3<float>& v : f){
 		cout << v << '\n';
 	}
@@ -58,7 +58,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	approx::Face<float>::CutResult result = f.split_by(p);
 	cout << f << "\n--------------------------\n" << result.negative << "\n--------------------------\n" << result.positive;
 	cout << "\n--------------------------\n" << vertices.size() << "\n-------------------\n";
-	cout << result.positive.size();*/
+	cout << result.positive.size();
 	vertices.clear();
 	normals.clear();
 

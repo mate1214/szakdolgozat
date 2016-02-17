@@ -210,7 +210,7 @@ namespace approx{
 		}
 
 
-		CutResult split_by(const Plane<T>& p, std::vector<Vector3<T>>* target_vecs, std::vector<Vector3<T>>* target_normals) {
+		CutResult split_by(const Plane<T>& p, std::vector<Vector3<T>>* target_vecs, std::vector<Vector3<T>>* target_normals) const{
 			
 			if (target_vecs == vecs && target_normals == normals) return split_by(p);
 

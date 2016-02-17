@@ -116,7 +116,15 @@ namespace approx{
 		}
 
 		T intersection_volume(const Body<T>& b) const {
-			//TODO: ezt itt megirni
+			std::vector<Vector3<T>> tmp_points,tmp_normals;
+			std::vector<Face<T>> faces1, faces2;
+			std::vector<std::pair<int, int>> edges;
+			//vegigmegyek ennek az atomnak az elein, mindegyikkel elmetszem a testet
+			Body<T>::ConstFaceIterator fiter = begin();
+			Plane<T> p = fiter->to_plane();
+			for (const Face<T>& f : b){
+				Face<T>::CutResult cut = f.cut_into();
+			}
 			return 0;
 		}
 	};
