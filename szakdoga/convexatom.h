@@ -1,6 +1,11 @@
 #ifndef CONVEXATOM_H_INCLUDED
 #define CONVEXATOM_H_INCLUDED
 
+//
+// Keszitette: Toth Mate
+// Konvex testeket reprezentalo adatszerkezet melyet az approximacio atomjaihoz hasznalunk
+//
+
 #include <utility>
 #include <algorithm>
 #include <memory>
@@ -12,9 +17,9 @@
 namespace approx{
 
 
-
+	//parameterezheto barmely Vector3-al kompatibilis skalar tipussal
 	template <class T> class ConvexAtom : public Body < T > {
-		struct Less{
+		struct Less{ //rendezesi muvelet a map tipussal valo hasznalathoz
 			bool operator ()(const Vector3<T>& a,const Vector3<T>& b) const{
 				return a.x < b.x ||
 					(a.x == b.x && a.y < b.y) ||
@@ -70,8 +75,6 @@ namespace approx{
 				avg_pt /= pt_ids.size(); //kozeppont
 				Vector3<T> vx = vc[pt_ids.front()] - avg_pt,
 						   vy = cross(p.normal(),vx);
-
-				//TODO: rendezes cw ccw dolog atbeszel
 				std::sort(pt_ids.begin(), pt_ids.end(), [&](int a, int b){
 					Vector3<T> v1 = vc[a] - avg_pt, v2 = vc[b] - avg_pt;
 					T x1 = dot(v1, vx), y1 = dot(v1,vy),
@@ -79,9 +82,9 @@ namespace approx{
 					return atan2(x1, y1) < atan2(x2, y2);
 				});
 
-				vector<int> new_fc;
-				for (int i = 0; i < pt_ids.size(); i += 2){
-					new_fc.push_back(pt_ids[i]);
+				vector<int> new_fc{pt_ids[0]};
+				for (int i = 2; i < pt_ids.size(); i += 2){
+					if(vc[pt_ids[i]] != vc[new_fc.back()]) new_fc.push_back(pt_ids[i]); //egy csucsnal lehet hogy tobb el osszefut, nem akarunk egymas utan ugyanolyan pontokat
 				}
 				faces->emplace_back(face(0).vertex_container(),new_fc, face(0).normal_container(),p.normal());
 				std::reverse(new_fc.begin(),new_fc.end());
@@ -89,7 +92,6 @@ namespace approx{
 				faces_added+=2;
 				neg_faces.push_back(faces->size() - 2);
 				pos_faces.push_back(faces->size() - 1);
-				//TODO? garbage collection valamikor valahol a duplazasok miatt
 			}
 			return{ std::make_shared<ConvexAtom<T>>(faces,std::move(pos_faces)),
 					std::make_shared<ConvexAtom<T>>(faces, std::move(neg_faces)),
@@ -115,8 +117,9 @@ namespace approx{
 			return pts.size();
 		}
 
-		T intersection_volume(const Body<T>& b) const {
-			std::vector<Vector3<T>> tmp_points,tmp_normals;
+		//metszetterfogat szamitas a 
+		T intersection_volume(const Body<T>& b) const { //TODO: ez nagyon nincs megirva
+			/*std::vector<Vector3<T>> tmp_points,tmp_normals;
 			std::vector<Face<T>> faces1, faces2;
 			std::vector<std::pair<int, int>> edges;
 			//vegigmegyek ennek az atomnak az elein, mindegyikkel elmetszem a testet
@@ -125,7 +128,7 @@ namespace approx{
 			for (const Face<T>& f : b){
 				Face<T>::CutResult cut = f.cut_into();
 			}
-			return 0;
+			return 0;*/
 		}
 	};
 

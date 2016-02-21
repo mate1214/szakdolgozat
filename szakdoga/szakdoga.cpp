@@ -4,9 +4,12 @@
 #include "stdafx.h"
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include "vectors.h"
 #include "face.h"
 #include "convexatom.h"
+
 using namespace std;
 
 template <class T> std::ostream& operator << (std::ostream& o, const approx::Vector2<T>& v){
@@ -35,10 +38,10 @@ struct Less{
 	}
 };
 
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f },
-	{ 3.0f, 1.0f, 3.0f }, {2.0f,3.0f,3.0f} },
+	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, {2.0f,3.0f,3.0f} },
 								   normals { {0.0f,0.0f,-1.0f} };
 	vector<approx::Face<float>> faces;
 	approx::Face<float> f(&vertices, {0,1,2,3,4}, &normals,0);
@@ -52,7 +55,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cout << f2.area();
 	approx::Vector3<float> v{ 1.0, 0, 0 };
 	cout << '\n'<< v.x << ',' << v.y << ',' << v.z;
-	approx::Plane<float> p({ 1, 0, 0 }, 2.0f);
+	approx::Plane<float> p({ 0, 0, 1 }, 3.0f);
 	cout << p.classify_point(vertices.front()) << " " << p.classify_point(vertices.back()) << "\n";
 	
 	approx::Face<float>::CutResult result = f.split_by(p);
@@ -61,7 +64,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cout << result.positive.size();
 	vertices.clear();
 	normals.clear();
-
+	/*
 	approx::Vector3<float> vmin(1,1,1), vmax(3,2,2);
 	float border = 0;
 	//TODO: CW CCW dolog egyeztet
@@ -88,7 +91,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	faces.emplace_back(&vertices, std::vector<int>{ 0, 4, 5, 1 }, &normals, 5);
 	approx::ConvexAtom<float> atom(&faces, std::vector < int > {0, 1, 2, 3, 4, 5});
 	auto cut = atom.cut_by(approx::Plane<float>({1,0,0},2.0f));
-/*	for (auto& f : *cut.negative.get()){
+	for (auto& f : *cut.negative.get()){
 		cout << f;
 	}
 	cout << "=====================================\n";
@@ -96,10 +99,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		cout << f;
 	}
 	cout << "==========================" << faces.size()<<"\n";
-	for (auto x : vertices){ cout << x << "\n"; }*/
+	for (auto x : vertices){ cout << x << "\n"; }
 	cout << atom.volume() << " " << cut.positive->volume() << " " << cut.negative->volume();
-	cout << "\n" << vertices.size();
-	cin.get();
+	cout << "\n" << vertices.size();*/
 	return 0;
 }
 

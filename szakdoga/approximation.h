@@ -32,7 +32,6 @@ namespace approx{
 				vmax.y = std::max(vmax.y, v.y);
 				vmax.z = std::max(vmax.z, v.z);
 				}
-			//TODO: CW CCW dolog egyeztet
 			vertices.push_back({ vmin.x - border, vmin.y - border, vmin.z - border });
 			vertices.push_back({ vmax.x + border, vmin.y - border, vmin.z - border });
 			vertices.push_back({ vmax.x + border, vmax.y + border, vmin.z - border });
@@ -60,6 +59,37 @@ namespace approx{
 		Approximation(const TargetBody<T>* _target, T _border) : target(_target){
 			starting_atom(_border);
 		}
+		
+		Approximation& operator = (const Approximation& app){
+			target = app.target;
+			vertices = app.vertices;
+			normals = app.normals;
+			faces.clear();
+			atoms.clear();
+			for (const Face<T>& f : app.faces){
+				faces.push_back(f.migrate_to(&vertices, &normals));
+			}
+			for (const AtomType<T>& a : app.atoms){
+				atoms.push_back(a.migrate_to(&faces));
+			}
+			return *this;
+		}
+
+		Approximation& operator = (Approximation&& app){
+			target = app.target;
+			vertices = std::move(app.vertices);
+			normals = std::move(app.normals);
+			faces.clear();
+			atoms.clear();
+			for (Face<T>&& f : app.faces){
+				faces.push_back(f.migrate_to(&vertices, &normals));
+			}
+			for (AtomType<T>&& a : app.atoms){
+				atoms.push_back(a.migrate_to(&faces));
+			}
+			return *this;
+		}
+
 
 		Iterator begin() { return atoms.begin(); }
 		Iterator end() { return atoms.end(); }
@@ -71,14 +101,15 @@ namespace approx{
 
 		AtomType<T>::CutResult slice(size_t ind, const Plane<T>& p){
 			auto res = atoms[ind].cut_by(p);
-			atoms.push_back(*(AtomType<T>*)res.positive.get());
-			atoms.push_back(*(AtomType<T>*)res.negative.get());
+			atoms.push_back(*static_cast<AtomType<T>*>(res.positive.get()));
+			atoms.push_back(*static_cast<AtomType<T>*>(res.negative.get()));
 			return res;
 		}
 
 		AtomType<T>::CutResult slice(Iterator pos, const Plane<T>& p){
 			slice(pos - atoms.begin(), p);
 		}
+
 
 	};
 

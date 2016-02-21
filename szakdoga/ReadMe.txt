@@ -38,6 +38,9 @@ AppWizard uses "TODO:" comments to indicate parts of the source code you
 should add to or customize.
 
 /////////////////////////////////////////////////////////////////////////////
-
+Hasznalati informacio:
+	A glm hasznalatahoz a T: meghajtot az OGLPack-ot hasznalo konyvtarba kell allitani
 TODO:
-	-metszetszámítást egyeztetni, mit hogy merre, ha ki kell számolni a metszetet akkor az éleket össze tudom rendezni úgy hogy kijöjjenek a részszögek mert mindennek két szomszédja van
+	-ccw ellenorzes
+	-rajzolashoz konverzio
+	-obj betoltesnel normalvektoros kerdesek

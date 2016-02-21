@@ -51,6 +51,9 @@
     <ClInclude Include="convexatom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="conversion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
