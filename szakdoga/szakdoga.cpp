@@ -9,6 +9,8 @@
 #include "vectors.h"
 #include "face.h"
 #include "convexatom.h"
+#include "targetbody.h"
+#include "approximation.h"
 
 using namespace std;
 
@@ -46,9 +48,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, {2.0f,3.0f,3.0f} },
 								   normals { {0.0f,0.0f,-1.0f} };
 	vector<approx::Face<float>> faces;
-
-	std::shared_ptr<A> pt = std::make_shared<A>(A{1});
-	std::shared_ptr<B> pt2 = (std::shared_ptr<B>)pt;
+	approx::Plane<float> p({ 1, 0, 0 }, 2.0f);
 
 	/*approx::Face<float> f(&vertices, {0,1,2,3,4}, &normals,0);
 	for (const approx::Vector3<float>& v : f){
@@ -61,7 +61,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cout << f2.area();
 	approx::Vector3<float> v{ 1.0, 0, 0 };
 	cout << '\n'<< v.x << ',' << v.y << ',' << v.z;
-	approx::Plane<float> p({ 0, 0, 1 }, 3.0f);
+	
 	cout << p.classify_point(vertices.front()) << " " << p.classify_point(vertices.back()) << "\n";
 	
 	approx::Face<float>::CutResult result = f.cut_by(p);
@@ -70,7 +70,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cout << result.positive.size();
 	vertices.clear();
 	normals.clear();*/
-	/*
+	
 	approx::Vector3<float> vmin(1,1,1), vmax(3,2,2);
 	float border = 0;
 	vertices.push_back({ vmin.x - border, vmin.y - border, vmin.z - border });
@@ -94,7 +94,33 @@ int _tmain(int argc, _TCHAR* argv[])
 	faces.emplace_back(&vertices, std::vector<int>{ 4, 0, 3, 7 }, &normals, 3);
 	faces.emplace_back(&vertices, std::vector<int>{ 3, 2, 6, 7 }, &normals, 4);
 	faces.emplace_back(&vertices, std::vector<int>{ 0, 4, 5, 1 }, &normals, 5);
-	approx::ConvexAtom<float> atom(&faces, std::vector < int > {0, 1, 2, 3, 4, 5});
+
+	approx::TargetBody<float> tb(vertices,normals,faces);
+	cout << tb.body().size();
+	//for (auto& f : tb.body()) cout << f;
+	approx::Approximation<float, approx::ConvexAtom<float>> app(&tb,0.0f);
+	cout << "\n" << app.begin()->volume() << "\n";
+	auto cut = app.cut(0,p);
+	cout << app.pending() << "\n";
+	cut.choose_both();
+	app.garbage_collection();
+	cout << "\naaaa\n";
+	for (auto& b : app){
+		cout << b.volume() << "\n";
+	}
+	cin.get();
+	/*
+	for(auto x : app.vertex_container()) cout << x << "\n";
+
+	for (auto x : app.normal_container()) cout << x << "\n";
+
+	for (auto x : app.face_container()) cout << x << "\n";
+	*/
+	//for (auto f : *(app.begin()+1)) cout << f << "\n";
+	//cout << app.size() << "\n";
+	//cin.get();
+
+	/*approx::ConvexAtom<float> atom(&faces, std::vector < int > {0, 1, 2, 3, 4, 5});
 	auto cut = atom.cut_by(approx::Plane<float>({1,0,0},2.0f));
 	for (auto& f : *cut.negative.get()){
 		cout << f;

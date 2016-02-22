@@ -16,40 +16,41 @@ namespace approx{
 	template <class T> class Body{
 	protected:
 		std::vector<Face<T>>* _faces;
-		std::vector<int> ids;
+		std::vector<int> inds;
 
 		typedef IndexIterator<Face<T>> FaceIterator;
 		typedef ConstIndexIterator<Face<T>> ConstFaceIterator;
 	public:
-		Body(std::vector<Face<T>>* f, const std::vector<int>& i) : _faces(f), ids(i){}
-		Body(std::vector<Face<T>>* f, std::vector<int>&& i) : _faces(f), ids(i){}
+		Body(std::vector<Face<T>>* f, const std::vector<int>& i) : _faces(f), inds(i){}
+		Body(std::vector<Face<T>>* f, std::vector<int>&& i) : _faces(f), inds(i){}
 		Body(const Body&) = default;
-		Body(Body&& b) : _faces(b._faces), ids(std::move(b.ids)){}
+		Body(Body&& b) : _faces(b._faces), inds(std::move(b.inds)){}
 
 		Body& operator = (const Body& b) = default;
 		Body& operator =(Body&& b){
-			ids = std::move(b.ids);
+			inds = std::move(b.inds);
 			_faces = b._faces;
 			return *this;
 		}
 
 		Body migrate_to(std::vector<Face<T>>* fcs){
-			return Body(fcs, std::move(ids));
+			return Body(fcs, std::move(inds));
 		}
 
 		Body migrate_to(std::vector<Face<T>>* fcs) const {
-			return Body(fcs, ids);
+			return Body(fcs, inds);
 		}
 
 
-		int size() const { return ids.size(); }
-	    int indicies(size_t i) const { return ids[i]; }
-		const std::vector<int>& indicies() const { return ids; }
+		int size() const { return inds.size(); }
+	    int indicies(size_t i) const { return inds[i]; }
+		const std::vector<int>& indicies() const { return inds; }
+		std::vector<int>& indicies() { return inds; }
 		Face<T>& faces(size_t i){ return _faces->operator[](i); }
 		const Face<T>& faces(size_t i) const { return _faces->operator[](i); }
 
-		FaceIterator begin() { return FaceIterator(_faces, &ids, 0); }
-		FaceIterator end() { return FaceIterator(_faces, &ids, ids.size()); }
+		FaceIterator begin() { return FaceIterator(_faces, &inds, 0); }
+		FaceIterator end() { return FaceIterator(_faces, &inds, inds.size()); }
 
 		ConstFaceIterator begin() const { return ConstFaceIterator(_faces, &inds, 0); }
 		ConstFaceIterator end() const { return ConstFaceIterator(_faces, &inds, inds.size()); }

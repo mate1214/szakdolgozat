@@ -91,6 +91,7 @@ namespace approx{
 		int indicies(size_t i){ return inds[i]; }
 		//a normalvektor indexe
 		int normal_index() const { return normal_id; }
+		int& normal_index() { return normal_id; }
 		//a pontok szama
 		size_t size() const { return inds.size(); }
 		

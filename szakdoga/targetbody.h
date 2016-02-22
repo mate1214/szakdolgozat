@@ -6,7 +6,7 @@
 // Osztaly mely kezeli a kozelitendo testet minden adataval egyutt.
 // A masolasa es a mozgatasa is linearis mert a lapok mutatoit felul kell irni
 //
-
+#include <utility>
 #include <vector>
 #include <fstream>
 #include <string>
@@ -34,19 +34,25 @@ namespace approx{
 		//masolo es mozgato konstruktorok
 		TargetBody(const TargetBody& t) : vecs(t.vecs), normals(t.normals), bdy(t.bdy.migrate_to(&faces)){
 			faces.reserve(t.faces.size());
-			for (const Face<T>& f : t.faces) faces.push_back(f.migrate_to(&vecs, &normals));
+			for (const Face<T>& f : t.faces) { faces.push_back(f.migrate_to(&vecs, &normals)); }
 		}
 		//a koltoztetesi pointer atallitas miatt a mozgato konstruktor is linearis ideju
-		TargetBody(TargetBody&&) vecs(std::move(t.vecs)), normals(std::move(t.normals)), bdy(std::move(t.bdy.migrate_to(&faces))){
+		TargetBody(TargetBody&& t) : vecs(std::move(t.vecs)), normals(std::move(t.normals)), bdy(std::move(t.bdy.migrate_to(&faces))){
 			faces.reserve(t.faces.size());
-			for (Face<T>&& f : t.faces) faces.push_back(f.migrate_to(&vecs, &normals));
+			for (Face<T>& f : t.faces) { faces.push_back(f.migrate_to(&vecs, &normals)); }
 		}
 
 		//inicializalas pont, normalvektor es lap vektorokkal, a lapok kozul mindengyiket hasznalja
 		TargetBody(const std::vector<Vector3<T>>& vec, const std::vector<Vector3<T>>& nrm, const std::vector<Face<T>>& fac)
-			: vecs(vec), normals(nrm), faces(fac), bdy(&faces, std::move(range(faces.size()))){}
+			: vecs(vec), normals(nrm), bdy(&faces, std::move(range(fac.size()))) {
+			faces.reserve(fac.size());
+			for (const Face<T>& f : fac) { faces.push_back(f.migrate_to(&vecs, &normals)); }
+		}
 		TargetBody(std::vector<Vector3<T>>&& vec, std::vector<Vector3<T>>&& nrm, std::vector<Face<T>>&& fac)
-			: vecs(vec), normals(nrm), faces(fac), bdy(&faces, std::move(range(faces.size()))){}
+			: vecs(vec), normals(nrm), bdy(&faces, std::move(range(fac.size()))){
+			faces.reserve(fac.size());
+			for (Face<T>& f : fac) { faces.push_back(f.migrate_to(&vecs, &normals)); }
+		}
 
 		//a konkret test kinyerese
 		const Body<T>& body() const{
@@ -54,9 +60,9 @@ namespace approx{
 		}
 
 		//pontokat tartalmazo vektor
-		const std::vector<Vector3<T>>& points() const { return vecs; }
+		const std::vector<Vector3<T>>& vertex_container() const { return vecs; }
 		//normalisokat tartalmazo vektor
-		const std::vector<Vector3<T>>& normals() const { return normals; }
+		const std::vector<Vector3<T>>& normal_container() const { return normals; }
 		//masolo ertekadas
 		TargetBody& operator = (const TargetBody& t) {
 			vecs = t.vecs;
