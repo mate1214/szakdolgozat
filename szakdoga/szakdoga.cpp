@@ -38,13 +38,19 @@ struct Less{
 	}
 };
 
+struct A{ int x; };
+struct B : public A{ int y; };
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, {2.0f,3.0f,3.0f} },
 								   normals { {0.0f,0.0f,-1.0f} };
 	vector<approx::Face<float>> faces;
-	approx::Face<float> f(&vertices, {0,1,2,3,4}, &normals,0);
+
+	std::shared_ptr<A> pt = std::make_shared<A>(A{1});
+	std::shared_ptr<B> pt2 = (std::shared_ptr<B>)pt;
+
+	/*approx::Face<float> f(&vertices, {0,1,2,3,4}, &normals,0);
 	for (const approx::Vector3<float>& v : f){
 		cout << v << '\n';
 	}
@@ -58,16 +64,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	approx::Plane<float> p({ 0, 0, 1 }, 3.0f);
 	cout << p.classify_point(vertices.front()) << " " << p.classify_point(vertices.back()) << "\n";
 	
-	approx::Face<float>::CutResult result = f.split_by(p);
+	approx::Face<float>::CutResult result = f.cut_by(p);
 	cout << f << "\n--------------------------\n" << result.negative << "\n--------------------------\n" << result.positive;
 	cout << "\n--------------------------\n" << vertices.size() << "\n-------------------\n";
 	cout << result.positive.size();
 	vertices.clear();
-	normals.clear();
+	normals.clear();*/
 	/*
 	approx::Vector3<float> vmin(1,1,1), vmax(3,2,2);
 	float border = 0;
-	//TODO: CW CCW dolog egyeztet
 	vertices.push_back({ vmin.x - border, vmin.y - border, vmin.z - border });
 	vertices.push_back({ vmax.x + border, vmin.y - border, vmin.z - border });
 	vertices.push_back({ vmax.x + border, vmax.y + border+2, vmin.z - border });
@@ -101,7 +106,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	cout << "==========================" << faces.size()<<"\n";
 	for (auto x : vertices){ cout << x << "\n"; }
 	cout << atom.volume() << " " << cut.positive->volume() << " " << cut.negative->volume();
-	cout << "\n" << vertices.size();*/
+	cout << "\n" << vertices.size();
+	cin.get();*/
 	return 0;
 }
 

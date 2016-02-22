@@ -53,7 +53,9 @@ namespace approx{
 			return bdy;
 		}
 
+		//pontokat tartalmazo vektor
 		const std::vector<Vector3<T>>& points() const { return vecs; }
+		//normalisokat tartalmazo vektor
 		const std::vector<Vector3<T>>& normals() const { return normals; }
 		//masolo ertekadas
 		TargetBody& operator = (const TargetBody& t) {

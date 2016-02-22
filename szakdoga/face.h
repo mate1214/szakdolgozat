@@ -44,28 +44,33 @@ namespace approx{
 			int points_added; //a hozzaadott pontok szama <= pt_inds.size()
 		};
 
-		//konstrukrorok amelyek szamoljak a normalvektort
+		//konstrukror mely szamolja es beilleszti a normalist
 		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* _normals) : vecs(vertices), inds(ids), normals(_normals){ calc_normal(); }
+		//konstrukror mely szamolja es beilleszti a normalist, de mozgatast hasznal a megadott pont indexekre
 		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* _normals) : vecs(vertices), inds(ids), normals(_normals){ calc_normal(); }
 		//megadott normalvektort felhasznalo konstruktor
 		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* normals, int n_id) : vecs(vertices), inds(ids), normals(normals), normal_id(n_id){}
+		//megadott normalvektort felhasznalo konstruktor, mozgatja a megadott pontindex vektort
 		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* normals, int n_id) : vecs(vertices), inds(ids), normals(normals), normal_id(n_id){}
-		//megadott de beszurando normalist hasznalo konstruktorok
+		//megadott de beszurando normalist hasznalo konstruktor
 		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* _normals, const Vector3<T>& normal)
 			: vecs(vertices), inds(ids), normals(_normals), normal_id(normals->size()){
 			normals->push_back(normal);
 		}
+		//megadott de beszurando normalist hasznalo konstruktor a pontok mozgatasaval
 		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* _normals, const Vector3<T>& normal)
 			: vecs(vertices), inds(ids), normals(_normals), normal_id(normals->size()){
 			normals->push_back(normal);
 		}
 
-		//masolo es mozgato konstruktorok
+		//masolo konstruktor, linearis a pontok szamaban
 		Face(const Face&) = default;
+		//mozgato konstruktor konstans idovel
 		Face(Face&& f) : vecs(f.vecs), normals(f.normals), inds(std::move(f.inds)), normal_id(f.normal_id){}
 
-		//masolo es mozgato ertekadasok
+		//masolo ertekadas, default, linearis idovel
 		Face& operator = (const Face& f) = default;
+		//mozgato ertekadas konstans idoben
 		Face& operator = (Face&& f){
 			inds = std::move(f.inds);
 			vecs = f.vecs;
@@ -137,6 +142,9 @@ namespace approx{
 		}
 
 		//lekepezes ketto dimenzioba a lapra melyen fekszik
+		//a feszito koordinata:
+		// x = elso es masodik hatarpont kozotti vektor
+		// y = cross(normal,x)
 		Polygon2<T> to_2d() const {
 			Vector3<T> y = (points(1) - points(0)).normalized();
 			Vector3<T> x = cross(get_normal(), y).normalized();
@@ -147,7 +155,7 @@ namespace approx{
 		//a keletkezo lapok ugyanarra a tarolora hivatkoznak
 		//a vagas feltetelezi, hogy a lap konvex
 		//a muveletigeny linearis a csucspontok szamaban
-		CutResult split_by(const Plane<T>& p) const {
+		CutResult cut_by(const Plane<T>& p) const {
 			T sign1 = p.classify_point(points(0)), sign2;
 			int n = size();
 			std::vector<int> pos, neg,cut;
@@ -187,7 +195,9 @@ namespace approx{
 				sign1 = sign2;
 			}
 			return{ Face<T>(vecs, std::move(pos), normals, normal_id),
-				Face<T>(vecs, std::move(neg), normals, normal_id),cut, pts_added };
+				    Face<T>(vecs, std::move(neg), normals, normal_id),
+					cut,
+					pts_added };
 		}
 
 		//a sajatjaval megegyezo taroloba vagas
@@ -196,7 +206,7 @@ namespace approx{
 		// [] operator : Vector3<T> -> int, megadja a ponthoz tarsitott indexet
 		// pelda tipus: std::map<Vector3<T>,int>,std::unordered_map<Vector3<T>,int> a szukseges rendezessel vagy hasitassal
 		//a muveletigeny linearis a pontok szamaban, valamint a vagopontok beszurasanal a megadott Maptype kereso es beszuro koltsege
-		template<class MapType> CutResult split_by(const Plane<T>& p,MapType& m) const {
+		template<class MapType> CutResult cut_by(const Plane<T>& p,MapType& m) const {
 			T sign1 = p.classify_point(points(0)), sign2;
 			int n = size();
 			std::vector<int> pos, neg, cut;
@@ -249,13 +259,15 @@ namespace approx{
 				sign1 = sign2;
 			}
 			return{ Face<T>(vecs, std::move(pos), normals, normal_id),
-				Face<T>(vecs, std::move(neg), normals, normal_id), cut, pts_added };
+				Face<T>(vecs, std::move(neg), normals, normal_id),
+				cut,
+				pts_added };
 		}
 
-		//elvagas teljesen uj taroloba
-		CutResult split_by(const Plane<T>& p, std::vector<Vector3<T>>* target_vecs, std::vector<Vector3<T>>* target_normals) const{
+		//elvagas teljesen uj taroloba az adott sikkal
+		CutResult cut_by(const Plane<T>& p, std::vector<Vector3<T>>* target_vecs, std::vector<Vector3<T>>* target_normals) const{
 			
-			if (target_vecs == vecs && target_normals == normals) return split_by(p);
+			if (target_vecs == vecs && target_normals == normals) return cut_by(p);
 
 			T sign1 = p.classify_point(points(0)), sign2;
 			int n = size();
@@ -299,7 +311,9 @@ namespace approx{
 			target_normals->push_back(get_normal());
 			int n_id = target_normals->size() - 1;
 			return{ Face<T>(target_vecs, std::move(pos), target_normals, n_id),
-				Face<T>(target_vecs, std::move(neg), target_normals, n_id),cut, pts_added };
+					Face<T>(target_vecs, std::move(neg), target_normals, n_id),
+					cut,
+					pts_added };
 		}
 
 	};
