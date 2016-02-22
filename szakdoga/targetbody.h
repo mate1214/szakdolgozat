@@ -31,6 +31,7 @@ namespace approx{
 		}
 
 	public:
+		TargetBody(){}
 		//masolo es mozgato konstruktorok
 		TargetBody(const TargetBody& t) : vecs(t.vecs), normals(t.normals), bdy(t.bdy.migrate_to(&faces)){
 			faces.reserve(t.faces.size());

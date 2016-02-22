@@ -88,7 +88,7 @@ namespace approx{
 		const std::vector<int>& indicies() const { return inds; }
 		std::vector<int>& indicies(){ return inds; }
 		//az i. pont indexe
-		int indicies(size_t i){ return inds[i]; }
+		int indicies(size_t i) const { return inds[i]; }
 		//a normalvektor indexe
 		int normal_index() const { return normal_id; }
 		int& normal_index() { return normal_id; }
@@ -96,8 +96,8 @@ namespace approx{
 		size_t size() const { return inds.size(); }
 		
 		//a pontokat valojavan tartalamzo tarolok
-		std::vector< Vector3<T> >* vertex_container() { return vecs; }
-		std::vector< Vector3<T> >* normal_container() { return normals; }
+		std::vector< Vector3<T> >* vertex_container() const { return vecs; }
+		std::vector< Vector3<T> >* normal_container() const { return normals; }
 
 		//normalvektor es index alapjan pontok elerese konstans esetre
 		const Vector3<T>& get_normal() const { return normals->operator[](normal_id); }

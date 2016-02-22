@@ -11,6 +11,8 @@
 #include "convexatom.h"
 #include "targetbody.h"
 #include "approximation.h"
+#include "conversion.h"
+
 
 using namespace std;
 
@@ -101,13 +103,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	approx::Approximation<float, approx::ConvexAtom<float>> app(&tb,0.0f);
 	cout << "\n" << app.begin()->volume() << "\n";
 	auto cut = app.cut(0,p);
-	cout << app.pending() << "\n";
 	cut.choose_both();
-	app.garbage_collection();
-	cout << "\naaaa\n";
+	//app.garbage_collection();
 	for (auto& b : app){
 		cout << b.volume() << "\n";
 	}
+
+	approx::BodyList rajzol = approx::drawinfo<decltype(app.begin()),float>(app.begin(),app.end());
+
 	cin.get();
 	/*
 	for(auto x : app.vertex_container()) cout << x << "\n";
