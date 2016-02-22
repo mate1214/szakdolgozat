@@ -1,6 +1,13 @@
 #ifndef INDEXITERATOR_H_INCLUDED
 #define INDEXITERATOR_H_INCLUDED
 
+//
+// Keszitette: Toth Mate
+// Absztrakt iterator sablon tipusok melyek modosithato es konstans hozzaferest nyujtanak indexelt adatokhoz
+// Tobb adatszerkezetnek van szuksege olyan adatok kezelesere melyekre indexsorozattal hivatkoznak, ez az iterator tipus ezt segiti.
+// Ezek a tipusok kielegitik a C++ szabvany RandomAccessIterator elvarasait, hasznalhatoak az std konyvtar algoritmusaival
+//
+
 #include <vector>
 #include <iterator>
 

@@ -3,7 +3,7 @@
 
 //
 // Keszitette: Toth Mate
-// Test tipus mely indexekkel hivatkozik a lapjaira
+// Test tipus mely indexekkel hivatkozik a hatarolo lapjaira, valamint kenyelmi fuggvenyeket nyujt
 // 
 
 #include <vector>

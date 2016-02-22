@@ -3,7 +3,7 @@
 
 //
 // Keszitette: Toth Mate
-// Konverzios es kulso hasznalatra alkalmassa tevo konyvtar
+// Konverzios es kulso hasznalatra alkalmassa tevo eljarasok, tipusok
 //
 
 

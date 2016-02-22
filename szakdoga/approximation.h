@@ -1,6 +1,12 @@
 #ifndef APPROXIMATION_H_INCLUDED
 #define APPROXIMATION_H_INCLUDED
 
+//
+// Keszitette: Toth Mate
+// Az approximacios folyamatot kezelo adatszerkezetet leiro tipus.
+// A felhasznaloval valo interakcio ezen a szinten lep ervenybe
+//
+
 #include <vector>
 #include <utility>
 #include <algorithm>
