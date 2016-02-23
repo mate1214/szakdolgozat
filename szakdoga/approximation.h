@@ -41,12 +41,12 @@ namespace approx{
 			Vector3<T> vmin, vmax;
 			for (const Face<T>& f : target->body())
 				for (const Vector3<T>& v : f){
-				vmin.x = std::min(vmin.x, v.x);
-				vmin.y = std::min(vmin.y, v.y);
-				vmin.z = std::min(vmin.z, v.z);
-				vmax.x = std::max(vmax.x, v.x);
-				vmax.y = std::max(vmax.y, v.y);
-				vmax.z = std::max(vmax.z, v.z);
+					vmin.x = std::min(vmin.x, v.x);
+					vmin.y = std::min(vmin.y, v.y);
+					vmin.z = std::min(vmin.z, v.z);
+					vmax.x = std::max(vmax.x, v.x);
+					vmax.y = std::max(vmax.y, v.y);
+					vmax.z = std::max(vmax.z, v.z);
 				}
 			vertices.push_back({ vmin.x - border, vmin.y - border, vmin.z - border });
 			vertices.push_back({ vmax.x + border, vmin.y - border, vmin.z - border });
