@@ -12,27 +12,13 @@
 #include "targetbody.h"
 #include "approximation.h"
 #include "conversion.h"
-
+#include "polygraph.h"
+#include "geoio.h"
 
 using namespace std;
+using namespace approx;
 
-template <class T> std::ostream& operator << (std::ostream& o, const approx::Vector2<T>& v){
-	o << v.x << ',' << v.y << '\n';
-	return o;
-}
 
-template <class T> std::ostream& operator << (std::ostream& o, const approx::Vector3<T>& v){
-	o << v.x << ',' << v.y << ',' << v.z << '\n';
-	return o;
-}
-
-template <class T> std::ostream& operator << (std::ostream& o, const approx::Face<T>& f){
-	o << "\n----------------------------\n";
-	for (auto vert : f){
-		o << vert << '\n';
-	}
-	return o;
-}
 
 struct Less{
 	bool operator ()(const approx::Vector3<float>& a, const approx::Vector3<float>& b) const{
@@ -42,11 +28,130 @@ struct Less{
 	}
 };
 
-struct A{ int x; };
-struct B : public A{ int y; };
+
+void cut_eq_test(){
+	vector<approx::Vector3<float>>
+		vertices{ { 1.0000456f, 0.0f, 0.0f },
+				  { sqrt(2.0f), sqrt(3.0f), sqrt(11.0f) },
+				  {(sqrt(2.0f)+sqrt(3.17f))/2.0f,sqrt(3.0f)+sqrt(8.767f) ,sqrt(10.65f)+sqrt(1.5678f)},
+				  {sqrt(6.56f),sqrt(3.0f)+sqrt(6.789f),-0.564f} },
+		normals{ cross(vertices[1] - vertices[0], vertices[2] - vertices[0]).normalized(),
+				 cross(vertices[3] - vertices[1], vertices[2] - vertices[1]).normalized() };
+	approx::Face<float>
+		face1(&vertices, {0,1,2},&normals,0),
+		face2(&vertices, {1,3,2},&normals,1);
+	approx::Plane<float> plane({0,1,0},sqrt(3.0f)+sqrt(5.456f));
+	auto cut1 = face1.cut_by(plane);
+	auto cut2 = face2.cut_by(plane);
+	cout << vertices[cut1.pt_inds.front()] << "\n"
+		<< vertices[cut1.pt_inds.back()] << "\n"
+		<< vertices[cut2.pt_inds.front()] << "\n"
+		<< vertices[cut2.pt_inds.back()] << "\n";
+	cout << boolalpha << (vertices[cut1.pt_inds.front()] == vertices[cut2.pt_inds.back()]);
+}
+
+void poly_graph_test(){
+	Graph<float> gr;
+	gr[{1, 1}].push_back({2,1.043f});
+	gr[{ 2, 1.043f }].push_back({1,1});
+
+	gr[{ 2.5f, 2.5f }].push_back({ 2, 1.043f });
+	gr[{ 2, 1.043f }].push_back({ 2.5f, 2.5f });
+
+	gr[{ 2.5f, 2.5f }].push_back({ 3,2 });
+	gr[{ 3, 2 }].push_back({ 2.5f,2.5f });
+	
+	gr[{ 2.5f, 2.5f }].push_back({ 1,5});
+	gr[{ 1, 5 }].push_back({ 2.5f, 2.5f });
+	
+	gr[{ 1, 5 }].push_back({ 7, 12 });
+	gr[{ 7, 12 }].push_back({ 1, 5 });
+
+	gr[{ 7, 12 }].push_back({ 5, 16 });
+	gr[{ 5, 16 }].push_back({ 7, 12 });
+
+	gr[{ 5, 16 }].push_back({ 1, 5 });
+	gr[{ 1, 5 }].push_back({ 5, 16 });
+
+	gr[{ 1, 5 }].push_back({ 1, 1 });
+	gr[{ 1, 1 }].push_back({ 1, 5 });
+
+
+	gr[{ 1, 5 }].push_back({ -1.5f, 4 });
+	gr[{ -1.5f, 4 }].push_back({ 1, 5 });
+
+	gr[{ -1.5f, 4 }].push_back({ -2, 8 });
+	gr[{ -2, 8 }].push_back({ -1.5f, 4 });
+
+	gr[{ 1, 5 }].push_back({ -2, 8 });
+	gr[{ -2, 8 }].push_back({ 1, 5 });
+
+	gr[{ 10, 10 }].push_back({ 15, 15 });
+	gr[{ 15, 15 }].push_back({ 10, 10 });
+
+	gr[{ 10, 10 }].push_back({ 15, 10 });
+	gr[{ 15, 10 }].push_back({ 10, 10 });
+
+	gr[{ 15, 10 }].push_back({ 15, 15 });
+	gr[{ 15, 15 }].push_back({ 15, 10 });
+
+
+	auto ls = get_polys(gr);
+
+	for (const auto& p : ls){
+		cout << p;
+	}
+
+}
+
+void plane_line_test(){
+	Plane<float> p1({0,0,-1},-2);
+	auto base = p1.ortho2d();
+	cout << "Plane1: " << p1 << "\nBase:\n" << base.first << "\n" << base.second << "\n";
+	Plane<float> p2({ sqrt(2.0f) / 2, 0, sqrt(2.0f) / 2 }, 1);
+	cout << "Plane2: " << p2 << "\n";
+	Line<float> l = p1.intersection_line(p2);
+	cout << l;
+}
+
+void poly_partition_test(){
+	Polygon2<float> convex_poly({ { 1, 1 }, { 2, 1 }, { 3, 2 }, { 5, 3 }, {3,10} });
+	cout << "CCW: " << convex_poly.is_ccw() << "\n";
+	auto polys = convex_poly.convex_partitions();
+	for (auto& e : polys){
+		cout << e << '\n';
+	}
+}
+
+void face_cut_test(){
+	vector<approx::Vector3<float>> vertices{ { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, { 2.0f, 3.0f, 3.0f } },
+		normals{ { 0.0f, 0.0f, -1.0f } };
+	approx::Face<float> f(&vertices, { 0, 1, 2, 3, 4 }, &normals, 0);
+	approx::Plane<float> p({ 0, 0, -1.0f }, -3.0f);
+	auto cut = f.cut_by(p);
+	cout << "coplanar cut done\n";
+	cout << cut.positive << "\n--------------------------\n" << cut.negative;
+	vector<approx::Vector3<float>> tmpv, tmpn;
+	auto cut2 = f.cut_by(p, &tmpv, &tmpn);
+	cout << "new container cut done\n";
+	f = cut2.negative;
+	auto cut3 = f.cut_by(p, &tmpv, &tmpn);
+	cout << cut3.negative << "\n--------------------------\n" << cut3.positive;
+	cout << cut3.negative.cut_by(p).positive.cut_by(p).negative;
+}
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+
+	//cut_eq_test();
+	//poly_graph_test();
+	//plane_line_test();
+	//poly_partition_test();
+	//face_cut_test();
+	//cin.get();
+	
+	
 	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, {2.0f,3.0f,3.0f} },
 								   normals { {0.0f,0.0f,-1.0f} };
 	vector<approx::Face<float>> faces;
@@ -98,18 +203,19 @@ int _tmain(int argc, _TCHAR* argv[])
 	faces.emplace_back(&vertices, std::vector<int>{ 0, 4, 5, 1 }, &normals, 5);
 
 	approx::TargetBody<float> tb(vertices,normals,faces);
-	cout << tb.body().size();
+	cout << tb.body().size() <<"\n";
 	//for (auto& f : tb.body()) cout << f;
-	approx::Approximation<float, approx::ConvexAtom<float>> app(&tb,0.0f);
-	cout << "\n" << app.begin()->volume() << "\n";
+	approx::Approximation<approx::ConvexAtom<float>> app(&tb,0.0f);
+	//cout << "\n" << app.begin()->volume() << "\n";
 	auto cut = app.cut(0,p);
+	//cout << "cut done\n";
 	cut.choose_both();
-	//app.garbage_collection();
+	app.garbage_collection();
 	for (auto& b : app){
-		cout << b.volume() << "\n";
+		cout << b.volume() << " "<< b.intersection_volume() <<"\n";
 	}
 
-	approx::BodyList rajzol = approx::drawinfo<decltype(app.begin()),float>(app.begin(),app.end());
+	//approx::BodyList rajzol = approx::drawinfo<decltype(app.begin()),float>(app.begin(),app.end());
 
 	cin.get();
 	/*
@@ -137,6 +243,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	cout << atom.volume() << " " << cut.positive->volume() << " " << cut.negative->volume();
 	cout << "\n" << vertices.size();
 	cin.get();*/
+
+
+
+
+
 	return 0;
 }
 

@@ -22,7 +22,8 @@ namespace approx{
 	// T: az approximacio skalar tipusa, kompatibilisnek kell lennie a Vector3 sablonnal, valamint az atan2 fuggvennyel mukodnie kell
 	// AtomType: az atomtipus melyet az approximacio hasznal, publikus interfeszenek meg kell egyeznie a ConvexAtom<T> tipussal,
 	//			 az approximacio soran ez a tipus lesz minden atom tipusa
-	template <class T, class AtomType> class Approximation {
+	template <class AtomType> class Approximation {
+		typedef typename AtomType::ScalarType T;
 		const TargetBody<T>* target; //a cel test
 		std::vector<Vector3<T>> vertices, normals; //pontok es normalisok
 		std::vector<Face<T>> faces; //lapok
@@ -68,10 +69,12 @@ namespace approx{
 			faces.emplace_back(&vertices, std::vector<int>{4, 0, 3, 7}, &normals, 3);
 			faces.emplace_back(&vertices, std::vector<int>{3, 2, 6, 7}, &normals, 4);
 			faces.emplace_back(&vertices, std::vector<int>{0, 4, 5, 1}, &normals, 5);
-			_atoms.emplace_back(&faces, std::vector<int>{0, 1, 2, 3, 4, 5});
+			_atoms.emplace_back(&faces, std::vector<int>{0, 1, 2, 3, 4, 5},&target->body());
 		}
 
 	public:
+		typedef T ScalarType;
+
 		//konstruktor mely az approximalando testre mutato pointert es a kezdo kocka lapjainak kozelseget varja
 		//futasideje linearis a celtest pontjainak szamaban
 		Approximation(const TargetBody<T>* _target, T _border) : target(_target), last_cut(-1){
@@ -163,8 +166,8 @@ namespace approx{
 			//az eredeti atomot toroljuk beszurjuk az ujakat
 			void choose_both(){
 				if (a->pending()){
-					a->_atoms.erase(a->_atoms.begin() + a->last_cut);
-					a->_atoms.push_back(*static_cast<AtomType*>(a->cut_res.negative.get()));
+					//a->_atoms.erase(a->_atoms.begin() + a->last_cut);
+					a->_atoms[a->last_cut] = std::move(*static_cast<AtomType*>(a->cut_res.negative.get()));
 					a->_atoms.push_back(*static_cast<AtomType*>(a->cut_res.positive.get()));
 					a->cut_res.positive.reset();
 					a->cut_res.negative.reset();
@@ -175,8 +178,8 @@ namespace approx{
 			//a negativ atomot megtartjuk a pozitivat es az eredetit eldobjuk
 			void choose_negative(){
 				if (a->pending()){
-					a->_atoms.erase(a->_atoms.begin() + a->last_cut);
-					a->_atoms.push_back(*static_cast<AtomType*>(a->cut_res.negative.get()));
+					//a->_atoms.erase(a->_atoms.begin() + a->last_cut);
+					a->_atoms[a->last_cut] = std::move(*static_cast<AtomType*>(a->cut_res.negative.get()));
 					a->cut_res.positive.reset();
 					a->cut_res.negative.reset();
 					a->last_cut = -1;
@@ -186,8 +189,8 @@ namespace approx{
 			//a pozitiv atomot megtartjuk a negativot es az eredetit eldobjuk
 			void choose_positive(){
 				if (a->pending()){
-					a->_atoms.erase(a->_atoms.begin() + a->last_cut);
-					a->_atoms.push_back(*static_cast<AtomType*>(a->cut_res.positive.get()));
+					//a->_atoms.erase(a->_atoms.begin() + a->last_cut);
+					a->_atoms[a->last_cut]=std::move(*static_cast<AtomType*>(a->cut_res.positive.get()));
 					a->cut_res.positive.reset();
 					a->cut_res.negative.reset();
 					a->last_cut = -1;

@@ -84,10 +84,12 @@
     <ClInclude Include="conversion.h" />
     <ClInclude Include="convexatom.h" />
     <ClInclude Include="face.h" />
+    <ClInclude Include="geoio.h" />
     <ClInclude Include="indexiterator.h" />
     <ClInclude Include="planes.h" />
     <ClInclude Include="poly2.h" />
     <ClInclude Include="approximation.h" />
+    <ClInclude Include="polygraph.h" />
     <ClInclude Include="targetbody.h" />
     <ClInclude Include="vectors.h" />
     <ClInclude Include="stdafx.h" />

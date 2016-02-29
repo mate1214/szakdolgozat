@@ -15,6 +15,8 @@ namespace approx{
 
 	//Ketto dimenzios vektor, felkeszitve matematikai muveletek ellatasara
 	template <class T> struct Vector2{
+		typedef T ScalarType;
+
 		T x, y; //koordinatak
 
 		//konstruktorok
@@ -69,6 +71,7 @@ namespace approx{
 
 	//Harom dimenzios vektor felkeszitve matematikai muveletekre
 	template <class T> struct Vector3{
+		typedef T ScalarType;
 		T x, y, z; //koordinatak
 
 		//konstruktorok
@@ -161,6 +164,11 @@ namespace approx{
 		return Vector3<T>(u.y*v.z-u.z*v.y,
 			              u.z*v.x-u.x*v.z,
 						  u.x*v.y-u.y*v.x);
+	}
+
+	template <class T> bool ccw(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& c){
+		Vector2<T> u = c - b, v = a - b;
+		return u.x*v.y - u.y*v.x > 0;
 	}
 
 	//konkret float es double skalarok feletti vektor tipusok

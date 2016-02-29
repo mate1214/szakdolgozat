@@ -20,8 +20,7 @@ namespace approx{
 
 	//minden rajzolasi infot tartalmazo adaszerkezet
 	struct BodyList{
-		std::vector<Vec3> points, //csucspontok
-						  normals; //normal fektorok TODO: ez megbeszel hogy kell-e
+		std::vector<Vec3> points; //csucspontok
 		std::vector<Index> indexes; //indexek amik a pontokra es normalokra mutatnak
 		std::vector<Index> index_ranges; //az egymast koveto elemek az indexek szamai
 	};
@@ -44,10 +43,10 @@ namespace approx{
 		for (const Vector3<T>& p : vs){
 			res.points.push_back(convert(p));
 		}
-		res.normals.reserve(ns.size());
-		for (const Vector3<T>& p : ns){
-			res.normals.push_back(convert(p));
-		}
+//		res.normals.reserve(ns.size());
+//		for (const Vector3<T>& p : ns){
+//			res.normals.push_back(convert(p));
+//		}
 		res.index_ranges.push_back(0);
 		res.index_ranges.push_back(0);
 		for (const Face<T>& f : body){
@@ -76,10 +75,10 @@ namespace approx{
 		for (const Vector3<T>& p : vs){
 			res.points.push_back(convert(p));
 		}
-		res.normals.reserve(ns.size());
-		for (const Vector3<T>& p : ns){
-			res.normals.push_back(convert(p));
-		}
+//		res.normals.reserve(ns.size());
+//		for (const Vector3<T>& p : ns){
+//			res.normals.push_back(convert(p));
+//		}
 		res.index_ranges.push_back(0);
 		for (; first != last; ++first){
 			res.index_ranges.push_back(res.index_ranges.back());

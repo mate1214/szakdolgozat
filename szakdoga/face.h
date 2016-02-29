@@ -69,7 +69,14 @@ namespace approx{
 		Face(Face&& f) : vecs(f.vecs), normals(f.normals), inds(std::move(f.inds)), normal_id(f.normal_id){}
 
 		//masolo ertekadas, default, linearis idovel
-		Face& operator = (const Face& f) = default;
+		//Face& operator = (const Face& f) = default;
+		Face& operator = (const Face& f) {
+			inds = f.inds;
+			vecs = f.vecs;
+			normals = f.normals;
+			normal_id = f.normal_id;
+			return *this;
+		}
 		//mozgato ertekadas konstans idoben
 		Face& operator = (Face&& f){
 			inds = std::move(f.inds);
@@ -147,9 +154,10 @@ namespace approx{
 		// x = elso es masodik hatarpont kozotti vektor
 		// y = cross(normal,x)
 		Polygon2<T> to_2d() const {
-			Vector3<T> y = (points(1) - points(0)).normalized();
-			Vector3<T> x = cross(get_normal(), y).normalized();
-			return to_2d(x, y);
+			//Vector3<T> y = (points(1) - points(0)).normalized();
+			//Vector3<T> x = cross(get_normal(), y).normalized();
+			std::pair<Vector3<T>, Vector3<T>> base = to_plane().ortho2d();
+			return to_2d(base.first, base.second);
 		}
 
 		//elvagas a parameterkent megadott sikkal, a vagasnal keletkezo uj pontokat a sajat tarolo vektoraba szurja
@@ -278,8 +286,9 @@ namespace approx{
 				sign2 = p.classify_point(points((i + 1) % n));
 				float sign = sign1*sign2;
 				target_vecs->push_back(points(i));
+				++pts_added;
 				if (sign1 < 0){
-					neg.push_back(inds[i]);
+					neg.push_back(target_vecs->size() - 1);
 					if (sign2 > 0){
 						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(target_vecs->size());
@@ -291,7 +300,7 @@ namespace approx{
 					}
 				}
 				else if (sign1 > 0){
-					pos.push_back(inds[i]);
+					pos.push_back(target_vecs->size() - 1);
 					if (sign2 < 0){
 						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(target_vecs->size());

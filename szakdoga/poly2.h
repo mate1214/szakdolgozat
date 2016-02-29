@@ -15,7 +15,8 @@
 namespace approx{
 
 	// Sokszog tipus 2 dimenzioban.
-	// Tetszoleges skalar tipussal paramezerezheto ami megfelel a Vector2 elvarasainak.
+	// Tetszoleges skalar tipussal paramezerezheto ami megfelel a Vector2 elvarasainak,
+	// valamint elvegezheto rajta az "x > 0" es az abszolutertek muvelet.
 	template<class T> class Polygon2{
 		std::vector<Vector2<T>> pts;
 		typedef typename std::vector<Vector2<T>>::const_iterator ConstIterator;
@@ -48,17 +49,24 @@ namespace approx{
 		const Vector2<T>& points(size_t i) const { return pts[i]; }
 		Vector2<T>& points(size_t i) { return pts[i]; }
 		
-		
+		//elojeles terulet, elojele seggithet annak eldonteseben hogy cw vagy ccw felsorolasban van megadva
+		T signed_area() const {
+			int n = pts.size();
+			T result = 0;
+			for (int i = 0; i < n; ++i){
+				result += pts[(i + 1) % n].x*pts[i].y - pts[i].x*pts[(i + 1) % n].y;
+			}
+			return result / static_cast<T>(2);
+		}
+
 		//teruletet kiszamito metodus, a pontossaga a megadott skalartol fugg
 		//kepes kezelni CW es CCW sorrendben megadott alakzatot is
 		T area() const {
-			int n = pts.size()-1;
-			T result = 0;
-			for (int i = 0; i < n; ++i){
-				result += pts[(i + 1)].x*pts[i].y - pts[i].x*pts[(i + 1)].y;
-			}
-			result += pts.front().x*pts.back().y - pts.back().x* pts.front().y;
-			return abs(result / static_cast<T>(2));
+			return abs(signed_area());
+		}
+
+		bool is_ccw() const {
+			return signed_area() < 0;
 		}
 
 		//vagasi eredmeny tipus
@@ -70,7 +78,7 @@ namespace approx{
 		//a megadott vonallal elvagva kapott sokszogek szamitasa
 		//feltetelezzuk, hogy a sokszog konvex, ebbol kovetkezoen az eredmeny is az
 		//muveletigeny linearis a csucspontok szamaban
-		CutResult split_by(const Line<T> l) const {
+		CutResult cut_by(const Line<T> l) const {
 			std::vector<Vector2<T>> pos, neg;
 			T sign1 = l.classify_point(pts[0]); //az aktualisan vizsgalt pont elhelyezkedese a sikhoz kepest
 			const int n = size();
@@ -101,6 +109,46 @@ namespace approx{
 				sign1 = sign2; //a kovetkezo pont elojelet mar kiszamoltuk
 			}
 			return{ Polygon2<T>(std::move(neg)), Polygon2<T>(std::move(pos))};
+		}
+
+		//TODO
+		std::vector<Polygon2<T>> convex_partitions() const {
+			bool cc = is_ccw();
+			std::vector<Vector2<T>> tmp = pts;
+			std::vector<Polygon2<T>> res;
+			while (tmp.size() > 3){
+				int i = 1;
+				while (ccw(tmp[i-1], tmp[i], tmp[(i + 1) % tmp.size()]) != cc) ++i;
+				res.push_back(Polygon2<T>(tmp.begin() + i - 1, tmp.begin() + i + 2));
+				tmp.erase(tmp.begin() + i);
+			}
+			if (tmp.size() == 3) res.push_back(Polygon2<T>(std::move(tmp)));
+			return res;
+		}
+
+		//a Sutherland–Hodgman algoritmus alapjan megtalalja a masik polygon beleeso reszet
+		Polygon2<T> convex_clip(const Polygon2<T>& p) const {
+			std::vector<Vector2<T>> outputlist = p.pts;
+			int inside = ccw(pts[0], pts[1], pts[2]) ? 1 : -1;
+			for (int i = 0; i < size(); ++i){
+				Vector2<T> tmp = pts[(i + 1) % size()] - pts[i];
+				Line<T> edge({-tmp.y,tmp.x},pts[i]);
+				std::vector<Vector2<T>> inputlist = std::move(outputlist);
+				outputlist.clear();
+				Vector2<T> S = inputlist.back();
+				for (const Vector2<T>& E : inputlist){
+					T clfe = edge.classify_point(E);
+					T clfs = edge.classify_point(S);
+					if (clfe*inside >= 0){
+						outputlist.push_back(E);
+					}
+					if (clfs*clfe < 0){
+						outputlist.push_back(abs(clfs) / (abs(clfe) + abs(clfs))*E);
+					}
+					S = E;
+				}
+			}
+			return Polygon2<T>(std::move(outputlist));
 		}
 
 	};
