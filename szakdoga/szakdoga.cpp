@@ -231,9 +231,21 @@ int _tmain(int argc, _TCHAR* argv[])
 	for (auto& b : app){
 		cout << /*b.volume() <<*/ " "<< b.intersection_volume() <<"\n";
 	}
-	approx::ObjectWriter<float>::save_obj("test_out.obj", app);
+	//approx::ObjectWriter<float>::save_obj("test_out.obj", app);
 	approx::BodyList rajzol = approx::drawinfo<decltype(app.begin()),float>(app.begin(),app.end());
 
+	cout << "--------------------------------pts\n";
+	for (auto e : rajzol.points){
+		cout << e.x << "," << e.y << "," << e.z << "\n";
+	}
+	cout << "--------------------------------inds\n";
+	for (int i : rajzol.indexes){
+		cout << i << " ";
+	}
+	cout << "\n--------------------------------ind_ranges\n";
+	for (int i : rajzol.index_ranges){
+		cout << i << " ";
+	}
 	cin.get();
 	/*
 	for(auto x : app.vertex_container()) cout << x << "\n";

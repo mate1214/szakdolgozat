@@ -1,6 +1,11 @@
 #ifndef GEOIO_H_INCLUDED
 #define GEOIO_H_INCLUDED
 
+//
+// Keszitette: Toth Mate
+// A fajl celja az iostream-ekkel valo altalanos kommunikacio, foleg debuggolasi celbol.
+//
+
 #include <iostream>
 #include "vectors.h"
 #include "face.h"

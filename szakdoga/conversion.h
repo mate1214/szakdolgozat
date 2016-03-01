@@ -3,7 +3,7 @@
 
 //
 // Keszitette: Toth Mate
-// Konverzios es kulso hasznalatra alkalmassa tevo eljarasok, tipusok
+// Konverzios es kulso hasznalatra alkalmassa tevo eljarasok, tipusok.
 //
 
 
@@ -43,11 +43,6 @@ namespace approx{
 		for (const Vector3<T>& p : vs){
 			res.points.push_back(convert(p));
 		}
-//		res.normals.reserve(ns.size());
-//		for (const Vector3<T>& p : ns){
-//			res.normals.push_back(convert(p));
-//		}
-		res.index_ranges.push_back(0);
 		res.index_ranges.push_back(0);
 		for (const Face<T>& f : body){
 			for (int i = 2; i < f.size(); ++i){
@@ -55,10 +50,6 @@ namespace approx{
 				res.indexes.push_back(f.indicies(i-1));
 				res.indexes.push_back(f.indicies(i));
 				//minden pontnak azonos normal indexet adok
-				/*Vec3 nrm = convert(f.get_normal());
-				res.normals.push_back(nrm);
-				res.normals.push_back(nrm);
-				res.normals.push_back(nrm);*/
 			}
 		}
 		res.index_ranges.push_back(res.index_ranges.size());
@@ -75,10 +66,6 @@ namespace approx{
 		for (const Vector3<T>& p : vs){
 			res.points.push_back(convert(p));
 		}
-//		res.normals.reserve(ns.size());
-//		for (const Vector3<T>& p : ns){
-//			res.normals.push_back(convert(p));
-//		}
 		res.index_ranges.push_back(0);
 		for (; first != last; ++first){
 			res.index_ranges.push_back(res.index_ranges.back());
@@ -88,10 +75,6 @@ namespace approx{
 					res.indexes.push_back(f.indicies(i - 1));
 					res.indexes.push_back(f.indicies(i));
 					//minden pontnak azonos normal indexet adok
-					/*Vec3 nrm = convert(f.get_normal());
-					res.normals.push_back(nrm);
-					res.normals.push_back(nrm);
-					res.normals.push_back(nrm);*/
 					res.index_ranges.back() += 3;
 				}
 			}
@@ -99,22 +82,21 @@ namespace approx{
 		return res;
 	}
 
-	template <class T> BodyList compact_drawinfo(const Body<T>& body){ //TODO: megir
+	template <class T> BodyList compact_drawinfo(const Body<T>& body){
 		BodyList res;
 		std::unordered_map<int, int> id_map; //a mar felhasznalt pontokat felrakom
+		std::map<int, int> verts;
 		for (const Face<T>& f : body){
-			for (int i = 0; i < f.size(); ++i){
-				if (!id_map.count(f.indicies(i))){
-					res.points.push_back(convert(f.points(i)));
-					id_map[f.indicies(i)] = res.points.size() - 1;
+			for (int i : f.indicies()){
+				if (!verts.count(i)){
+					verts[i] = res.points.size();
+					res.points.push_back(convert(f.vertex_container()->operator[](i)));
 				}
-			}
-			for (int i = 2; i < f.size(); ++i){
-				res.indexes.push_back(id_map[f.indicies(0)]);
-				res.indexes.push_back(id_map[f.indicies(i-1)]);
-				res.indexes.push_back(id_map[f.indicies(i)]);
+				res.indexes.push_back(verts[i]);
 			}
 		}
+		res.index_ranges = { 0, res.indexes.size() };
+		return res;
 	}
 }
 
