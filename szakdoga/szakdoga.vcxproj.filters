@@ -57,7 +57,13 @@
     <ClInclude Include="polygraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="geoio.h">
+    <ClInclude Include="objio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geoios.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="objrepair.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

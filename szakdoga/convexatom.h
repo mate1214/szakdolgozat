@@ -16,10 +16,7 @@
 #include "body.h"
 #include "planes.h"
 
-#include "geoio.h" //TODO: csak debug
-
 namespace approx{
-
 
 	//parameterezheto barmely Vector3-al kompatibilis skalar tipussal, melyre direkt,
 	//vagy implicit konverzioval ertelmezve van az atan2 fuggveny
@@ -218,14 +215,19 @@ namespace approx{
 					clipf = cut.negative;
 					++it;
 				}
-				if (clipf.size()>=3)
-					sum += clipf.to_2d().area()*dot(clipf.get_normal(),clipf.points(0));
-			}
 
-			for (const std::shared_ptr<SurfacePoly>& ptr : f_poly){
-				if (ptr) sum += ptr->area()*ptr->plane.signed_distance();
+				
+				if (clipf.size() >= 3){
+					sum += clipf.to_2d().area()*clipf.to_plane().signed_distance();
+				}
 			}
-			return sum;
+			for (int i = 0; i < size(); ++i){
+				if (f_poly[i]){
+					int sign = dot(f_poly[i]->plane.normal(), faces(i).normal()) > 0 ? 1 : -1;
+					sum += f_poly[i]->area()*f_poly[i]->plane.signed_distance()*sign;
+				}
+			}
+			return sum/3;
 		}
 	};
 

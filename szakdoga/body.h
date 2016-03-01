@@ -39,6 +39,8 @@ namespace approx{
 			return *this;
 		}
 
+		bool valid() const { return _faces; }
+
 		//mozgatas masik tarolora hivatkozassal
 		Body migrate_to(std::vector<Face<T>>* fcs){
 			return Body(fcs, std::move(inds));
@@ -72,7 +74,7 @@ namespace approx{
 		T volume() const {
 			T sum = 0;
 			for (const Face<T>& f : *this){
-				sum += f.to_2d().area() * dot(f.points(0), f.get_normal());
+				sum += f.to_2d().area() * dot(f.points(0), f.normal());
 			}
 			sum /= 3;
 			return sum;

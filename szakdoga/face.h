@@ -107,11 +107,11 @@ namespace approx{
 		std::vector< Vector3<T> >* normal_container() const { return normals; }
 
 		//normalvektor es index alapjan pontok elerese konstans esetre
-		const Vector3<T>& get_normal() const { return normals->operator[](normal_id); }
+		const Vector3<T>& normal() const { return normals->operator[](normal_id); }
 		const Vector3<T>& points(size_t ind) const { return vecs->operator[](inds[ind]); }
 
 		//a sik kinyerese melyen a lap fekszik
-		Plane<T> to_plane() const { return Plane<T>(get_normal(), points(0)); }
+		Plane<T> to_plane() const { return Plane<T>(normal(), points(0)); }
 
 		//iteralhatosaghoz konstans iterator
 		VertexIterator begin() const { return VertexIterator(vecs, &inds, 0); }
@@ -156,6 +156,7 @@ namespace approx{
 		Polygon2<T> to_2d() const {
 			//Vector3<T> y = (points(1) - points(0)).normalized();
 			//Vector3<T> x = cross(get_normal(), y).normalized();
+			if (!size()) return Polygon2<T>({});
 			std::pair<Vector3<T>, Vector3<T>> base = to_plane().ortho2d();
 			return to_2d(base.first, base.second);
 		}
@@ -318,7 +319,7 @@ namespace approx{
 				}
 				sign1 = sign2;
 			}
-			target_normals->push_back(get_normal());
+			target_normals->push_back(normal());
 			int n_id = target_normals->size() - 1;
 			return{ Face<T>(target_vecs, std::move(pos), target_normals, n_id),
 					Face<T>(target_vecs, std::move(neg), target_normals, n_id),

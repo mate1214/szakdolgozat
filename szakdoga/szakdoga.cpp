@@ -13,7 +13,8 @@
 #include "approximation.h"
 #include "conversion.h"
 #include "polygraph.h"
-#include "geoio.h"
+#include "geoios.h"
+#include "objio.h"
 
 using namespace std;
 using namespace approx;
@@ -141,9 +142,9 @@ void face_cut_test(){
 }
 
 
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-
 	//cut_eq_test();
 	//poly_graph_test();
 	//plane_line_test();
@@ -202,17 +203,33 @@ int _tmain(int argc, _TCHAR* argv[])
 	faces.emplace_back(&vertices, std::vector<int>{ 3, 2, 6, 7 }, &normals, 4);
 	faces.emplace_back(&vertices, std::vector<int>{ 0, 4, 5, 1 }, &normals, 5);
 
-	approx::TargetBody<float> tb(vertices,normals,faces);
-	cout << tb.body().size() <<"\n";
+	//approx::TargetBody<float> tb(vertices,normals,faces);
+	//cout << tb.body().size() <<"\n";
+	//cout << (-0.0f == 0.0f) << (0.0f*-0.0f < 0);
+	approx::TargetBody<float> tb;
+	if (approx::ObjectLoader<float>::load_obj("./test.obj", tb,0.1f)){
+		cout << "obj done\n";
+	}
+	else{
+		cout << "obj error!";
+		cin.get();
+		return 0;
+	}
+
+	/*for (const auto& f : tb.body()){
+		cout << f << "   " << f.normal() << "\n";
+	}*/
+
+	
 	//for (auto& f : tb.body()) cout << f;
-	approx::Approximation<approx::ConvexAtom<float>> app(&tb,0.0f);
+	approx::Approximation<approx::ConvexAtom<float>> app(&tb,0.0001f);
 	//cout << "\n" << app.begin()->volume() << "\n";
 	auto cut = app.cut(0,p);
 	//cout << "cut done\n";
 	cut.choose_both();
 	app.garbage_collection();
 	for (auto& b : app){
-		cout << b.volume() << " "<< b.intersection_volume() <<"\n";
+		cout << /*b.volume() <<*/ " "<< b.intersection_volume() <<"\n";
 	}
 
 	//approx::BodyList rajzol = approx::drawinfo<decltype(app.begin()),float>(app.begin(),app.end());

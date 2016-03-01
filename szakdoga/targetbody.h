@@ -8,12 +8,13 @@
 //
 #include <utility>
 #include <vector>
-#include <fstream>
 #include <string>
-#include <sstream>
+
 #include "body.h"
 
 namespace approx{
+
+	template <class T> class ObjectLoader;
 
 	//Parametere tetszoleges Vector3 kompatibilis skalar
 	template <class T> class TargetBody{
@@ -31,7 +32,7 @@ namespace approx{
 		}
 
 	public:
-		TargetBody(){}
+		TargetBody() : bdy(nullptr, {}){}
 		//masolo es mozgato konstruktorok
 		TargetBody(const TargetBody& t) : vecs(t.vecs), normals(t.normals), bdy(t.bdy.migrate_to(&faces)){
 			faces.reserve(t.faces.size());
@@ -91,58 +92,8 @@ namespace approx{
 			return *this;
 		}
 
-		// .obj formatumu fajl betoltese
-		void load_obj(const std::string& filename){
-			vecs.clear();
-			normals.clear();
-			faces.clear();
-			std::ifstream f(filename);
-			std::string line;
-			bool vt = false;
-			while (std::getline(f, line)){
-				std::string::size_type ind = line.find('#');
-				if (ind != std::string::npos){
-					line.erase(ind);
-				}
-				if (line.size()){
-					std::stringstream stream(line);
-					std::string beg;
-					T x, y, z;
-					int ind1, ind2, ind3;
-					char sep;
-					line >> beg;
-					if (beg == "v"){
-						stream >> x >> y >> z;
-						vertices.push_back({ x, y, z });
-					}
-					else if (beg == "vn"){
-						//TODO: kesobb esetleg kellhet olyan amiben a normalok jol allnak
-					}
-					else if (beg == "vt"){
-						vt = true;
-					}
-					else if (beg == "f"){
-						std::vector<int> inds;
-						if (vt){
-							while (stream >> ind1 >> sep >> ind2 >> sep >> ind3){
-								inds.push_back(ind1);
-							}
-							normals.push_back(cross(vecs[inds[2]] - vecs[inds[1]], vecs[inds[1]] - vecs[inds[0]]).normalized());
-							faces.emplace_back(&vecs, std::move(inds), &normals, normals.size() - 1);
-						}
-						else{
-							while (stream >> ind1 >> sep >> sep >> ind3){
-								inds.push_back(ind1);
-							}
-							normals.push_back(cross(vecs[inds[2]] - vecs[inds[1]], vecs[inds[1]] - vecs[inds[0]]).normalized());
-							faces.emplace_back(&vecs, std::move(inds), &normals, normals.size() - 1);
-						}
-					}
-				}
-			}
-			bdy = Body<T>(&faces, std::move(range(faces.size()-1)));
-		}
-
+		//friend bool load_obj(const std::string&,TargetBody<T>&);
+		friend class ObjectLoader<T>;
 
 	};
 
