@@ -231,8 +231,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	for (auto& b : app){
 		cout << /*b.volume() <<*/ " "<< b.intersection_volume() <<"\n";
 	}
-
-	//approx::BodyList rajzol = approx::drawinfo<decltype(app.begin()),float>(app.begin(),app.end());
+	approx::ObjectWriter<float>::save_obj("test_out.obj", app);
+	approx::BodyList rajzol = approx::drawinfo<decltype(app.begin()),float>(app.begin(),app.end());
 
 	cin.get();
 	/*
