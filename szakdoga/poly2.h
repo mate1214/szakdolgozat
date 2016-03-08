@@ -115,19 +115,20 @@ namespace approx{
 		//Konvex darabokra szeleteli az esetleg konkav polygont.
 		//Jelenleg haromszogekre bontja, azonban ezt fejelszteni lehet. (TODO)
 		//A polygon ful levagas modszeret alaklmazza.
-		std::vector<Polygon2<T>> convex_partitions() const {
-			bool cc = is_ccw();
-			std::vector<Vector2<T>> tmp = pts;
-			std::vector<Polygon2<T>> res;
-			while (tmp.size() > 3){
-				int i = 1;
-				while (ccw(tmp[i-1], tmp[i], tmp[(i + 1) % tmp.size()]) != cc) ++i;
-				res.push_back(Polygon2<T>(tmp.begin() + i - 1, tmp.begin() + i + 2));
-				tmp.erase(tmp.begin() + i);
-			}
-			if (tmp.size() == 3) res.push_back(Polygon2<T>(std::move(tmp)));
-			return res;
-		}
+		//TODO: ezt kivettem mert hibasan detektalja a fuleket, de kesobb kellhet
+		//std::vector<Polygon2<T>> convex_partitions() const {
+		//	bool cc = is_ccw();
+		//	std::vector<Vector2<T>> tmp = pts;
+		//	std::vector<Polygon2<T>> res;
+		//	while (tmp.size() > 3){
+		//		int i = 1;
+		//		while (ccw(tmp[i-1], tmp[i], tmp[(i + 1) % tmp.size()]) != cc) ++i;
+		//		res.push_back(Polygon2<T>(tmp.begin() + i - 1, tmp.begin() + i + 2));
+		//		tmp.erase(tmp.begin() + i);
+		//	}
+		//	if (tmp.size() == 3) res.push_back(Polygon2<T>(std::move(tmp)));
+		//	return res;
+		//}
 
 		//a Sutherland–Hodgman algoritmus alapjan megtalalja a masik polygon beleeso reszet
 		Polygon2<T> convex_clip(const Polygon2<T>& p) const {

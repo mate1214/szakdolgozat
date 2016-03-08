@@ -55,7 +55,8 @@ namespace approx{
 		}
 		ConvexAtom(std::vector<Face<T>>* f, const std::vector<int>& i, const Body<T>* targ, const std::vector<std::shared_ptr<SurfacePoly>>& plist) : Body<T>(f, i), f_poly(plist), target(targ){}
 		ConvexAtom(std::vector<Face<T>>* f, std::vector<int>&& i, const Body<T>* targ, std::vector<std::shared_ptr<SurfacePoly>>&& plist) : Body<T>(f, i), f_poly(plist), target(targ){}
-
+		ConvexAtom(const ConvexAtom&) = default;
+		ConvexAtom(ConvexAtom&&) = default;
 
 		ConvexAtom& operator = (const ConvexAtom& a){
 			Body<T>::operator=(a);
@@ -170,13 +171,11 @@ namespace approx{
 				neg_poly.push_back(pos_poly.back());
 				std::vector<Polygon2<T>> surf = target->cut_surface(p);
 				for (const Polygon2<T>& e : surf){
-					std::vector<Polygon2<T>> to_clip=e.convex_partitions();
-					for (const Polygon2<T>& e2 : to_clip){
-						Polygon2<T> clipped = clipper.convex_clip(e2);
-						if (clipped.size() > 2){
-							pos_poly.back()->poly.push_back(clipped);
-						}
+					Polygon2<T> clipped = clipper.convex_clip(e);
+					if (clipped.size() > 2){
+						pos_poly.back()->poly.push_back(clipped);
 					}
+					
 				}
 			}
 			return{ std::make_shared<ConvexAtom<T>>(_faces,std::move(pos_faces),target,std::move(pos_poly)),

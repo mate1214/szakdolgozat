@@ -115,14 +115,15 @@ void plane_line_test(){
 	cout << l;
 }
 
-void poly_partition_test(){
-	Polygon2<float> convex_poly({ { 1, 1 }, { 2, 1 }, { 3, 2 }, { 5, 3 }, {3,10} });
-	cout << "CCW: " << convex_poly.is_ccw() << "\n";
-	auto polys = convex_poly.convex_partitions();
-	for (auto& e : polys){
-		cout << e << '\n';
-	}
-}
+//TODO: kivett feature
+//void poly_partition_test(){
+//	Polygon2<float> convex_poly({ { 1, 1 }, { 2, 1 }, { 3, 2 }, { 5, 3 }, {3,10} });
+//	cout << "CCW: " << convex_poly.is_ccw() << "\n";
+//	auto polys = convex_poly.convex_partitions();
+//	for (auto& e : polys){
+//		cout << e << '\n';
+//	}
+//}
 
 void face_cut_test(){
 	vector<approx::Vector3<float>> vertices{ { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, { 2.0f, 3.0f, 3.0f } },
@@ -247,13 +248,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		cout << i << " ";
 	}
 	cin.get();
-	/*
-	for(auto x : app.vertex_container()) cout << x << "\n";
-
-	for (auto x : app.normal_container()) cout << x << "\n";
-
-	for (auto x : app.face_container()) cout << x << "\n";
-	*/
+	
+	//for(auto x : app.vertex_container()) cout << x << "\n";
+	//for (auto x : app.normal_container()) cout << x << "\n";
+	//for (auto x : app.face_container()) cout << x << "\n";
+	
 	//for (auto f : *(app.begin()+1)) cout << f << "\n";
 	//cout << app.size() << "\n";
 	//cin.get();

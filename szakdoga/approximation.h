@@ -80,12 +80,23 @@ namespace approx{
 		Approximation(const TargetBody<T>* _target, T _border) : target(_target), last_cut(-1){
 			starting_atom(_border);
 		}
-		
+
+		Approximation(const Approximation& a) : target(app.target), vertices(app.vertices), normals(app.normals){
+			faces.clear();
+			_atoms.clear();
+			for (const Face<T>& f : app.faces) {
+				faces.push_back(f.migrate_to(&vertices, &normals));
+			}
+			for (const AtomType<T>& a : app._atoms) {
+				_atoms.push_back(a.migrate_to(&faces));
+			}
+		}
+
 		//masolo ertekadas, gondoskodik a koltoztetesnel fellepo pointer valtasrol
 		Approximation& operator = (const Approximation& app){
 			target = app.target;
 			vertices = app.vertices;
-			normals = app._normals;
+			normals = app.normals;
 			faces.clear();
 			_atoms.clear();
 			for (const Face<T>& f : app.faces){

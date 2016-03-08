@@ -7,7 +7,7 @@
 // Az itt talalhato muveletek ketto dimenzios pontokbol allo grafokat alakitanak at sokszogekke.
 //
 
-
+#include <set>
 #include <map>
 #include <vector>
 #include <algorithm>
