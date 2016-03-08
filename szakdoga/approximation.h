@@ -219,7 +219,7 @@ namespace approx{
 		CutResult cut(Iterator pos, const Plane<T>& p){
 			return cut(pos - _atoms.begin(), p);
 		}
-		
+		//pontosan akkor igaz ha az utolso vagast meg nem fejeztuk be visszavonassal vagy elfogado valasztassal
 		bool pending() const {
 			return last_cut != -1;
 		}

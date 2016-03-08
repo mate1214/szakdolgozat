@@ -5,6 +5,7 @@
 // Keszitette Toth Mate
 // Kettodimenzios sokszog sablon. A haromdimenzios lappal ellentetben minden pontjat helyben tarolja.
 // Feladata a teruletenek kiszamitasa, valamint a vagas implementalasa.
+//
 
 #include <vector>
 #include <cmath>
@@ -111,7 +112,9 @@ namespace approx{
 			return{ Polygon2<T>(std::move(neg)), Polygon2<T>(std::move(pos))};
 		}
 
-		//TODO
+		//Konvex darabokra szeleteli az esetleg konkav polygont.
+		//Jelenleg haromszogekre bontja, azonban ezt fejelszteni lehet. (TODO)
+		//A polygon ful levagas modszeret alaklmazza.
 		std::vector<Polygon2<T>> convex_partitions() const {
 			bool cc = is_ccw();
 			std::vector<Vector2<T>> tmp = pts;

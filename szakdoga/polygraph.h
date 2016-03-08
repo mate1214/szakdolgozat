@@ -1,6 +1,13 @@
 #ifndef POLYGRAPH_H_INCLUDED
 #define POLYGRAPH_H_INCLUDED
 
+
+//
+// Keszitette: Toth Mate
+// Az itt talalhato muveletek ketto dimenzios pontokbol allo grafokat alakitanak at sokszogekke.
+//
+
+
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -29,11 +36,9 @@ namespace approx{
 				std::vector<Vector2<T>>::iterator it = find(path.begin(), path.end(),pt);
 				//korre talaltam
 				if (it != path.end() && it != path.end()-2){ 
-					std::vector<Vector2<T>> tmp(it, path.end());
+					Polygon2<T> tmp(it, path.end());
 					//a kesobbi alkalmazasok miatt fix ccw sorrendbe rakom
-					//TODO: a ccwsitesnek gondja lehet azzal ha konkav polygont kap, egyelore kihagyom mivel nem szamit
-					//kesobb meg visszaterek ra
-					//if (!ccw(tmp[0], tmp[1], tmp[2])) std::reverse(tmp.begin(), tmp.end());
+					if (!tmp.is_ccw()) std::reverse(tmp.begin(), tmp.end());
 					result.emplace_back(std::move(tmp));
 				}
 			}

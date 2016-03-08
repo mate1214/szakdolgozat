@@ -156,7 +156,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	vector<approx::Vector3<float>> vertices { { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, {2.0f,3.0f,3.0f} },
 								   normals { {0.0f,0.0f,-1.0f} };
 	vector<approx::Face<float>> faces;
-	approx::Plane<float> p({ 1, 0, 0 }, 2.0f);
+	approx::Plane<float> p({ 1, 0, 0 }, 6.0f);
 
 	/*approx::Face<float> f(&vertices, {0,1,2,3,4}, &normals,0);
 	for (const approx::Vector3<float>& v : f){
@@ -239,7 +239,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		cout << e.x << "," << e.y << "," << e.z << "\n";
 	}
 	cout << "--------------------------------inds\n";
-	for (int i : rajzol.indexes){
+	for (int i : rajzol.indicies){
 		cout << i << " ";
 	}
 	cout << "\n--------------------------------ind_ranges\n";

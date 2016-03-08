@@ -1,37 +1,47 @@
 #ifndef OBJREPAIR_H_INCLUDED
 #define OBJREPAIR_H_INCLUDED
 
-#include <vector>
-#include <algorithm>
-#include <functional>
-#include "vectors.h"
-#include "indexiterator.h"
 //
 // Keszitette: Toth Mate
 // Ez a header fajl ellatja az egymashoz kozeli pontokbol allo sorozatok javitasat.
 // Felhasznalhato faljok betoltesenel illetve barmely algoritmusban mely folyamatosan gyujti a pontokat.
 //
 
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include "vectors.h"
+#include "indexiterator.h"
+
 namespace approx{
 
 	template <class T> class RepairVector{
-		std::vector<Vector3<T>> vecs;
-		std::vector<int> ind_map;
+		std::vector<Vector3<T>> vecs; //a konkret vektorok
+		std::vector<int> ind_map; //egyes indexeket atiranyito lekepezo vektor
+		
 		typedef ConstIndexIterator<T> ConstIterator;
 		typedef IndexIterator<T> Iterator;
-		std::function<T(const Vector3<T>&, const Vector3<T>&)> dist_fun;
-		T eps;
+
+		std::function<T(const Vector3<T>&, const Vector3<T>&)> dist_fun; //tavolsag fv.
+		T eps; //ekvivalencia sugar
+		
 		static T def_dist(const Vector3<T>& a, const Vector3<T>& b){
 			return (a - b).length();
 		}
 
 	public:
+		//epszilon sugaru euklideszi tavolsagban levo pontok egyenlonek tekintese
 		RepairVector(T epsilon) : dist_fun(def_dist),eps(epsilon){}
 
+		//a megadott tavolsag fuggvegy szerinti epszilon sugarban levo pontok egyenlonek tekintese
+		RepairVector(T epsilon, const std::function<T(const Vector3<T>&, const Vector3<T>&)>& func) : dist_fun(func), eps(epsilon){}
+
+		//az adott indexrol eldonti valojaban hanyadik elemre mutat
 		int transform_index(int ind) const {
 			return ind_map[id];
 		}
 
+		//a megadott indexsorozatra elvegzi az indextranszformaciot
 		std::vector<int> transform_range(const std::vector<int>& inds) const {
 			std::vector<int> res;
 			res.reserve(inds.size());
@@ -41,10 +51,12 @@ namespace approx{
 			return res;
 		}
 
+		//elem lekerdezese
 		Vector3<T> operator[](int ind) const {
 			return vecs[ind_map[ind]];
 		}
 
+		//elemszam
 		int size() const {
 			return ind_map.size();
 		}
@@ -54,6 +66,7 @@ namespace approx{
 		Iterator begin() { return Iterator(&vecs, &ind_map, 0); }
 		Iterator end()   { return Iterator(&vecs, &ind_map, size()); }
 
+		//taroloba helyezes ellenorzessel
 		void push_back(const Vector3<T>& v){
 			int i = 0,n=size();
 			while (i < n && eps < dist_fun(v, vecs[i])){ ++i; }
@@ -61,10 +74,12 @@ namespace approx{
 			if (i == n) vecs.push_back(v);
 		}
 
+		//konvertalas vektorra az ismetlodesekkel egyutt
 		operator std::vector<Vector3<T>>() const {
 			return std::vector<Vector3<T>>(begin(), end());
 		}
 
+		//a valojaban kello egyedi vektorok listaja
 		std::vector<Vector3<T>> needed_vecs() const {
 			return vecs;
 		}

@@ -4,6 +4,7 @@
 //
 // Keszitette: Toth Mate
 // Konverzios es kulso hasznalatra alkalmassa tevo eljarasok, tipusok.
+// A belso adatszerkezeteket a glm csomag tipusaiba kepzem le.
 //
 
 
@@ -21,7 +22,7 @@ namespace approx{
 	//minden rajzolasi infot tartalmazo adaszerkezet
 	struct BodyList{
 		std::vector<Vec3> points; //csucspontok
-		std::vector<Index> indexes; //indexek amik a pontokra es normalokra mutatnak
+		std::vector<Index> indicies; //indexek amik a pontokra es normalokra mutatnak
 		std::vector<Index> index_ranges; //az egymast koveto elemek az indexek szamai
 	};
 
@@ -46,9 +47,9 @@ namespace approx{
 		res.index_ranges.push_back(0);
 		for (const Face<T>& f : body){
 			for (int i = 2; i < f.size(); ++i){
-				res.indexes.push_back(f.indicies(0));
-				res.indexes.push_back(f.indicies(i-1));
-				res.indexes.push_back(f.indicies(i));
+				res.indicies.push_back(f.indicies(0));
+				res.indicies.push_back(f.indicies(i-1));
+				res.indicies.push_back(f.indicies(i));
 				//minden pontnak azonos normal indexet adok
 			}
 		}
@@ -71,9 +72,9 @@ namespace approx{
 			res.index_ranges.push_back(res.index_ranges.back());
 			for (const Face<T>& f : *first){
 				for (int i = 2; i < f.size(); ++i){
-					res.indexes.push_back(f.indicies(0));
-					res.indexes.push_back(f.indicies(i - 1));
-					res.indexes.push_back(f.indicies(i));
+					res.indicies.push_back(f.indicies(0));
+					res.indicies.push_back(f.indicies(i - 1));
+					res.indicies.push_back(f.indicies(i));
 					//minden pontnak azonos normal indexet adok
 					res.index_ranges.back() += 3;
 				}
@@ -92,10 +93,10 @@ namespace approx{
 					verts[i] = res.points.size();
 					res.points.push_back(convert(f.vertex_container()->operator[](i)));
 				}
-				res.indexes.push_back(verts[i]);
+				res.indicies.push_back(verts[i]);
 			}
 		}
-		res.index_ranges = { 0, res.indexes.size() };
+		res.index_ranges = { 0, res.indicies.size() };
 		return res;
 	}
 }
