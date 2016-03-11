@@ -34,7 +34,7 @@ namespace approx{
 			Plane<T> plane;
 			std::vector<Polygon2<T>> poly;
 
-			SurfacePoly(const Plane<T>& pl) : plane(pl), poly{} {}
+			SurfacePoly(const Plane<T>& pl) : plane(pl) {}
 			//osszegzem az egyes polygonok teruletet
 			T area() const { 
 				T s = 0;
@@ -89,17 +89,17 @@ namespace approx{
 		// az atom elvagasa adott sikkal
 		// a muveletigeny linearis a lapok szamaban valamint valodi vagasnal linearitmikus a vagasi pontok szamaban
 		CutResult cut_by(const Plane<T>& p) const {
-			std::vector<int> pt_ids,pos_faces,neg_faces;
-			std::vector<std::shared_ptr<SurfacePoly>> pos_poly, neg_poly;
-			int faces_added=0, pts_added=0;
-			Vector3<T> avg_pt;
+			std::vector<int> pt_ids, //a hozzaadott pontok indexei
+							 pos_faces, //a pozitiv oldali lapok indexei
+							 neg_faces; //a negativ oldali lapok indexei
+			std::vector<std::shared_ptr<SurfacePoly>> pos_poly, neg_poly; //az egyes oldalakra kerulo vetuletek
+			int faces_added=0, pts_added=0; //ennyi pont es lap kerult hozzaadasra a taroloban
+			Vector3<T> avg_pt; //kozeppont ami korul rendezzuk az oldalakat
 			std::vector<Vector3<T>>& vc = *faces(0).vertex_container();
 			std::map<Vector3<T>, int,Less> ptbuffer;
 			std::pair<Vector3<T>, Vector3<T>> base = p.ortho2d();
 			for (int i = 0; i < size();++i){ //vegegiteralok minden lapon es elvagom oket a sikkal, kezelve a hamis vagasokat
 				Face<T>::CutResult cut = faces(i).cut_by(p,ptbuffer);
-				//pos_poly.push_back(nullptr);
-				//neg_poly.push_back(nullptr);
 				if (cut.pt_inds.size() < cut.positive.size() && cut.pt_inds.size() < cut.negative.size()){ //valodi vagas tortent, mindket oldalon valid sokszog all
 					pos_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
 					neg_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
@@ -132,14 +132,12 @@ namespace approx{
 						pt_ids.push_back(cut.pt_inds.back());
 					}
 					if (cut.pt_inds.size() < cut.positive.size()){ //a pozitiv oldalra kerul az egesz lap
-						pos_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
 						pos_faces.push_back(indicies(i));
-						pos_poly.back()=f_poly[i];
+						pos_poly.push_back(f_poly[i]);
 					}
 					else{ //a negativ oldalra kerul az egesz lap
-						neg_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
 						neg_faces.push_back(indicies(i));
-						neg_poly.back()=f_poly[i];
+						neg_poly.push_back(f_poly[i]);
 					}
 				}
 			}
@@ -172,6 +170,9 @@ namespace approx{
 				//a vetuleteket is clippelni kell
 				pos_poly.push_back(make_shared<SurfacePoly>(p));
 				neg_poly.push_back(pos_poly.back());
+
+				cout << "pnormal: "<< pos_poly.back()->plane.normal() << "\n";
+
 				std::vector<Polygon2<T>> surf = target->cut_surface(p);
 				for (const Polygon2<T>& e : surf){
 					Polygon2<T> clipped = clipper.convex_clip(e);
@@ -221,12 +222,24 @@ namespace approx{
 				}
 				if (clipf.size() >= 3){
 					sum += clipf.to_2d().area()*f.to_plane().signed_distance();
+					//cout << "cplif: " << clipf.to_2d().area() << "   normal: " << f.to_plane().normal() << "\n";
 				}
 			}
+
+			for (int i = 0; i < size(); ++i) {
+				cout << i << "->" << faces(i).normal() << "; ";
+			}
+			cout << "\n";
+
 			for (int i = 0; i < size(); ++i){
 				sum += f_poly[i]->area()*faces(i).to_plane().signed_distance();
+				
+				//if (f_poly[i]->area() > 0) {
+				//	cout << i << "fpoly: " << f_poly[i]->area() << "   normal: " << faces(i).normal() << "\n";
+				//}
+
 			}
-			return sum/3;
+			return sum / static_cast<T>(3);
 		}
 	};
 

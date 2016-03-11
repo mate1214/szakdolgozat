@@ -63,8 +63,8 @@ namespace approx{
 		std::vector<int>& indicies() { return inds; }
 		
 		//az i. lap elerese
-		Face<T>& faces(size_t i){ return _faces->operator[](i); }
-		const Face<T>& faces(size_t i) const { return _faces->operator[](i); }
+		Face<T>& faces(size_t i){ return _faces->operator[](inds[i]); }
+		const Face<T>& faces(size_t i) const { return _faces->operator[](inds[i]); }
 
 		FaceIterator begin() { return FaceIterator(_faces, &inds, 0); }
 		FaceIterator end() { return FaceIterator(_faces, &inds, inds.size()); }

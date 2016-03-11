@@ -4,7 +4,7 @@
 #include "stdafx.h"
 
 
-/*
+
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -17,7 +17,7 @@
 #include "conversion.h"
 #include "polygraph.h"
 #include "geoios.h"
-#include "objio.h"*/
+#include "objio.h"
 #include "approximator.h"
 using namespace std;
 using namespace approx;
@@ -127,11 +127,11 @@ void plane_line_test(){
 void cut_surface_test() {
 	vector<approx::Vector3<float>> vertices, normals;
 	vector<approx::Face<float>> faces;
-	approx::Plane<float> p({ 1, 0, 0 }, 15.0f);
+	approx::Plane<float> p({ 1, 0, 0 }, 2.0f);
 
 	approx::Vector3<float> vmin(1, 1, 1), vmax(3, 2, 2);
 	float border = 0;
-	/*vertices.push_back({ vmin.x - border, vmin.y - border, vmin.z - border });
+	vertices.push_back({ vmin.x - border, vmin.y - border, vmin.z - border });
 	vertices.push_back({ vmax.x + border, vmin.y - border, vmin.z - border });
 	vertices.push_back({ vmax.x + border, vmax.y + border + 2, vmin.z - border });
 	vertices.push_back({ vmin.x - border, vmax.y + border, vmin.z - border });
@@ -143,7 +143,6 @@ void cut_surface_test() {
 	normals.push_back({ 1, 0, 0 });
 	normals.push_back({ 0, 0, 1 });
 	normals.push_back({ -1, 0, 0 });
-	//normals.push_back({ 0, 1, 0 });
 	normals.push_back({ -sqrt(2.0f) / 2, sqrt(2.0f) / 2, 0.0f });
 	normals.push_back({ 0, -1, 0 });
 	faces.emplace_back(&vertices, std::vector<int>{ 0, 1, 2, 3 }, &normals, 0);
@@ -151,20 +150,24 @@ void cut_surface_test() {
 	faces.emplace_back(&vertices, std::vector<int>{ 5, 4, 7, 6 }, &normals, 2);
 	faces.emplace_back(&vertices, std::vector<int>{ 4, 0, 3, 7 }, &normals, 3);
 	faces.emplace_back(&vertices, std::vector<int>{ 3, 2, 6, 7 }, &normals, 4);
-	faces.emplace_back(&vertices, std::vector<int>{ 0, 4, 5, 1 }, &normals, 5);*/
+	faces.emplace_back(&vertices, std::vector<int>{ 0, 4, 5, 1 }, &normals, 5);
 
 	approx::TargetBody<float> tb(vertices, normals, faces);
 
-	if (approx::ObjectLoader<float>::load_obj("./test.obj", tb, 0.0f)) {
+	/*if (approx::ObjectLoader<float>::load_obj("./test.obj", tb, 0.0f)) {
 		cout << "obj ok!\n";
-	}
+	}*/
 	cout << "tbvol: " << tb.body().volume() << "\n";
 	approx::Approximation<float> app(&tb, 0.1f);
 	cout << "starting atom vol: " << app.atoms(0).volume() << "\n";
-	app.cut(0, p).choose_both();
-	for (const Face<float> f : app.atoms(0)) {
-		cout << f << "\n";
+	auto cut = app.cut(0, p);
+	cut.choose_both();
+	int i = 0;
+	for (const Face<float> f : /**cut.negative()*/ app.atoms(0)) {
+		cout << f.normal() << "    "<< app.atoms(0).faces(i++).normal() <<  "\n";
+
 	}
+	cut.choose_both();
 	cout << app.atoms(0).volume() << " -> " << app.atoms(0).intersection_volume() <<"\n";
 	cout << app.atoms(1).volume() << " -> " << app.atoms(1).intersection_volume() << "\n";
 
@@ -298,8 +301,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//plane_line_test();
 	//poly_partition_test();
 	//face_cut_test();
-	//cut_surface_test();
-	approximator_test();
+	cut_surface_test();
+	//approximator_test();
 	
 
 	cin.get();
