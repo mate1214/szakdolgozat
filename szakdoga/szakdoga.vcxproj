@@ -81,6 +81,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="approximator.h" />
     <ClInclude Include="body.h" />
     <ClInclude Include="conversion.h" />
     <ClInclude Include="convexatom.h" />

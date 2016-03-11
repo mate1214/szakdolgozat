@@ -31,10 +31,24 @@ namespace approx{
 			normals->push_back(n);
 		}
 
-		typedef ConstIndexIterator<Vector3<T>> VertexIterator;
 
+		//Az [A,B] el elvagasa a numerikus hiba miatt nem lenne egyenlo a [B,A] sik elvagasaval
+		//ez a fuggveny gondoskodik rola hogy ez a problema ne keruljon elo es az azonos oldal
+		//azonos sikkal valo vagasa mas lapon is ugyanazt az eredmenyt adja
+		Vector3<T> cut_point_stable(int pind1, int pind2, T sign1, T sign2) const {
+			if (indicies(pind1) > indicies(pind2)) {
+				std::swap(pind1, pind2);
+				std::swap(sign1, sign2);
+			}
+			T   all = (abs(sign1) + abs(sign2)),
+				div = abs(sign1 / all),
+				div2 =abs(sign2 /all);
+			return div2*points(pind1) + div*points(pind2);
+		}
 
 	public:
+
+		typedef ConstIndexIterator<Vector3<T>> VertexIterator;
 
 		//a sikkal valo vagas eredmenye
 		struct CutResult{
@@ -176,11 +190,10 @@ namespace approx{
 				if (sign1 < 0){ //negativ oldalhoz tartozik
 					neg.push_back(inds[i]);
 					if (sign2 > 0){ //a kovetkezo pont pozitiv, kozottuk vagni kell
-						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(vecs->size());
 						pos.push_back(neg.back());
 						cut.push_back(neg.back());
-						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
+						Vector3<T> np = cut_point_stable(i, (i + 1) % n, sign1, sign2);
 						vecs->push_back(np);
 						++pts_added;
 					}
@@ -188,11 +201,10 @@ namespace approx{
 				else if (sign1 > 0){ //pozitiv oldalhoz tartozik
 					pos.push_back(inds[i]);
 					if (sign2 < 0){ //a kovetkezo pont negativ, kozottuk vagni kell
-						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(vecs->size());
 						pos.push_back(neg.back());
 						cut.push_back(neg.back());
-						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
+						Vector3<T> np = cut_point_stable(i, (i + 1) % n, sign1, sign2);
 						vecs->push_back(np);
 						++pts_added;
 					}
@@ -227,8 +239,7 @@ namespace approx{
 				if (sign1 < 0){
 					neg.push_back(inds[i]);
 					if (sign2 > 0){
-						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
-						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
+						Vector3<T> np = cut_point_stable(i, (i + 1) % n, sign1, sign2);
 						int ind;
 						if (!m.count(np)){
 							ind = vecs->size();
@@ -246,8 +257,7 @@ namespace approx{
 				else if (sign1 > 0){
 					pos.push_back(inds[i]);
 					if (sign2 < 0){
-						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
-						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
+						Vector3<T> np = cut_point_stable(i, (i + 1) % n, sign1, sign2);
 						int ind;
 						if (!m.count(np)){
 							ind = vecs->size();
@@ -291,11 +301,10 @@ namespace approx{
 				if (sign1 < 0){
 					neg.push_back(target_vecs->size() - 1);
 					if (sign2 > 0){
-						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(target_vecs->size());
 						pos.push_back(neg.back());
 						cut.push_back(neg.back());
-						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
+						Vector3<T> np = cut_point_stable(i, (i + 1) % n, sign1, sign2);
 						target_vecs->push_back(np);
 						++pts_added;
 					}
@@ -303,11 +312,10 @@ namespace approx{
 				else if (sign1 > 0){
 					pos.push_back(target_vecs->size() - 1);
 					if (sign2 < 0){
-						T div = abs(sign1 / (abs(sign1) + abs(sign2)));
 						neg.push_back(target_vecs->size());
 						pos.push_back(neg.back());
 						cut.push_back(neg.back());
-						Vector3<T> np = (1 - div)*points(i) + div*points((i + 1) % n);
+						Vector3<T> np = cut_point_stable(i, (i + 1) % n, sign1, sign2);
 						target_vecs->push_back(np);
 						++pts_added;
 					}

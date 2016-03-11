@@ -13,6 +13,7 @@
 #include "vectors.h"
 #include "face.h"
 #include "body.h"
+#include "convexatom.h"
 #include "targetbody.h"
 
 namespace approx{
@@ -22,8 +23,8 @@ namespace approx{
 	// T: az approximacio skalar tipusa, kompatibilisnek kell lennie a Vector3 sablonnal, valamint az atan2 fuggvennyel mukodnie kell
 	// AtomType: az atomtipus melyet az approximacio hasznal, publikus interfeszenek meg kell egyeznie a ConvexAtom<T> tipussal,
 	//			 az approximacio soran ez a tipus lesz minden atom tipusa
-	template <class AtomType> class Approximation {
-		typedef typename AtomType::ScalarType T;
+	template <class T> class Approximation {
+		typedef ConvexAtom<T> AtomType;
 		const TargetBody<T>* target; //a cel test
 		std::vector<Vector3<T>> vertices, normals; //pontok es normalisok
 		std::vector<Face<T>> faces; //lapok
@@ -32,14 +33,11 @@ namespace approx{
 		int last_cut; //az utolso vagasi muvelet atomjanak indexe
 		typename AtomType::CutResult cut_res; //az utolso vagas eredmenye
 
-		//iterator tipusok a konnyu bejaras erdekeben
-		typedef typename std::vector<AtomType>::iterator Iterator;
-		typedef typename std::vector<AtomType>::const_iterator ConstIterator;
-
 		//a kezdoatom egy tengelyek menten felhuzott kocka mely minden iranyban megadott hatarral a test korul helyezkedik el
 		//kiszamitasanak ideje linearis a test pontjainak szamaban
 		void starting_atom(T border){
-			Vector3<T> vmin, vmax;
+			Vector3<T> vmin = target->body().faces(0).points(0),
+				       vmax = target->body().faces(0).points(0);
 			for (const Face<T>& f : target->body())
 				for (const Vector3<T>& v : f){
 					vmin.x = std::min(vmin.x, v.x);
@@ -74,6 +72,9 @@ namespace approx{
 
 	public:
 		typedef T ScalarType;
+		//iterator tipusok a konnyu bejaras erdekeben
+		typedef typename std::vector<AtomType>::iterator Iterator;
+		typedef typename std::vector<AtomType>::const_iterator ConstIterator;
 
 		//konstruktor mely az approximalando testre mutato pointert es a kezdo kocka lapjainak kozelseget varja
 		//futasideje linearis a celtest pontjainak szamaban
@@ -230,6 +231,7 @@ namespace approx{
 		CutResult cut(Iterator pos, const Plane<T>& p){
 			return cut(pos - _atoms.begin(), p);
 		}
+
 		//pontosan akkor igaz ha az utolso vagast meg nem fejeztuk be visszavonassal vagy elfogado valasztassal
 		bool pending() const {
 			return last_cut != -1;
@@ -302,6 +304,9 @@ namespace approx{
 				}
 
 		}
+
+		//TODO: megir
+		Body<T> approximated_body() const {}
 
 	};
 

@@ -34,7 +34,7 @@ namespace approx{
 			Plane<T> plane;
 			std::vector<Polygon2<T>> poly;
 
-			SurfacePoly(const Plane<T>& pl) : plane(pl) {}
+			SurfacePoly(const Plane<T>& pl) : plane(pl), poly{} {}
 			//osszegzem az egyes polygonok teruletet
 			T area() const { 
 				T s = 0;
@@ -100,9 +100,9 @@ namespace approx{
 				Face<T>::CutResult cut = faces(i).cut_by(p,ptbuffer);
 				//pos_poly.push_back(nullptr);
 				//neg_poly.push_back(nullptr);
-				pos_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
-				neg_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
 				if (cut.pt_inds.size() < cut.positive.size() && cut.pt_inds.size() < cut.negative.size()){ //valodi vagas tortent, mindket oldalon valid sokszog all
+					pos_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
+					neg_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
 					pts_added += cut.points_added; //osszegzem a hozzaadott uj pontokat
 					_faces->push_back(cut.negative); //a kapott lapokat szortirozom az uj sokszogekbe
 					_faces->push_back(cut.positive); 
@@ -132,15 +132,18 @@ namespace approx{
 						pt_ids.push_back(cut.pt_inds.back());
 					}
 					if (cut.pt_inds.size() < cut.positive.size()){ //a pozitiv oldalra kerul az egesz lap
+						pos_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
 						pos_faces.push_back(indicies(i));
 						pos_poly.back()=f_poly[i];
 					}
 					else{ //a negativ oldalra kerul az egesz lap
+						neg_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
 						neg_faces.push_back(indicies(i));
 						neg_poly.back()=f_poly[i];
 					}
 				}
 			}
+
 			if (pt_ids.size()){ //a vagasnak volt hatasa, keletkezett lap
 				avg_pt /= pt_ids.size(); //kozeppont szamitasa
 				// a kapott pontokat a sulypont korul a lap sikjan forgasszog szerint rendezem
@@ -175,15 +178,16 @@ namespace approx{
 					if (clipped.size() > 2){
 						pos_poly.back()->poly.push_back(clipped);
 					}
-					
 				}
 			}
+			
 			return{ std::make_shared<ConvexAtom<T>>(_faces,std::move(pos_faces),target,std::move(pos_poly)),
 					std::make_shared<ConvexAtom<T>>(_faces,std::move(neg_faces),target,std::move(neg_poly)),
 					pts_added,
 					faces_added};
 		}
 
+		//megvizsgalja, hogy a pont bele esik-e
 		bool point_inside(const Vector3<T>& pt) const {
 			for (const Face<T>& f : *this){
 				if (f.to_plane().classify_point(pt) > 0) return false;
@@ -191,10 +195,11 @@ namespace approx{
 			return true;
 		}
 
-		int vertex_count(const Body<T>& b) const{
+		//megszamolja, hogy a cel testnek hany pontja esik az atomba
+		int target_vertex_count_inside() const{
 			int cnt = 0;
 			std::set<Vector3<T>> pts;
-			for (const Face<T>& face : b){
+			for (const Face<T>& face : *target){
 				for (const Vector3<T>& p : face){
 					if (point_inside(p)) pts.insert(p);
 				}
@@ -214,17 +219,12 @@ namespace approx{
 					clipf = cut.negative;
 					++it;
 				}
-
-				
 				if (clipf.size() >= 3){
-					sum += clipf.to_2d().area()*clipf.to_plane().signed_distance();
+					sum += clipf.to_2d().area()*f.to_plane().signed_distance();
 				}
 			}
 			for (int i = 0; i < size(); ++i){
-				if (f_poly[i]){
-					int sign = dot(f_poly[i]->plane.normal(), faces(i).normal()) > 0 ? 1 : -1;
-					sum += f_poly[i]->area()*f_poly[i]->plane.signed_distance()*sign;
-				}
+				sum += f_poly[i]->area()*faces(i).to_plane().signed_distance();
 			}
 			return sum/3;
 		}

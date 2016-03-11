@@ -13,6 +13,8 @@
 #include <algorithm>
 #include "poly2.h"
 
+#include <iostream> //TODO: debug only
+
 namespace approx{
 
 	template <class T> struct Less2d{ //rendezesi muvelet a map tipussal valo hasznalathoz
@@ -33,9 +35,9 @@ namespace approx{
 				path.pop_back();
 			}
 			else{
-				std::vector<Vector2<T>>::iterator it = find(path.begin(), path.end(),pt);
+				std::vector<Vector2<T>>::iterator it = find(path.begin(), path.end()-1,pt);
 				//korre talaltam
-				if (it != path.end() && it != path.end()-2){ 
+				if (it != path.end()-1 && it != path.end()-2){ 
 					Polygon2<T> tmp(it, path.end());
 					//a kesobbi alkalmazasok miatt fix ccw sorrendbe rakom
 					if (!tmp.is_ccw()) std::reverse(tmp.begin(), tmp.end());

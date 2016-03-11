@@ -65,6 +65,9 @@ namespace approx{
 		const std::vector<Vector3<T>>& vertex_container() const { return vecs; }
 		//normalisokat tartalmazo vektor
 		const std::vector<Vector3<T>>& normal_container() const { return normals; }
+		//lapokat tartalmazo vektor
+		const std::vector<Face<T>>&    face_container()   const { return faces; }
+
 		//masolo ertekadas
 		TargetBody& operator = (const TargetBody& t) {
 			vecs = t.vecs;

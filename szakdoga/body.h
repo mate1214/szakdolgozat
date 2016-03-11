@@ -12,6 +12,8 @@
 #include "indexiterator.h"
 #include "polygraph.h"
 
+#include "geoios.h" //TODO: debug
+
 namespace approx{
 
 	//Parametere a skalar tipus ami felett ertelmezzuk a vektorteret
@@ -103,14 +105,15 @@ namespace approx{
 					T sign = plane.classify_point(*pt);
 					negative = negative || sign < 0;
 					positive = positive || sign > 0;
+					++pt;
 				}
+				++it;
 			}
 			return negative && positive;
 		}
 
 		//a metszo sik sajat koordinatarendszerbe levetitett lapok
 		std::vector<Polygon2<T>> cut_surface(const Plane<T>& plane) const {
-			std::vector<Vector3<T>> tmp_normals, tmp_vertices;
 			//a pontokat valos numerikus ertekuk szerint hasznalom
 			//felmerult a kerdes, miszerint a numerikus hiba okozta egyenloseg teszt nem jelent-e gondot,
 			//azonban amennyiben a modell szabalyosan van felepitve es a kozos pontok indexe megegyezik,
@@ -120,6 +123,7 @@ namespace approx{
 			//bazisnak hasznalt vektorok melyek a sikkal parhuzamosak igy veluk vett skalarszorzatok hasznalhatok a vetitesnel
 			std::pair<Vector3<T>, Vector3<T>> base = plane.ortho2d();
 			for (const Face<T>& face : *this){
+				std::vector<Vector3<T>> tmp_normals, tmp_vertices;
 				//vegigiteralok a test lapjain es metszem oket a sikkal
 				typename Face<T>::CutResult cut = face.cut_by(plane, &tmp_vertices, &tmp_normals);
 				//grafot epitek az egyes 2 dimenzios pontokbol
@@ -132,8 +136,6 @@ namespace approx{
 					neighbours[pt2].push_back(pt1);
 				}
 				//mivel mar nincs szuksegem a sokszogekre eldobom a pontjaikat
-				tmp_normals.clear();
-				tmp_vertices.clear();
 			}
 			//a neighbours tartalmazza a grafot melyet most sokszogekke kell alakitanunk
 			return get_polys(neighbours);
