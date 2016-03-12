@@ -144,8 +144,10 @@ void surf_test() {
 void poly_clip_test() {
 	Polygon2<float> clipper({ {1,3}, {2,2}, {4,3}, {3,7}, {1,6} }),
 		toclip({ {3,4}, {6,5}, {8,10}, {2,11}, {1.5f,8} });
+	cout << boolalpha << ccw<float>({ 1,3 }, { 2,2 }, { 4,3 }) << "\n";
 
 	auto clipped = clipper.convex_clip(toclip);
+	cout << "clipper area: " << clipper.area() << "\ntoclip area: " << toclip.area() << "\nclipped area:" << clipped.area() << "\nclipped:\n";
 	cout << clipped;
 }
 
@@ -196,7 +198,7 @@ void cut_surface_test() {
 
 	cout << app.atoms(0).volume() << " -> " << app.atoms(0).intersection_volume() <<"\n";
 	cout << app.atoms(1).volume() << " -> " << app.atoms(1).intersection_volume() << "\n";
-	cout << app.atoms(2).volume() << " -> " << app.atoms(1).intersection_volume() << "\n";
+	cout << app.atoms(2).volume() << " -> " << app.atoms(2).intersection_volume() << "\n";
 
 
 	for (auto& a : app) {

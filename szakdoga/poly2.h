@@ -33,7 +33,7 @@ namespace approx{
 
 		//ertekadas masolasra es mozgatasra
 		Polygon2& operator = (const Polygon2&) = default;
-		Polygon2& operator = (Polygon2&& p) { pts.swap(p.pts); }
+		Polygon2& operator = (Polygon2&&) = default;
 
 		//csak olvashato iteratorok a pontok bejarasara
 		ConstIterator begin() const { return pts.cbegin(); }
@@ -131,29 +131,46 @@ namespace approx{
 		//}
 
 		//a Sutherland–Hodgman algoritmus alapjan megtalalja a masik polygon beleeso reszet
+		//Polygon2<T> convex_clip(const Polygon2<T>& p) const {
+		//	std::vector<Vector2<T>> outputlist = p.pts;
+		//	int inside = ccw(pts[0], pts[1], pts[2]) ? 1 : -1;
+		//	for (int i = 0; i < size(); ++i){
+		//		Vector2<T> tmp = pts[(i + 1) % size()] - pts[i];
+		//		Line<T> edge({-tmp.y,tmp.x},pts[i]);
+		//		std::vector<Vector2<T>> inputlist = std::move(outputlist);
+		//		outputlist.clear();
+		//		Vector2<T> S = inputlist.back();
+		//		for (const Vector2<T>& E : inputlist){
+		//			T clfe = edge.classify_point(E);
+		//			T clfs = edge.classify_point(S);
+		//			if (clfe*inside >= 0){
+		//				outputlist.push_back(E);
+		//			}
+		//			if (clfs*clfe < 0){
+		//				T all = abs(clfe) + abs(clfs);
+		//				outputlist.push_back((abs(clfs) / all)*E + (abs(clfe)/all)*S);;
+		//			}
+		//			S = E;
+		//		}
+		//	}
+		//	return Polygon2<T>(std::move(outputlist));
+		//}
+
+
 		Polygon2<T> convex_clip(const Polygon2<T>& p) const {
-			std::vector<Vector2<T>> outputlist = p.pts;
-			int inside = ccw(pts[0], pts[1], pts[2]) ? 1 : -1;
-			for (int i = 0; i < size(); ++i){
+			Polygon2<T>  output = p;
+			bool cc = ccw(pts[0], pts[1], pts[2]);
+			for (int i = 0; i < size(); ++i) {
 				Vector2<T> tmp = pts[(i + 1) % size()] - pts[i];
-				Line<T> edge({-tmp.y,tmp.x},pts[i]);
-				std::vector<Vector2<T>> inputlist = std::move(outputlist);
-				outputlist.clear();
-				Vector2<T> S = inputlist.back();
-				for (const Vector2<T>& E : inputlist){
-					T clfe = edge.classify_point(E);
-					T clfs = edge.classify_point(S);
-					if (clfe*inside >= 0){
-						outputlist.push_back(E);
-					}
-					if (clfs*clfe < 0){
-						T all = abs(clfe) + abs(clfs);
-						outputlist.push_back((abs(clfs) / all)*E + (abs(clfe)/all)*S);;
-					}
-					S = E;
+				Line<T> edge({ -tmp.y,tmp.x }, pts[i]);
+				if (cc) {
+					output = output.cut_by(edge).positive;
+				}
+				else {
+					output = output.cut_by(edge).negative;
 				}
 			}
-			return Polygon2<T>(std::move(outputlist));
+			return output;
 		}
 
 	};
