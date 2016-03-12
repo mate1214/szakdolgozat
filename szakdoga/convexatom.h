@@ -170,9 +170,6 @@ namespace approx{
 				//a vetuleteket is clippelni kell
 				pos_poly.push_back(make_shared<SurfacePoly>(p));
 				neg_poly.push_back(pos_poly.back());
-
-				cout << "pnormal: "<< pos_poly.back()->plane.normal() << "\n";
-
 				std::vector<Polygon2<T>> surf = target->cut_surface(p);
 				for (const Polygon2<T>& e : surf){
 					Polygon2<T> clipped = clipper.convex_clip(e);
@@ -222,25 +219,19 @@ namespace approx{
 				}
 				if (clipf.size() >= 3){
 					sum += clipf.to_2d().area()*f.to_plane().signed_distance();
-					//cout << "cplif: " << clipf.to_2d().area() << "   normal: " << f.to_plane().normal() << "\n";
 				}
 			}
 
-			for (int i = 0; i < size(); ++i) {
-				cout << i << "->" << faces(i).normal() << "; ";
-			}
-			cout << "\n";
-
 			for (int i = 0; i < size(); ++i){
 				sum += f_poly[i]->area()*faces(i).to_plane().signed_distance();
-				
-				//if (f_poly[i]->area() > 0) {
-				//	cout << i << "fpoly: " << f_poly[i]->area() << "   normal: " << faces(i).normal() << "\n";
-				//}
-
 			}
 			return sum / static_cast<T>(3);
 		}
+
+		T surf_imprints(int i) const {
+			return f_poly[i]->area();
+		}
+
 	};
 
 }

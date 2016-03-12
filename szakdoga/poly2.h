@@ -147,7 +147,8 @@ namespace approx{
 						outputlist.push_back(E);
 					}
 					if (clfs*clfe < 0){
-						outputlist.push_back(abs(clfs) / (abs(clfe) + abs(clfs))*E);
+						T all = abs(clfe) + abs(clfs);
+						outputlist.push_back((abs(clfs) / all)*E + (abs(clfe)/all)*S);;
 					}
 					S = E;
 				}

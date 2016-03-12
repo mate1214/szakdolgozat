@@ -124,6 +124,32 @@ void plane_line_test(){
 	cout << l;
 }
 
+void surf_test() {
+	vector<approx::Vector3<float>> vertices{ {1,1,1},{ 1,1,2 }, {1,2,2}, { 1,2,1 } }, normals{ {1,0,0} };
+	approx::Face<float> f(&vertices, { 0,1,2,3 }, &normals, 0);
+
+	Plane<float> pl({ 0,0,1 }, 1.5f);
+	auto f2 = f.to_2d();
+	for (auto e : f2) {
+		cout << e << "\n";
+	}
+	cout << "\n";
+
+	auto cutline = f.to_plane().intersection_line(pl);
+	cout << cutline;
+	auto cut = f2.cut_by(cutline);
+	cout << cut.negative << "\n=============\n" << cut.positive;
+}
+
+void poly_clip_test() {
+	Polygon2<float> clipper({ {1,3}, {2,2}, {4,3}, {3,7}, {1,6} }),
+		toclip({ {3,4}, {6,5}, {8,10}, {2,11}, {1.5f,8} });
+
+	auto clipped = clipper.convex_clip(toclip);
+	cout << clipped;
+}
+
+
 void cut_surface_test() {
 	vector<approx::Vector3<float>> vertices, normals;
 	vector<approx::Face<float>> faces;
@@ -160,16 +186,25 @@ void cut_surface_test() {
 	cout << "tbvol: " << tb.body().volume() << "\n";
 	approx::Approximation<float> app(&tb, 0.1f);
 	cout << "starting atom vol: " << app.atoms(0).volume() << "\n";
+	//auto cut = app.cut(0, p);
+	//cut.choose_both();
+
 	auto cut = app.cut(0, p);
 	cut.choose_both();
-	int i = 0;
-	for (const Face<float> f : /**cut.negative()*/ app.atoms(0)) {
-		cout << f.normal() << "    "<< app.atoms(0).faces(i++).normal() <<  "\n";
+	approx::Plane<float> ps({ 0, 0, 1 }, 1.50f);
+	app.cut(0, ps).choose_both();
 
-	}
-	cut.choose_both();
 	cout << app.atoms(0).volume() << " -> " << app.atoms(0).intersection_volume() <<"\n";
 	cout << app.atoms(1).volume() << " -> " << app.atoms(1).intersection_volume() << "\n";
+	cout << app.atoms(2).volume() << " -> " << app.atoms(1).intersection_volume() << "\n";
+
+
+	for (auto& a : app) {
+		for (int i = 0; i < a.size();++i) {
+			cout << a.surf_imprints(i) << "\n";
+		}
+		cout <<  "==================================\n";
+	}
 
 	/*cout << "vertex size: " << tb.vertex_container().size() << "\n"
 		 << "normal size: " << tb.normal_container().size() << "\n"
@@ -303,7 +338,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//face_cut_test();
 	cut_surface_test();
 	//approximator_test();
-	
+	//surf_test();
+	//poly_clip_test();
 
 	cin.get();
 
