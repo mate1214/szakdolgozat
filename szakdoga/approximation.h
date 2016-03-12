@@ -305,6 +305,10 @@ namespace approx{
 
 		}
 
+		CutResult last_cut_result() {
+			return CutResult(this);
+		}
+
 		//TODO: megir
 		Body<T> approximated_body() const {}
 

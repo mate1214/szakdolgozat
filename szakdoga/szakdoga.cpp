@@ -296,7 +296,7 @@ void approximator_test() {
 	cout << "pozitiv oldali keletkezett atom terfogata: " << cut.positive()->volume() << "\n";
 
 	//mondjuk hogy tetszik az eredmeny, berakjuk az atomokat
-	cut.choose_both();
+	app.container().last_cut_result().choose_both();
 	//mostmar ket atomunk van
 	//choose_negative() - choose_positive() ezek csak a negativ vagy csak a pozitiv oldali atomot hagyjak meg
 	//ha nem tetszene az eredmeny akkor cut.undo();
