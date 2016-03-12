@@ -289,7 +289,6 @@ void approximator_test() {
 	//a 0. atomot elvagom az elobb megadott sikkal
 	//a cut egy vagasi eredmeny, a vagast vegrehajtom, de az atomok nem kerulnek be a taroloba
 	Approximation<float>::CutResult cut = app.container().cut(0, p);
-	
 	//mindenfele ugyes okos vizsgalatok a keletkezett atomokon hogy jok-e, pl terfogat ellenorzes
 	//a metszet terfogat meg bugol, de a sima terfogat jol mukodik
 	//a pozitiv es negativ oldal a metszosikhoz kepesti elhelyezkedest jelenti 
@@ -329,6 +328,7 @@ void approximator_test() {
 	//hasonlo modon kerheto el a rajzolando celtest is
 	approx::BodyList targetdata = app.target_drawinfo();
 	app.restart();
+
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -338,8 +338,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//plane_line_test();
 	//poly_partition_test();
 	//face_cut_test();
-	cut_surface_test();
-	//approximator_test();
+	//cut_surface_test();
+	approximator_test();
 	//surf_test();
 	//poly_clip_test();
 

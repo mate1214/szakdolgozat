@@ -53,7 +53,7 @@ namespace approx{
 				//minden pontnak azonos normal indexet adok
 			}
 		}
-		res.index_ranges.push_back(res.index_ranges.size());
+		res.index_ranges.push_back(res.indicies.size());
 		return res;
 	}
 
