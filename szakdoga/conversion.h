@@ -85,18 +85,21 @@ namespace approx{
 
 	template <class T> BodyList compact_drawinfo(const Body<T>& body){
 		BodyList res;
-		std::unordered_map<int, int> id_map; //a mar felhasznalt pontokat felrakom
-		std::map<int, int> verts;
+		std::unordered_map<int, int> verts;
 		for (const Face<T>& f : body){
 			for (int i : f.indicies()){
 				if (!verts.count(i)){
 					verts[i] = res.points.size();
 					res.points.push_back(convert(f.vertex_container()->operator[](i)));
 				}
-				res.indicies.push_back(verts[i]);
+			}
+			for (int i = 2; i < f.indicies().size(); ++i) {
+				res.indicies.push_back(verts[f.indicies(0)]);
+				res.indicies.push_back(verts[f.indicies(i-1)]);
+				res.indicies.push_back(verts[f.indicies(i)]);
 			}
 		}
-		res.index_ranges = { 0, res.indicies.size() };
+		res.index_ranges = { 0, (unsigned short)res.indicies.size() };
 		return res;
 	}
 }

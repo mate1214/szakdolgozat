@@ -295,8 +295,21 @@ void approximator_test() {
 	cout << "negativ oldali keletkezett atom terfogata: " << cut.negative()->volume() << "\n";
 	cout << "pozitiv oldali keletkezett atom terfogata: " << cut.positive()->volume() << "\n";
 
+	
+	
+
+	approx::BodyList d = app.cut_drawinfo();
+	for (int i = 0; i < d.index_ranges.size() - 1; ++i) {
+		cout << " -------- Atom" << i << " -------- \n";
+		for (int j = d.index_ranges[i]; j < d.index_ranges[i + 1]; ++j) {
+			cout << d.points[d.indicies[j]].x << ", "
+				<< d.points[d.indicies[j]].y << ", "
+				<< d.points[d.indicies[j]].z << "\n";
+		}
+	}
 	//mondjuk hogy tetszik az eredmeny, berakjuk az atomokat
 	app.container().last_cut_result().choose_both();
+
 	//mostmar ket atomunk van
 	//choose_negative() - choose_positive() ezek csak a negativ vagy csak a pozitiv oldali atomot hagyjak meg
 	//ha nem tetszene az eredmeny akkor cut.undo();

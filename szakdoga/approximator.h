@@ -8,7 +8,7 @@
 
 #include <string>
 #include <memory>
-
+#include <algorithm>
 #include "targetbody.h"
 #include "approximation.h"
 #include "conversion.h"
@@ -120,6 +120,20 @@ namespace approx {
 		//az atomokbol eloallo approximacios test vertex adatai rajzolashoz
 		BodyList approx_drawinfo() const {
 			return compact_drawinfo(app->approximated_body());
+		}
+
+		//a ket meg be nem illesztett atom rajz adatai
+		//elso a negativ oldali masodik a pozitiv oldali
+		BodyList cut_drawinfo() const {
+			BodyList b1 = compact_drawinfo(*app->last_cut_result().negative());
+			BodyList b2 = compact_drawinfo(*app->last_cut_result().positive());
+			b1.points.insert(b1.points.end(), b2.points.begin(), b2.points.end());
+			int n = b1.indicies.size();
+			for (int x : b2.indicies) {
+				b1.indicies.push_back(x+n);
+			}
+			b1.index_ranges.push_back(n + b2.indicies.size());
+			return b1;
 		}
 
 	};
