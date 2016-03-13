@@ -349,7 +349,7 @@ void conversion_test() {
 
 	std::vector<approx::Vector3<float>> vertices, normals;
 	std::vector<approx::Face<float>> faces;
-	approx::Plane<float> p({ 1, 0, 0 }, 15.0f);
+	approx::Plane<float> p({ 1, 0, 0 }, 1.50f);
 
 	approx::Vector3<float> vmin(1, 1, 1), vmax(3, 2, 2);
 	float border = 0;
@@ -380,8 +380,8 @@ void conversion_test() {
 	cout << "obj ok!\n";
 	}*/
 	std::cout << "tbvol: " << tb.body().volume() << "\n";
-	//approx::Approximator<float> app(std::move(std::make_unique<TargetBody<float>>(tb)), 0.0f);
-	approx::Approximator<float> app("test.obj", 0.0f);
+	approx::Approximator<float> app(std::move(std::make_unique<TargetBody<float>>(tb)), 0.0f);
+	//approx::Approximator<float> app("test.obj", 0.0f);
 
 
 	app.container().cut(0, p);
@@ -397,12 +397,30 @@ void conversion_test() {
 
 	BodyList data = app.atom_drawinfo();
 
+	int i = 0;
+	for (const ConvexAtom<float>& a : app.container()) {
+		std::cout << "==========ATOM" << i++ << "================\n";
+		for (const Face<float>& f : a) {
+			for (int ind : f.indicies()) {
+				std::cout << ind << ",";
+			}
+			std::cout << "\n";
+		}
+	}
+
 	for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
-		std::cout << " -------- Atom" << i << " -------- \n";
-		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
-			std::cout << data.points[data.indicies[j]].x << ", "
+		std::cout << " -------- DrawnAtom" << i << " -------- \n";
+		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; j+=3) {
+			std::cout << data.indicies[j] << ',' << data.indicies[j+1] << ',' << data.indicies[j+2] << " => ";
+			std::cout << "(" << data.points[data.indicies[j]].x << ", "
 				<< data.points[data.indicies[j]].y << ", "
-				<< data.points[data.indicies[j]].z << "\n";
+				<< data.points[data.indicies[j]].z << ") ; ("
+				<< data.points[data.indicies[j+1]].x << ", "
+				<< data.points[data.indicies[j+1]].y << ", "
+				<< data.points[data.indicies[j+1]].z << ") ; ("
+				<< data.points[data.indicies[j+2]].x << ", "
+				<< data.points[data.indicies[j+2]].y << ", "
+				<< data.points[data.indicies[j+2]].z << ")\n";
 		}
 	}
 
@@ -416,10 +434,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_partition_test();
 	//face_cut_test();
 	//cut_surface_test();
-	approximator_test();
+	//approximator_test();
 	//surf_test();
 	//poly_clip_test();
-	//conversion_test();
+	conversion_test();
+
 	std::cin.get();
 
 	return 0;

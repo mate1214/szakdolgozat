@@ -98,7 +98,7 @@ namespace approx{
 				res.indicies.push_back(verts[f.indicies(i)]);
 			}
 		}
-		res.index_ranges = { 0, (unsigned short)res.indicies.size() };
+		res.index_ranges = { 0, (Index)res.indicies.size() };
 		return res;
 	}
 }
