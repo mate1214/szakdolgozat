@@ -31,7 +31,7 @@ namespace approx {
 
 		//a megadott celtest felhasznalasa, adott tavolsagu hatarolo kockaval indulva
 		Approximator(std::unique_ptr<TargetBody<T>>&& target,T _border) {
-			set_target(target,_border);
+			set_target(std::move(target),_border);
 		}
 
 		//pontosan akkor igaz, ha az approximacios munkafolyamat megkezdheto
@@ -53,7 +53,7 @@ namespace approx {
 		//pontosan akkor ad igazat, ha a folyamat megkezdheto
 		bool restart() {
 			if (!(tb && tb->body().size())) return false;
-			app = make_unique<Approximation<T>>(tb.get(), border);
+			app = std::make_unique<Approximation<T>>(tb.get(), border);
 			return true;
 		}
 		
@@ -66,13 +66,13 @@ namespace approx {
 		//a harmadik opcionalis parameter arra valo, ha betoltesnel korrekciot kivanunk vegezni a testen.
 		bool set_target(const std::string& filename, T _border,T merging_epsilon=0) {
 			border = _border;
-			tb = make_unique<TargetBody<T>>();
+			tb = std::make_unique<TargetBody<T>>();
 			if (!(ObjectLoader<T>::load_obj(filename, *tb, merging_epsilon) && tb->body().size())) {
 				tb.release();
 				app.release();
 				return false;
 			}
-			app = make_unique<Approximation<T>>(tb.get(),border);
+			app = std::make_unique<Approximation<T>>(tb.get(),border);
 			return true;
 		}
 
@@ -85,7 +85,7 @@ namespace approx {
 				app.release();
 				return false;
 			}
-			app = make_unique<Approximation<T>>(tb.get(), border);
+			app = std::make_unique<Approximation<T>>(tb.get(), border);
 			return true;
 		}
 

@@ -101,8 +101,8 @@ namespace approx{
 			for (int i = 0; i < size();++i){ //vegegiteralok minden lapon es elvagom oket a sikkal, kezelve a hamis vagasokat
 				Face<T>::CutResult cut = faces(i).cut_by(p,ptbuffer);
 				if (cut.pt_inds.size() < cut.positive.size() && cut.pt_inds.size() < cut.negative.size()){ //valodi vagas tortent, mindket oldalon valid sokszog all
-					pos_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
-					neg_poly.push_back(make_shared<SurfacePoly>(f_poly[i]->plane));
+					pos_poly.push_back(std::make_shared<SurfacePoly>(f_poly[i]->plane));
+					neg_poly.push_back(std::make_shared<SurfacePoly>(f_poly[i]->plane));
 					pts_added += cut.points_added; //osszegzem a hozzaadott uj pontokat
 					_faces->push_back(cut.negative); //a kapott lapokat szortirozom az uj sokszogekbe
 					_faces->push_back(cut.positive); 
@@ -156,7 +156,7 @@ namespace approx{
 					return atan2(x1, y1) < atan2(x2, y2);
 				});
 				//a rendezett pontokbol minden masodik egyedi bekerul a sokszogre
-				vector<int> new_fc{pt_ids[0]};
+				std::vector<int> new_fc{pt_ids[0]};
 				for (int i = 2; i < pt_ids.size(); i += 2){
 					if(vc[pt_ids[i]] != vc[new_fc.back()]) new_fc.push_back(pt_ids[i]); //egy csucsnal lehet hogy tobb el osszefut, nem akarunk egymas utan ugyanolyan pontokat
 				}
@@ -168,7 +168,7 @@ namespace approx{
 				neg_faces.push_back(_faces->size() - 2);
 				pos_faces.push_back(_faces->size() - 1);
 				//a vetuleteket is clippelni kell
-				pos_poly.push_back(make_shared<SurfacePoly>(p));
+				pos_poly.push_back(std::make_shared<SurfacePoly>(p));
 				neg_poly.push_back(pos_poly.back());
 				std::vector<Polygon2<T>> surf = target->cut_surface(p);
 				for (const Polygon2<T>& e : surf){

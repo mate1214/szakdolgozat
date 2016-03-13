@@ -75,7 +75,6 @@ namespace approx{
 					res.indicies.push_back(f.indicies(0));
 					res.indicies.push_back(f.indicies(i - 1));
 					res.indicies.push_back(f.indicies(i));
-					//minden pontnak azonos normal indexet adok
 					res.index_ranges.back() += 3;
 				}
 			}

@@ -19,7 +19,8 @@
 #include "geoios.h"
 #include "objio.h"
 #include "approximator.h"
-using namespace std;
+
+//using namespace std;
 using namespace approx;
 
 
@@ -40,7 +41,7 @@ Vector3<float> cut(const Vector3<float>& pt1, const Vector3<float>& pt2, const P
 
 
 void cut_eq_test(){
-	vector<approx::Vector3<float>>
+	std::vector<approx::Vector3<float>>
 		vertices{ { 1.0000456f, 0.0f, 0.0f },
 				  { sqrt(2.0f), sqrt(3.0f), sqrt(11.0f) },
 				  {(sqrt(2.0f)+sqrt(3.17f))/2.0f,sqrt(3.0f)+sqrt(8.767f) ,sqrt(10.65f)+sqrt(1.5678f)},
@@ -53,11 +54,11 @@ void cut_eq_test(){
 	approx::Plane<float> plane({0,1,0},sqrt(3.0f)+sqrt(5.456f));
 	auto cut1 = face1.cut_by(plane);
 	auto cut2 = face2.cut_by(plane);
-	cout << vertices[cut1.pt_inds.front()] << "\n"
+	std::cout << vertices[cut1.pt_inds.front()] << "\n"
 		<< vertices[cut1.pt_inds.back()] << "\n"
 		<< vertices[cut2.pt_inds.front()] << "\n"
 		<< vertices[cut2.pt_inds.back()] << "\n";
-	cout << boolalpha << (vertices[cut1.pt_inds.front()] == vertices[cut2.pt_inds.back()]);
+	std::cout << std::boolalpha << (vertices[cut1.pt_inds.front()] == vertices[cut2.pt_inds.back()]);
 }
 
 void poly_graph_test(){
@@ -109,7 +110,7 @@ void poly_graph_test(){
 	auto ls = get_polys(gr);
 
 	for (const auto& p : ls){
-		cout << p;
+		std::cout << p;
 	}
 
 }
@@ -117,44 +118,43 @@ void poly_graph_test(){
 void plane_line_test(){
 	Plane<float> p1({0,0,-1},-2);
 	auto base = p1.ortho2d();
-	cout << "Plane1: " << p1 << "\nBase:\n" << base.first << "\n" << base.second << "\n";
+	std::cout << "Plane1: " << p1 << "\nBase:\n" << base.first << "\n" << base.second << "\n";
 	Plane<float> p2({ sqrt(2.0f) / 2, 0, sqrt(2.0f) / 2 }, 1);
-	cout << "Plane2: " << p2 << "\n";
+	std::cout << "Plane2: " << p2 << "\n";
 	Line<float> l = p1.intersection_line(p2);
-	cout << l;
+	std::cout << l;
 }
 
 void surf_test() {
-	vector<approx::Vector3<float>> vertices{ {1,1,1},{ 1,1,2 }, {1,2,2}, { 1,2,1 } }, normals{ {1,0,0} };
+	std::vector<approx::Vector3<float>> vertices{ {1,1,1},{ 1,1,2 }, {1,2,2}, { 1,2,1 } }, normals{ {1,0,0} };
 	approx::Face<float> f(&vertices, { 0,1,2,3 }, &normals, 0);
 
 	Plane<float> pl({ 0,0,1 }, 1.5f);
 	auto f2 = f.to_2d();
 	for (auto e : f2) {
-		cout << e << "\n";
+		std::cout << e << "\n";
 	}
-	cout << "\n";
+	std::cout << "\n";
 
 	auto cutline = f.to_plane().intersection_line(pl);
-	cout << cutline;
+	std::cout << cutline;
 	auto cut = f2.cut_by(cutline);
-	cout << cut.negative << "\n=============\n" << cut.positive;
+	std::cout << cut.negative << "\n=============\n" << cut.positive;
 }
 
 void poly_clip_test() {
 	Polygon2<float> clipper({ {1,3}, {2,2}, {4,3}, {3,7}, {1,6} }),
 		toclip({ {3,4}, {6,5}, {8,10}, {2,11}, {1.5f,8} });
-	cout << boolalpha << ccw<float>({ 1,3 }, { 2,2 }, { 4,3 }) << "\n";
+	std::cout << std::boolalpha << ccw<float>({ 1,3 }, { 2,2 }, { 4,3 }) << "\n";
 
 	auto clipped = clipper.convex_clip(toclip);
-	cout << "clipper area: " << clipper.area() << "\ntoclip area: " << toclip.area() << "\nclipped area:" << clipped.area() << "\nclipped:\n";
-	cout << clipped;
+	std::cout << "clipper area: " << clipper.area() << "\ntoclip area: " << toclip.area() << "\nclipped area:" << clipped.area() << "\nclipped:\n" << clipped;
 }
 
 
 void cut_surface_test() {
-	vector<approx::Vector3<float>> vertices, normals;
-	vector<approx::Face<float>> faces;
+	std::vector<approx::Vector3<float>> vertices, normals;
+	std::vector<approx::Face<float>> faces;
 	approx::Plane<float> p({ 1, 0, 0 }, 2.0f);
 
 	approx::Vector3<float> vmin(1, 1, 1), vmax(3, 2, 2);
@@ -185,9 +185,9 @@ void cut_surface_test() {
 	/*if (approx::ObjectLoader<float>::load_obj("./test.obj", tb, 0.0f)) {
 		cout << "obj ok!\n";
 	}*/
-	cout << "tbvol: " << tb.body().volume() << "\n";
+	std::cout << "tbvol: " << tb.body().volume() << "\n";
 	approx::Approximation<float> app(&tb, 0.1f);
-	cout << "starting atom vol: " << app.atoms(0).volume() << "\n";
+	std::cout << "starting atom vol: " << app.atoms(0).volume() << "\n";
 	//auto cut = app.cut(0, p);
 	//cut.choose_both();
 
@@ -196,16 +196,16 @@ void cut_surface_test() {
 	approx::Plane<float> ps({ 0, 0, 1 }, 1.50f);
 	app.cut(0, ps).choose_both();
 
-	cout << app.atoms(0).volume() << " -> " << app.atoms(0).intersection_volume() <<"\n";
-	cout << app.atoms(1).volume() << " -> " << app.atoms(1).intersection_volume() << "\n";
-	cout << app.atoms(2).volume() << " -> " << app.atoms(2).intersection_volume() << "\n";
+	std::cout << app.atoms(0).volume() << " -> " << app.atoms(0).intersection_volume() <<"\n"
+			<< app.atoms(1).volume() << " -> " << app.atoms(1).intersection_volume() << "\n"
+			<< app.atoms(2).volume() << " -> " << app.atoms(2).intersection_volume() << "\n";
 
 
 	for (auto& a : app) {
 		for (int i = 0; i < a.size();++i) {
-			cout << a.surf_imprints(i) << "\n";
+			std::cout << a.surf_imprints(i) << "\n";
 		}
-		cout <<  "==================================\n";
+		std::cout <<  "==================================\n";
 	}
 
 	/*cout << "vertex size: " << tb.vertex_container().size() << "\n"
@@ -248,20 +248,20 @@ void cut_surface_test() {
 //}
 
 void face_cut_test(){
-	vector<approx::Vector3<float>> vertices{ { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, { 2.0f, 3.0f, 3.0f } },
+	std::vector<approx::Vector3<float>> vertices{ { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 3.0f }, { 2.0f, 0.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, { 2.0f, 3.0f, 3.0f } },
 		normals{ { 0.0f, 0.0f, -1.0f } };
 	approx::Face<float> f(&vertices, { 0, 1, 2, 3, 4 }, &normals, 0);
 	approx::Plane<float> p({ 0, 0, -1.0f }, -3.0f);
 	auto cut = f.cut_by(p);
-	cout << "coplanar cut done\n";
-	cout << cut.positive << "\n--------------------------\n" << cut.negative;
-	vector<approx::Vector3<float>> tmpv, tmpn;
+	std::cout << "coplanar cut done\n";
+	std::cout << cut.positive << "\n--------------------------\n" << cut.negative;
+	std::vector<approx::Vector3<float>> tmpv, tmpn;
 	auto cut2 = f.cut_by(p, &tmpv, &tmpn);
-	cout << "new container cut done\n";
+	std::cout << "new container cut done\n";
 	f = cut2.negative;
 	auto cut3 = f.cut_by(p, &tmpv, &tmpn);
-	cout << cut3.negative << "\n--------------------------\n" << cut3.positive;
-	cout << cut3.negative.cut_by(p).positive.cut_by(p).negative;
+	std::cout << cut3.negative << "\n--------------------------\n" << cut3.positive;
+	std::cout << cut3.negative.cut_by(p).positive.cut_by(p).negative;
 }
 
 void approximator_test() {
@@ -275,12 +275,12 @@ void approximator_test() {
 
 	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
 	if (!app.set_target("test.obj", 0.5f)) {
-		cout << "HIBA A FAJL BETOLTESENEL!\n";
+		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
 	}
 
 	//A celtest az app.target().body()-ban erheto el, a body.h-ban bovebb info talalhato rola
 	//es a metodusairol
-	cout << "A celtest terfogata: " << app.target().body().volume() << "\n";
+	std::cout << "A celtest terfogata: " << app.target().body().volume() << "\n";
 
 	//vagosik
 	approx::Plane<float> p({ 1,0,0 }, 15.0f);
@@ -292,21 +292,21 @@ void approximator_test() {
 	//mindenfele ugyes okos vizsgalatok a keletkezett atomokon hogy jok-e, pl terfogat ellenorzes
 	//a metszet terfogat meg bugol, de a sima terfogat jol mukodik
 	//a pozitiv es negativ oldal a metszosikhoz kepesti elhelyezkedest jelenti 
-	cout << "negativ oldali keletkezett atom terfogata: " << cut.negative()->volume() << "\n";
-	cout << "pozitiv oldali keletkezett atom terfogata: " << cut.positive()->volume() << "\n";
+	std::cout << "negativ oldali keletkezett atom terfogata: " << cut.negative()->volume() << "\n";
+	std::cout << "pozitiv oldali keletkezett atom terfogata: " << cut.positive()->volume() << "\n";
 
 	
 	
 
-	approx::BodyList d = app.cut_drawinfo();
+	/*approx::BodyList d = app.cut_drawinfo();
 	for (int i = 0; i < d.index_ranges.size() - 1; ++i) {
-		cout << " -------- Atom" << i << " -------- \n";
+		std::cout << " -------- Atom" << i << " -------- \n";
 		for (int j = d.index_ranges[i]; j < d.index_ranges[i + 1]; ++j) {
-			cout << d.points[d.indicies[j]].x << ", "
+			std::cout << d.points[d.indicies[j]].x << ", "
 				<< d.points[d.indicies[j]].y << ", "
 				<< d.points[d.indicies[j]].z << "\n";
 		}
-	}
+	}*/
 	//mondjuk hogy tetszik az eredmeny, berakjuk az atomokat
 	app.container().last_cut_result().choose_both();
 
@@ -318,7 +318,7 @@ void approximator_test() {
 	//az app.container().atoms(i) az i. atom kozvetlen konstans eleresre, pl teszteli hogy az adott sik atmegy-e rajta
 	approx::Plane<float> p2({ 1,0,0 }, 16.0f);
 	if (app.container().atoms(1).intersects_plane(p2)) {
-		cout << "az 1. indexu atomon atmegy a p2 sik \n";
+		std::cout << "az 1. indexu atomon atmegy a p2 sik \n";
 	}
 
 	//lekerem az atomok rajzolasi adatait
@@ -330,9 +330,9 @@ void approximator_test() {
 	//tehat az i. atomnal index_ranges[i] az elso es van index_ranges[i+1]-index_ranges[i] darab
 	//GL_TRIANGLES modban mukodnie kell
 	for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
-		cout << " -------- Atom" << i << " -------- \n";
+		std::cout << " -------- Atom" << i << " -------- \n";
 		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
-			cout << data.points[ data.indicies[j] ].x << ", "
+			std::cout << data.points[ data.indicies[j] ].x << ", "
 				 << data.points[ data.indicies[j] ].y << ", "
 				 << data.points[ data.indicies[j] ].z << "\n";
 		}
@@ -341,6 +341,70 @@ void approximator_test() {
 	//hasonlo modon kerheto el a rajzolando celtest is
 	approx::BodyList targetdata = app.target_drawinfo();
 	app.restart();
+
+}
+
+
+void conversion_test() {
+
+	std::vector<approx::Vector3<float>> vertices, normals;
+	std::vector<approx::Face<float>> faces;
+	approx::Plane<float> p({ 1, 0, 0 }, 15.0f);
+
+	approx::Vector3<float> vmin(1, 1, 1), vmax(3, 2, 2);
+	float border = 0;
+	vertices.push_back({ vmin.x - border, vmin.y - border, vmin.z - border });
+	vertices.push_back({ vmax.x + border, vmin.y - border, vmin.z - border });
+	vertices.push_back({ vmax.x + border, vmax.y + border, vmin.z - border });
+	vertices.push_back({ vmin.x - border, vmax.y + border, vmin.z - border });
+	vertices.push_back({ vmin.x - border, vmin.y - border, vmax.z + border });
+	vertices.push_back({ vmax.x + border, vmin.y - border, vmax.z + border });
+	vertices.push_back({ vmax.x + border, vmax.y + border, vmax.z + border });
+	vertices.push_back({ vmin.x - border, vmax.y + border, vmax.z + border });
+	normals.push_back({ 0, 0, -1 });
+	normals.push_back({ 1, 0, 0 });
+	normals.push_back({ 0, 0, 1 });
+	normals.push_back({ -1, 0, 0 });
+	normals.push_back({ 0, 1, 0.0f });
+	normals.push_back({ 0, -1, 0 });
+	faces.emplace_back(&vertices, std::vector<int>{ 0, 1, 2, 3 }, &normals, 0);
+	faces.emplace_back(&vertices, std::vector<int>{ 1, 5, 6, 2 }, &normals, 1);
+	faces.emplace_back(&vertices, std::vector<int>{ 5, 4, 7, 6 }, &normals, 2);
+	faces.emplace_back(&vertices, std::vector<int>{ 4, 0, 3, 7 }, &normals, 3);
+	faces.emplace_back(&vertices, std::vector<int>{ 3, 2, 6, 7 }, &normals, 4);
+	faces.emplace_back(&vertices, std::vector<int>{ 0, 4, 5, 1 }, &normals, 5);
+
+	approx::TargetBody<float> tb(vertices, normals, faces);
+
+	/*if (approx::ObjectLoader<float>::load_obj("./test.obj", tb, 0.0f)) {
+	cout << "obj ok!\n";
+	}*/
+	std::cout << "tbvol: " << tb.body().volume() << "\n";
+	//approx::Approximator<float> app(std::move(std::make_unique<TargetBody<float>>(tb)), 0.0f);
+	approx::Approximator<float> app("test.obj", 0.0f);
+
+
+	app.container().cut(0, p);
+
+	ConvexAtom<float> neg = *app.container().last_cut_result().negative();
+	ConvexAtom<float> pos = *app.container().last_cut_result().positive();
+
+	app.container().last_cut_result().choose_both();
+
+	
+
+	std::cout << std::boolalpha << (std::equal(neg.begin(),neg.end(),app.container().atoms(0).begin())) << "\n";
+
+	BodyList data = app.atom_drawinfo();
+
+	for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
+		std::cout << " -------- Atom" << i << " -------- \n";
+		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
+			std::cout << data.points[data.indicies[j]].x << ", "
+				<< data.points[data.indicies[j]].y << ", "
+				<< data.points[data.indicies[j]].z << "\n";
+		}
+	}
 
 }
 
@@ -355,8 +419,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	approximator_test();
 	//surf_test();
 	//poly_clip_test();
-
-	cin.get();
+	//conversion_test();
+	std::cin.get();
 
 	return 0;
 }
