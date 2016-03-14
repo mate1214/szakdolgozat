@@ -470,6 +470,7 @@ namespace approx{
 		//szamitott test
 		//TODO: a belso lapos bohockodast meg kell csinalni
 		Body<T> approximated_body() {
+			garbage_collection();
 			std::vector<int> ind{};
 			for (int i = 0; i < connections.size(); ++i) {
 				if (connections[i].other_atom == -1) {
