@@ -4,8 +4,7 @@ Hasznalati informacio:
 	A glm hasznalatahoz a T: meghajtot az OGLPack-ot hasznalo konyvtarba kell allitani
 TODO:
 	-textura koordinata kerdesek
-	-metszetterfogat bugol
-	-approximacios test kirakasat megoldani
+	-approximacios test kirakasat megoldani: elvileg megoldva de minimum egy garbage collection kell elotte most
 
 ===========================================================================================
                                       EGYESITESHEZ TUTORIAL:
