@@ -341,7 +341,7 @@ void approximator_test() {
 
 	//hasonlo modon kerheto el a rajzolando celtest is
 	approx::BodyList targetdata = app.target_drawinfo();
-
+	app.container().garbage_collection();
 	ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
 
 	app.restart();

@@ -401,16 +401,19 @@ namespace approx{
 				for (int ind : a.indicies()) needed[ind] = 1; //az adott lap kell
 			}
 			std::vector<Face<T>> new_faces;
+			std::vector<Connection> new_connections;
 			int deleted = 0;
 			for (int i = 0; i < faces.size();++i){
 				if (needed[i]) { //az adott lap kell
 					needed[i] = deleted; //elotte ennyit toroltunk, annyival kell lejjebb vinni
 					new_faces.push_back(std::move(faces[i])); //elrakjuk az uj laptartoba
+					new_connections.push_back(connections[i]);
 				}
 				else{
 					++deleted;
 				}
 			}
+			connections = std::move(new_connections);
 			faces = std::move(new_faces); //a kello lapok
 			for (AtomType& a : _atoms){
 				for (int& ind : a.indicies()){
