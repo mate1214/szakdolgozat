@@ -76,6 +76,9 @@ namespace approx{
 			: vecs(vertices), inds(ids), normals(_normals), normal_id(normals->size()){
 			normals->push_back(normal);
 		}
+		//iteratorokkal mukodo konstruktor, az iteratorok az indexeket adjak meg
+		template <class Iter> Face(std::vector< Vector3<T> >* vertices, Iter fst,Iter lst, std::vector< Vector3<T> >* _normals, int n_id) : 
+			vecs(vertices), inds(fst,lst), normals(_normals), normal_id(n_id) {}
 
 		//masolo konstruktor, linearis a pontok szamaban
 		Face(const Face&) = default;
@@ -142,6 +145,14 @@ namespace approx{
 		//pontok sorrendjenek megforditasa
 		void reverse_order(){
 			std::reverse(inds.begin(), inds.end());
+		}
+
+
+		//visszaadja a lap ellentett lapjat, megforditott bejarassal es normalvektorral
+		//fontos: a normalvektor ellentettjet beszurja a taroloba
+		Face reversed() const {
+			std::vector<int> tmpind(inds.rbegin(), inds.rend());
+			return Face(vecs, std::move(tmpind), normals, normal()*-1);
 		}
 
 		//sulypont kiszamolasa

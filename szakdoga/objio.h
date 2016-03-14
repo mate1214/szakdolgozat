@@ -247,10 +247,10 @@ namespace approx {
 			write_obj_vector(f, "v", w_verts);
 			f << "#No. normals: " << w_normals.size() << ":" << std::endl;
 			write_obj_vector(f, "vn", w_normals);
-			for (const Face<T>& f : b){
+			for (const Face<T>& fac : b){
 				f << "f ";
-				for (int ind : f.indicies()){
-					f << verts[ind] << "//" << normals[f.normal_index()] << " ";
+				for (int ind : fac.indicies()){
+					f << verts[ind] << "//" << normals[fac.normal_index()] << " ";
 				}
 				f << std::endl;
 			}

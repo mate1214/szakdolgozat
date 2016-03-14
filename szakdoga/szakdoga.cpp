@@ -316,9 +316,10 @@ void approximator_test() {
 	//az undo csak egyszer mukodik, es ha mar elfogadtuk choose_*-al akkor nem undozhatjuk
 
 	//az app.container().atoms(i) az i. atom kozvetlen konstans eleresre, pl teszteli hogy az adott sik atmegy-e rajta
-	approx::Plane<float> p2({ 1,0,0 }, 16.0f);
+	approx::Plane<float> p2({0,1,0 }, 16.0f);
 	if (app.container().atoms(1).intersects_plane(p2)) {
 		std::cout << "az 1. indexu atomon atmegy a p2 sik \n";
+		app.container().cut(1, p2).choose_negative();
 	}
 
 	//lekerem az atomok rajzolasi adatait
@@ -329,17 +330,20 @@ void approximator_test() {
 	//az [index_ranges[i], indes_ranges[i+1]) intervallum az indexekbol egy atom
 	//tehat az i. atomnal index_ranges[i] az elso es van index_ranges[i+1]-index_ranges[i] darab
 	//GL_TRIANGLES modban mukodnie kell
-	for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
-		std::cout << " -------- Atom" << i << " -------- \n";
-		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
-			std::cout << data.points[ data.indicies[j] ].x << ", "
-				 << data.points[ data.indicies[j] ].y << ", "
-				 << data.points[ data.indicies[j] ].z << "\n";
-		}
-	}
+	//for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
+	//	std::cout << " -------- Atom" << i << " -------- \n";
+	//	for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
+	//		std::cout << data.points[ data.indicies[j] ].x << ", "
+	//			 << data.points[ data.indicies[j] ].y << ", "
+	//			 << data.points[ data.indicies[j] ].z << "\n";
+	//	}
+	//}
 
 	//hasonlo modon kerheto el a rajzolando celtest is
 	approx::BodyList targetdata = app.target_drawinfo();
+
+	ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
+
 	app.restart();
 
 }
@@ -408,8 +412,11 @@ void conversion_test() {
 		}
 	}
 
+	data = drawinfo(app.container().atoms(1));
+
 	for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
 		std::cout << " -------- DrawnAtom" << i << " -------- \n";
+		std::cout << data.index_ranges[i] << " - " << data.index_ranges[i + 1] << "\n";
 		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; j+=3) {
 			std::cout << data.indicies[j] << ',' << data.indicies[j+1] << ',' << data.indicies[j+2] << " => ";
 			std::cout << "(" << data.points[data.indicies[j]].x << ", "
@@ -423,7 +430,7 @@ void conversion_test() {
 				<< data.points[data.indicies[j+2]].z << ")\n";
 		}
 	}
-
+	
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -434,10 +441,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_partition_test();
 	//face_cut_test();
 	//cut_surface_test();
-	//approximator_test();
+	approximator_test();
 	//surf_test();
 	//poly_clip_test();
-	conversion_test();
+	//conversion_test();
 
 	std::cin.get();
 

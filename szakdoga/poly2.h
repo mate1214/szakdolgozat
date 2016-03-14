@@ -160,7 +160,7 @@ namespace approx{
 		Polygon2<T> convex_clip(const Polygon2<T>& p) const {
 			Polygon2<T>  output = p;
 			bool cc = ccw(pts[0], pts[1], pts[2]);
-			for (int i = 0; i < size(); ++i) {
+			for (int i = 0; i < size() && output.size(); ++i) {
 				Vector2<T> tmp = pts[(i + 1) % size()] - pts[i];
 				Line<T> edge({ -tmp.y,tmp.x }, pts[i]);
 				if (cc) {
