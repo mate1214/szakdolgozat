@@ -278,6 +278,8 @@ void approximator_test() {
 		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
 	}
 
+	std::cout << app.container().atoms(0).faces(0) << "\n";
+
 	//A celtest az app.target().body()-ban erheto el, a body.h-ban bovebb info talalhato rola
 	//es a metodusairol
 	std::cout << "A celtest terfogata: " << app.target().body().volume() << "\n";

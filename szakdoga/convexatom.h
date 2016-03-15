@@ -136,10 +136,10 @@ namespace approx{
 					avg_pt += vc[pt_ids[pt_ids.size() - 2]];
 					//gondoskodnom kell az elvagott vetuletek elosztasarol a ket lap kozott
 					Line<T> line = f_poly[i]->plane.intersection_line(p);
-					for (const Polygon2<T>& poly : f_poly[i]->poly){ //vegigiteralom az ideeso vetuleteket
+					for (const Polygon2<T>& poly : f_poly[i]->poly) { //vegigiteralom az ideeso vetuleteket
 						if (poly.size() > 2) {
 							typename Polygon2<T>::CutResult cut = poly.cut_by(line); //elvagom a vetuletet
-							//ha a vagas adott oldali eredmenye valodi sokszog akkor felveszem az adott oldalra
+																						//ha a vagas adott oldali eredmenye valodi sokszog akkor felveszem az adott oldalra
 							if (cut.positive.size() >= 3) {
 								pos_poly.back()->poly.push_back(cut.positive);
 							}
@@ -148,7 +148,6 @@ namespace approx{
 							}
 
 						}
-
 					}
 				}
 				else{//a vagas nem krealt uj lapokat, de lehet hogy egy el vagy pont raesik
