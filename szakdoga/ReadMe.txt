@@ -7,7 +7,7 @@ TODO:
 	-esetleges cw ccw megoldas
 	-approximacios test: csinal szamitas elott
 	 egy garbage collectiont, ami viszont nem funkcional ha van befejezetlen vagas
-	-ha 
+	-jobbkezes balkezes koordinata rendszer
 ===========================================================================================
                                       EGYESITESHEZ TUTORIAL:
 ===========================================================================================

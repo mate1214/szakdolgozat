@@ -342,9 +342,10 @@ void approximator_test() {
 	//}
 
 	//hasonlo modon kerheto el a rajzolando celtest is
-	approx::BodyList targetdata = app.target_drawinfo();
-	app.container().garbage_collection();
-	ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
+	data = app.target_drawinfo();
+
+	//app.container().garbage_collection();
+	//ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
 
 	app.restart();
 
@@ -435,6 +436,38 @@ void conversion_test() {
 	
 }
 
+
+void targetbody_ccw_test() {
+
+	//ez az osztaly tartja szamon az approximaciot
+	approx::Approximator<float> app;
+
+	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
+	if (!app.set_target("test.obj", 0.0f)) {
+		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
+	}
+
+	for (const Face<float>& f : app.target().body()) {
+		std::cout << f;
+		auto n = cross(f.points(2) - f.points(1), f.points(0) - f.points(1)).normalized();
+		std::cout << n << "  ~  " << f.normal() << "\n";
+	}
+
+	approx::BodyList data = app.target_drawinfo();
+
+	/*for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
+		std::cout << " -------- Atom" << i << " -------- \n";
+		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
+			std::cout << data.points[ data.indicies[j] ].x << ", "
+				 << data.points[ data.indicies[j] ].y << ", "
+				 << data.points[ data.indicies[j] ].z << "\n";
+		}
+	}*/
+
+
+
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//cut_eq_test();
@@ -443,10 +476,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_partition_test();
 	//face_cut_test();
 	//cut_surface_test();
-	approximator_test();
+	//approximator_test();
 	//surf_test();
 	//poly_clip_test();
 	//conversion_test();
+	targetbody_ccw_test();
+
 
 	std::cin.get();
 
