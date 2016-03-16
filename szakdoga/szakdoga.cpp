@@ -332,20 +332,20 @@ void approximator_test() {
 	//az [index_ranges[i], indes_ranges[i+1]) intervallum az indexekbol egy atom
 	//tehat az i. atomnal index_ranges[i] az elso es van index_ranges[i+1]-index_ranges[i] darab
 	//GL_TRIANGLES modban mukodnie kell
-	//for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
-	//	std::cout << " -------- Atom" << i << " -------- \n";
-	//	for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
-	//		std::cout << data.points[ data.indicies[j] ].x << ", "
-	//			 << data.points[ data.indicies[j] ].y << ", "
-	//			 << data.points[ data.indicies[j] ].z << "\n";
-	//	}
-	//}
+	for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
+		std::cout << " -------- Atom" << i << " -------- \n";
+		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
+			std::cout << data.points[ data.indicies[j] ].x << ", "
+				 << data.points[ data.indicies[j] ].y << ", "
+				 << data.points[ data.indicies[j] ].z << "\n";
+		}
+	}
 
 	//hasonlo modon kerheto el a rajzolando celtest is
 	data = app.target_drawinfo();
 
 	//app.container().garbage_collection();
-	//ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
+	ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
 
 	app.restart();
 
@@ -468,6 +468,7 @@ void targetbody_ccw_test() {
 
 }
 
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//cut_eq_test();
@@ -476,11 +477,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_partition_test();
 	//face_cut_test();
 	//cut_surface_test();
-	//approximator_test();
+	approximator_test();
 	//surf_test();
 	//poly_clip_test();
 	//conversion_test();
-	targetbody_ccw_test();
+	//targetbody_ccw_test();
+	InsideHandling x = InsideHandling::AddInside;
 
 
 	std::cin.get();

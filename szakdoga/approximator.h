@@ -118,8 +118,8 @@ namespace approx {
 		}
 
 		//az atomokbol eloallo approximacios test vertex adatai rajzolashoz
-		BodyList approx_drawinfo() const {
-			return compact_drawinfo(app->approximated_body());
+		BodyList approx_drawinfo(InsideHandling mode = InsideHandling::LeaveOut) const {
+			return compact_drawinfo(app->approximated_body(mode));
 		}
 
 		//a ket meg be nem illesztett atom rajz adatai
