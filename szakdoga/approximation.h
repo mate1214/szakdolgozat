@@ -10,7 +10,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
-#include <set>
+#include <map>
 #include "vectors.h"
 #include "face.h"
 #include "body.h"
@@ -403,17 +403,23 @@ namespace approx{
 			std::vector<Face<T>> new_faces;
 			std::vector<Connection> new_connections;
 			int deleted = 0;
+			std::map<int, int> face_num;
 			for (int i = 0; i < faces.size();++i){
 				if (needed[i]) { //az adott lap kell
 					needed[i] = deleted; //elotte ennyit toroltunk, annyival kell lejjebb vinni
 					new_faces.push_back(std::move(faces[i])); //elrakjuk az uj laptartoba
 					new_connections.push_back(connections[i]);
+					face_num[i] = new_faces.size() - 1;
 				}
 				else{
 					++deleted;
 				}
 			}
 			connections = std::move(new_connections);
+			for (int i = 0; i < connections.size(); ++i) {
+				if (connections[i].other_face >= 0)
+					connections[i].other_face = face_num[connections[i].other_face];
+			}
 			faces = std::move(new_faces); //a kello lapok
 			for (AtomType& a : _atoms){
 				for (int& ind : a.indicies()){

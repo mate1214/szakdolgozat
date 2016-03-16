@@ -274,7 +274,7 @@ void approximator_test() {
 	approx::Approximator<float> app;
 
 	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
-	if (!app.set_target("test.obj", 0.5f)) {
+	if (!app.set_target("test.obj", 0.0f)) {
 		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
 	}
 
