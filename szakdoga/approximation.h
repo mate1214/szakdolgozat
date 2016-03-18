@@ -103,8 +103,10 @@ namespace approx{
 			cut_res.negative.reset();
 			faces.erase(faces.end() - cut_res.faces_added, faces.end());
 			vertices.erase(vertices.end() - cut_res.points_added, vertices.end());
-			normals.pop_back();
-			normals.pop_back();
+			if (cut_res.neg_cut_face >= 0) {
+				normals.pop_back();
+				normals.pop_back();
+			}
 			last_cut = -1;
 		}
 
@@ -124,18 +126,17 @@ namespace approx{
 			for (const auto& e : cut_res.cut_map) { //bejarom a vago mapot
 				if (connections[e.first].other_atom > -1) { //csatlakozik valamivel a regi lap
 					//elvagom a masik lapot
-					const Face<T>& otherf = faces[connections[e.first].other_face];
 					faces.push_back(Face<T>(&vertices,
 											faces[e.second.neg_face_ind].indicies().rbegin(),
 											faces[e.second.neg_face_ind].indicies().rend(),
 											&normals,
-											otherf.normal_index()));
+											faces[connections[e.first].other_face].normal_index()));
 					connections.push_back(Connection(last_cut,e.second.neg_face_ind));
 					faces.push_back(Face<T>(&vertices,
 											faces[e.second.pos_face_ind].indicies().rbegin(),
 											faces[e.second.pos_face_ind].indicies().rend(),
 											&normals,
-											otherf.normal_index()));
+											faces[connections[e.first].other_face].normal_index()));
 					connections.push_back(Connection(posind, e.second.pos_face_ind));
 					//rendezem a kapcoslatokat
 					connections[e.second.neg_face_ind] = Connection( connections[e.first].other_atom, (int)faces.size()-2 );
@@ -179,18 +180,17 @@ namespace approx{
 			for (const auto& e : cut_res.cut_map) { //bejarom a vago mapot
 				if (connections[e.first].other_atom > -1) { //csatlakozik valamivel a regi lap
 															//elvagom a masik lapot
-					const Face<T>& otherf = faces[connections[e.first].other_face];
 					faces.push_back(Face<T>(&vertices,
 						faces[e.second.neg_face_ind].indicies().rbegin(),
 						faces[e.second.neg_face_ind].indicies().rend(),
 						&normals,
-						otherf.normal_index()));
+						faces[connections[e.first].other_face].normal_index()));
 					connections.push_back(Connection( last_cut,e.second.neg_face_ind ));
 					faces.push_back(Face<T>(&vertices,
 						faces[e.second.pos_face_ind].indicies().rbegin(),
 						faces[e.second.pos_face_ind].indicies().rend(),
 						&normals,
-						otherf.normal_index()));
+						faces[connections[e.first].other_face].normal_index()));
 					connections.push_back(extreme); // a pozitiv fel extremalis uresseget kap
 					//rendezem a kapcoslatokat
 					connections[e.second.neg_face_ind] = Connection( connections[e.first].other_atom, (int)faces.size() - 2 );
@@ -218,7 +218,7 @@ namespace approx{
 			return true;
 		}
 
-		void choose_positive() {
+		bool choose_positive() {
 			if (cut_res.pos_cut_face < 0 || !(*cut_res.positive)) {
 				undo();
 				return false;
@@ -233,18 +233,17 @@ namespace approx{
 			for (const auto& e : cut_res.cut_map) { //bejarom a vago mapot
 				if (connections[e.first].other_atom > -1) { //csatlakozik valamivel a regi lap
 															//elvagom a masik lapot
-					const Face<T>& otherf = faces[connections[e.first].other_face];
 					faces.push_back(Face<T>(&vertices,
 						faces[e.second.neg_face_ind].indicies().rbegin(),
 						faces[e.second.neg_face_ind].indicies().rend(),
 						&normals,
-						otherf.normal_index()));
+						faces[connections[e.first].other_face].normal_index()));
 					connections.push_back(extreme);
 					faces.push_back(Face<T>(&vertices,
 						faces[e.second.pos_face_ind].indicies().rbegin(),
 						faces[e.second.pos_face_ind].indicies().rend(),
 						&normals,
-						otherf.normal_index()));
+						faces[connections[e.first].other_face].normal_index()));
 					connections.push_back(Connection( last_cut,e.second.pos_face_ind )); // a pozitiv fel extremalis uresseget kap
 													//rendezem a kapcoslatokat
 					connections[e.second.neg_face_ind] = Connection( -3, -1 );
