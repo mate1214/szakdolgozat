@@ -285,7 +285,7 @@ void approximator_test() {
 	std::cout << "A celtest terfogata: " << app.target().body().volume() << "\n";
 
 	//vagosik
-	approx::Plane<float> p({ 1,0,0 }, 15.0f);
+	approx::Plane<float>  p = approx::Plane<float>({ 0,0,1 }, approx::Vector3<float>(0.0f, 0.0f, 26.0f));//p({ 1,0,0 }, 15.0f);
 
 	//az app.container() tartalmazza az atomokat es nyujt lehetoseget az approximacios muveletekre
 	//a 0. atomot elvagom az elobb megadott sikkal
@@ -296,9 +296,12 @@ void approximator_test() {
 	//a pozitiv es negativ oldal a metszosikhoz kepesti elhelyezkedest jelenti 
 	std::cout << "negativ oldali keletkezett atom terfogata: " << cut.negative()->volume() << "\n";
 	std::cout << "pozitiv oldali keletkezett atom terfogata: " << cut.positive()->volume() << "\n";
-
-	
-	
+	cut.choose_both();
+	p = approx::Plane<float>({ 0,2,1 }, approx::Vector3<float>(0.0f, 0.0f, 26.0f));
+	cut = app.container().cut(0, p);
+	//std::cout << (*cut.negative()) << "\n\n==================================================\n\n" << (*cut.positive()) << "\n";
+	cut.choose_both();
+	std::cout << app.container().size() << "\n";
 
 	/*approx::BodyList d = app.cut_drawinfo();
 	for (int i = 0; i < d.index_ranges.size() - 1; ++i) {
@@ -332,21 +335,22 @@ void approximator_test() {
 	//az [index_ranges[i], indes_ranges[i+1]) intervallum az indexekbol egy atom
 	//tehat az i. atomnal index_ranges[i] az elso es van index_ranges[i+1]-index_ranges[i] darab
 	//GL_TRIANGLES modban mukodnie kell
-	for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
-		std::cout << " -------- Atom" << i << " -------- \n";
-		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
-			std::cout << data.points[ data.indicies[j] ].x << ", "
-				 << data.points[ data.indicies[j] ].y << ", "
-				 << data.points[ data.indicies[j] ].z << "\n";
-		}
-	}
+
+	//for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
+	//	std::cout << " -------- Atom" << i << " -------- \n";
+	//	for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
+	//		std::cout << data.points[ data.indicies[j] ].x << ", "
+	//			 << data.points[ data.indicies[j] ].y << ", "
+	//			 << data.points[ data.indicies[j] ].z << "\n";
+	//	}
+	//}
 
 	//hasonlo modon kerheto el a rajzolando celtest is
 	data = app.target_drawinfo();
 
 	//app.container().garbage_collection();
 	ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
-
+	std::cout << app.container().approximated_body().volume();
 	app.restart();
 
 }
@@ -469,6 +473,63 @@ void targetbody_ccw_test() {
 }
 
 
+void ccw_test(){
+	Polygon2<float> convex_poly({ { 1, 1 }, { 2, 1 }, { 3, 2 }, {2,6} });
+	std::cout << "CCW: " << convex_poly.is_ccw() << "\n";
+}
+
+void add(Graph<float>& gr, Vector2<float> a, Vector2<float> b) {
+	gr[a].push_back(b);
+	gr[b].push_back(a);
+}
+
+void sausage_chain_test() {
+	Graph<float> gr;
+	std::vector<std::pair<Vector2<float>, Vector2<float>>> pairs{
+		{{2,2},{3,3}},
+		{{3,3},{3,4}},
+		{ {3,4},{2,5} },
+		{ {2,5},{1,4} },
+		{ {1,4},{2,2} },
+		{ {2,5},{3,5} },
+		{ {3,5},{4,6} },
+		{ {4,6},{4,7} },
+		{ {4,7},{2,5} },
+		{ {4,7},{5,6} },
+		{ {5,6},{6,6} },
+		{ {6,6},{7,7} },
+		{ {7,7},{6,9} },
+		{ {6,9},{4,7} },
+		{ {6,9},{7,11} },
+		{ {7,11},{6,13} },
+		{ {6,13},{5,11} },
+		{ {5,11},{6,9} },
+		{ {7,7},{6,4} },
+		{ {6,4},{7,3} },
+		{ {7,3},{8,5} },
+		{ {8,5},{7,7} },
+		{ {7,3},{5,3} },
+		{ {5,3},{5,2} },
+		{ {5,2},{7,3} },
+		{ {5,2},{4,3} },
+		{ {4,3},{2,2} },
+		{ {5,2},{4,1} },
+		{ {4,1},{3,1} },
+		{ {3,1},{2,2} },
+	};
+	std::random_shuffle(pairs.begin(), pairs.end());
+	for (auto p : pairs) {
+		add(gr, p.first, p.second);
+	}
+
+	auto ls = get_polys(gr);
+
+	for (const auto& p : ls) {
+		std::cout << p;
+	}
+}
+
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//cut_eq_test();
@@ -482,9 +543,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_clip_test();
 	//conversion_test();
 	//targetbody_ccw_test();
-	InsideHandling x = InsideHandling::AddInside;
-
-
+	//ccw_test();
+	//sausage_chain_test();
 	std::cin.get();
 
 	return 0;

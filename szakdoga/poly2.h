@@ -156,6 +156,23 @@ namespace approx{
 		//	return Polygon2<T>(std::move(outputlist));
 		//}
 
+		//mukodnie kell konvex es konkav esetre is
+		bool contains(const Polygon2<T>& p) const {
+			for (const Vector2<T>& pt : p) {
+				if (!contains(pt)) return false;
+			}
+			return true;
+		}
+
+		bool contains(const Vector2<T>& v) const {
+			Line<T> line( Vector2<T>(0,1) , v);
+			bool inside = false;
+			int n = size();
+			for (int i = 0; i < n; ++i) {
+				if (line.classify_point(points(i)) * line.classify_point(points((i + 1) % n)) <= 0) inside = !inside;
+			}
+			return inside;
+		}
 
 		Polygon2<T> convex_clip(const Polygon2<T>& p) const {
 			Polygon2<T>  output = p;
