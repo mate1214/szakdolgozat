@@ -301,38 +301,11 @@ void approximator_test() {
 	cut.choose_both();
 	p = approx::Plane<float>({ 1,2,1 }, approx::Vector3<float>(15, 30, 30));
 	int ind = 0;
-	if (app.container().atoms(ind).intersects_plane(p)) {
-		std::cout << "atmegy\n";
-	}
 	cut = app.container().cut(ind, p);
 	//std::cout << (*cut.negative()) << "\n\n==================================================\n\n" << (*cut.positive()) << "\n";
 	cut.choose_both();
-	std::cout << app.container().size() << "\n";
-
-	/*approx::BodyList d = app.cut_drawinfo();
-	for (int i = 0; i < d.index_ranges.size() - 1; ++i) {
-		std::cout << " -------- Atom" << i << " -------- \n";
-		for (int j = d.index_ranges[i]; j < d.index_ranges[i + 1]; ++j) {
-			std::cout << d.points[d.indicies[j]].x << ", "
-				<< d.points[d.indicies[j]].y << ", "
-				<< d.points[d.indicies[j]].z << "\n";
-		}
-	}*/
-	//mondjuk hogy tetszik az eredmeny, berakjuk az atomokat
-	//app.container().last_cut_result().choose_both();
-
-	//mostmar ket atomunk van
-	//choose_negative() - choose_positive() ezek csak a negativ vagy csak a pozitiv oldali atomot hagyjak meg
-	//ha nem tetszene az eredmeny akkor cut.undo();
-	//az undo csak egyszer mukodik, es ha mar elfogadtuk choose_*-al akkor nem undozhatjuk
-
-	//az app.container().atoms(i) az i. atom kozvetlen konstans eleresre, pl teszteli hogy az adott sik atmegy-e rajta
-	//approx::Plane<float> p2({0,1,0 }, 16.0f);
-	//if (app.container().atoms(1).intersects_plane(p2)) {
-	//	std::cout << "az 1. indexu atomon atmegy a p2 sik \n";
-	//	app.container().cut(1, p2).choose_negative();
-	//}
-
+	app.container().cut(0, approx::Plane<float>({ 1,2,1 }, approx::Vector3<float>(15, 30, 30))).choose_both();
+	app.container().cut(1, approx::Plane<float>({ 3,2,1 }, approx::Vector3<float>(15, 30, 30))).choose_positive();
 	//lekerem az atomok rajzolasi adatait
 	approx::BodyList data = app.atom_drawinfo();
 	//data.points - vertex adatok

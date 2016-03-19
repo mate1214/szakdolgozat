@@ -253,8 +253,8 @@ namespace approx{
 						connections[e.first].other_face,
 						(int)faces.size() - 2,
 						(int)faces.size() - 1,
-						_atoms[last_cut].surf_imprints(e.second.ind_in_neg_atom),
-						cut_res.negative->surf_imprints(e.second.ind_in_pos_atom)
+						cut_res.negative->surf_imprints(e.second.ind_in_neg_atom),
+						_atoms[last_cut].surf_imprints(e.second.ind_in_pos_atom)
 						);
 				}
 				connections[e.first].other_atom = -3;
