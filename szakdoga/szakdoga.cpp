@@ -315,7 +315,7 @@ void approximator_test() {
 	//tehat az i. atomnal index_ranges[i] az elso es van index_ranges[i+1]-index_ranges[i] darab
 	//GL_TRIANGLES modban mukodnie kell
 
-	for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
+	for (int i = 0; i < (int)data.index_ranges.size() - 1; ++i) {
 		std::cout << " -------- Atom" << i << " -------- \n";
 		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
 			std::cout << data.points[ data.indicies[j] ].x << ", "
@@ -400,7 +400,7 @@ void conversion_test() {
 
 	data = drawinfo(app.container().atoms(1));
 
-	for (int i = 0; i < data.index_ranges.size() - 1; ++i) {
+	for (int i = 0; i < (int)data.index_ranges.size() - 1; ++i) {
 		std::cout << " -------- DrawnAtom" << i << " -------- \n";
 		std::cout << data.index_ranges[i] << " - " << data.index_ranges[i + 1] << "\n";
 		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; j+=3) {
@@ -508,6 +508,87 @@ void sausage_chain_test() {
 	}
 }
 
+void line_test() {
+	approx::Line<float> l({0,1}, {1,1});
+	for (auto p : std::vector<Vector2<float>>{ {0,0}, {4,0}, {4,4}, {0,4} }) {
+		std::cout << p << "   " << l.classify_point(p) << "\n";
+	}
+}
+
+
+void coplanar_cut_test(){
+	std::vector<approx::Vector3<float>>
+		vertices{ {1,1,2.5f},{ 2,1,2.5f },{ 3,2,2.5f } },
+		normals{ {0,0,1} };
+	approx::Face<float>
+		face1(&vertices, { 0,1,2 }, &normals, 0);
+	approx::Plane<float> plane({ 0,0,1 }, 2.5f);
+	auto cut1 = face1.cut_by(plane);
+	std::cout << cut1.positive << "\n" << cut1.negative << "\n" << cut1.points_added;
+}
+
+void donut_test() {
+	Graph<float> gr;
+	std::vector<std::pair<Vector2<float>, Vector2<float>>> pairs{
+		{{0,0},{4,0}},
+		{ { 0,0 },{ 0,4 } },
+		//{ { 4,4 },{ 4,0 } },
+		{ { 0,4 },{ 4,4 } },
+		{{4,0},{5,1}},
+		{{4,4},{5,1}},
+
+		{ { 1,1 },{ 3,1 } },
+		{ { 1,1 },{ 1,3 } },
+		{ { 3,3 },{ 3,1 } },
+		{ { 3,3 },{ 1,3 } },
+	};
+
+	std::random_shuffle(pairs.begin(), pairs.end());
+	for (auto p : pairs) {
+		add(gr, p.first, p.second);
+	}
+
+	auto ls = get_polys(gr);
+
+	for (const auto& p : ls) {
+		std::cout << p;
+	}
+	//std::cout << ls[0].contains(ls[1]) << " " << ls[0].contains(ls[1].points(0)) << '\n';
+	for (int i = 0; i < ls[1].size(); ++i) {
+		std::cout << ls[0].contains(ls[1].points(i)) << "  ";
+	}
+}
+
+void real_donut_test(){
+	approx::Approximator<float> app;
+
+	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
+	if (!app.set_target("torus.obj", 0.2f)) {
+		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
+	}
+	std::cout << "target vol: " << app.target().body().volume() << " starting atom vol: " << app.container().atoms(0).volume() <<"\n";
+	app.container().cut(0, approx::Plane<float>({ 0,1,0 }, 0.0f)).choose_both();
+	for (const auto& a : app.container()) {
+		std::cout << "volume " << a.volume() << "  " << a.intersection_volume() << "\n";
+		for (int i = 0; i < (int)a.size(); ++i) {
+			std::cout << "\tface area: " << a.surf_imprints(i)->area() << " ---> " << a.faces(i).normal() << "\n";
+			/*for (auto& f : a.surf_imprints(i)->poly) {
+				std::cout <<"pos: " << f.second << "\n"<< f.first << "\n";
+			}*/
+		}
+	}
+	/*for (int i = 0; i < (int)app.container().atoms(0).size(); ++i) {
+		for (auto& f : app.container().atoms(0).surf_imprints(i)->poly) {
+			for (auto& f2 : app.container().atoms(0).surf_imprints(i)->poly) {
+				std::cout << (f == f2) << "\n";
+			}
+		}
+	}*/
+
+	//auto slice = app.container().target_body().body().cut_surface(approx::Plane<float>({ 0,1,0 }, 0));
+	//std::cout << slice[1].first.contains(slice[0].first) << "\n";
+}
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -517,13 +598,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_partition_test();
 	//face_cut_test();
 	//cut_surface_test();
-	approximator_test();
+	//approximator_test();
 	//surf_test();
 	//poly_clip_test();
 	//conversion_test();
 	//targetbody_ccw_test();
 	//ccw_test();
-	//sausage_chain_test();
+	//donut_test();
+	//line_test();
+	real_donut_test();
+	//coplanar_cut_test();
 	std::cin.get();
 
 	return 0;

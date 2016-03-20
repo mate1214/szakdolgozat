@@ -33,7 +33,7 @@ namespace approx{
 		ScalarType signed_distance() const { return dist; }
 		
 		//normalvektor lekerdezes
-		Vector& normal() { return n; }
+		//Vector& normal() { return n; }
 		Vector normal() const{ return n; }
 
 		//egy pont amely a sikon helyezkedik el es a normalvektor skalarszorosa

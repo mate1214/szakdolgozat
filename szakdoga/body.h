@@ -129,7 +129,7 @@ namespace approx{
 				//vegigiteralok a test lapjain es metszem oket a sikkal
 				typename Face<T>::CutResult cut = face.cut_by(plane, &tmp_vertices, &tmp_normals);
 				//grafot epitek az egyes 2 dimenzios pontokbol
-				if (cut.pt_inds.size() > 1) { //van a lapnak lenyomata a sikon, normalis eset 2 pont de nem romlik el egyenes szogeknel sem
+				if (cut.pt_inds.size() > 1 && cut.points_added) { //van a lapnak lenyomata a sikon, normalis eset 2 pont de nem romlik el egyenes szogeknel sem
 					//levetitem a pontokat a sikra
 					Vector2<T> pt1(dot(base.first, tmp_vertices[cut.pt_inds.front()]), dot(base.second, tmp_vertices[cut.pt_inds.front()])),
 						pt2(dot(base.first, tmp_vertices[cut.pt_inds.back()]), dot(base.second, tmp_vertices[cut.pt_inds.back()]));
@@ -144,16 +144,22 @@ namespace approx{
 			//rendezem terulet szerint novekvo sorrendbe es emgnezem hany maikban van benne
 			std::vector<std::pair<int, T>> sizes;
 			sizes.reserve(polys.size());
-			for (int i = 0; i < polys.size(); ++i) {
+			for (int i = 0; i < (int)polys.size(); ++i) {
 				sizes.push_back({ i,polys[i].area() });
 			}
 			std::sort(sizes.begin(), sizes.end(), [](const std::pair<int, T>& a, const std::pair<int, T>& b) { return a.second < b.second; });
+			auto last = std::unique(sizes.begin(), sizes.end(), [&](const std::pair<int, T>& a, const std::pair<int, T>& b) {return polys[a.first] == polys[b.first]; });
+			sizes.erase(last, sizes.end());
 			std::vector<std::pair<Polygon2<T>, bool>> result;
-			result.reserve(polys.size());
-			for (int i = 0; i < polys.size(); ++i) {
+			result.reserve(sizes.size());
+
+			std::cout << "asdtest: " << polys[sizes[1].first].contains(polys[sizes[0].first]) << "\n";
+
+			for (int i = 0; i < (int)sizes.size(); ++i) {
 				bool pos = true;
-				for (int j = i + 1; j < polys.size(); ++j) {
-					if (polys[sizes[j].first].contains(polys[sizes[i].first])) pos = !pos;
+				for (int j = i + 1; j < (int)sizes.size(); ++j) {
+					if (polys[sizes[j].first].contains(polys[sizes[i].first]))
+						pos = !pos;
 				}
 				result.emplace_back(polys[sizes[i].first], pos);
 			}

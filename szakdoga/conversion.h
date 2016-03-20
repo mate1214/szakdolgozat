@@ -49,14 +49,14 @@ namespace approx{
 			if (f.size()) {
 				Vector3<T> n = cross(f.points(2) - f.points(1), f.points(0) - f.points(1));
 				int prev = dot(n, f.normal()) > 0 ? 1 : 0;
-				for (int i = 2; i < f.size(); ++i) { //ccw-be sorolom es ugy veszem hogy kinn tudjak majd a normalist szamolni
+				for (int i = 2; i < (int)f.size(); ++i) { //ccw-be sorolom es ugy veszem hogy kinn tudjak majd a normalist szamolni
 					res.indicies.push_back(f.indicies(0));
 					res.indicies.push_back(f.indicies(i - prev));
 					res.indicies.push_back(f.indicies(i - 1 + prev));
 				}
 			}
 		}
-		res.index_ranges.push_back(res.indicies.size());
+		res.index_ranges.push_back((unsigned short)res.indicies.size());
 		return res;
 	}
 
@@ -77,7 +77,7 @@ namespace approx{
 				if (f.size()) {
 					Vector3<T> n = cross(f.points(2) - f.points(1), f.points(0) - f.points(1));
 					int prev = dot(n, f.normal()) > 0 ? 1 : 0;
-					for (int i = 2; i < f.size(); ++i) {
+					for (int i = 2; i < (int)f.size(); ++i) {
 						res.indicies.push_back(f.indicies(0));
 						res.indicies.push_back(f.indicies(i - prev));
 						res.indicies.push_back(f.indicies(i - 1 + prev));

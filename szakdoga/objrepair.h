@@ -85,6 +85,11 @@ namespace approx{
 			return vecs;
 		}
 
+		void clear() {
+			vecs.clear();
+			ind_map.clear();
+		}
+
 	};
 
 	//nulla tavolsaggal mukodik, viszont gyorsabban tud keresni mint a masik tipus
@@ -138,6 +143,10 @@ namespace approx{
 			return std::vector<Vector3<T>>(begin(), end());
 		}
 
+		void clear() {
+			vecs.clear();
+			inds.clear();
+		}
 	};
 
 }

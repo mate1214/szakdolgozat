@@ -166,7 +166,7 @@ namespace approx{
 			}
 
 			if (pt_ids.size()){ //a vagasnak volt hatasa, keletkezett lap
-				avg_pt /= pt_ids.size(); //kozeppont szamitasa
+				avg_pt /= static_cast<T>(pt_ids.size()); //kozeppont szamitasa
 				// a kapott pontokat a sulypont korul a lap sikjan forgasszog szerint rendezem
 				//a kapott lap konvex, tehat az ismetlodesek kiszurese utan megkapom a megfelelp sokszoget
 				Vector3<T> vx = vc[pt_ids.front()] - avg_pt, //x vektor a sikon
@@ -180,7 +180,7 @@ namespace approx{
 				});
 				//a rendezett pontokbol minden masodik egyedi bekerul a sokszogre
 				std::vector<int> new_fc{pt_ids[0]};
-				for (int i = 2; i < pt_ids.size(); i += 2){
+				for (int i = 2; i < (int)pt_ids.size(); i += 2){
 					if(vc[pt_ids[i]] != vc[new_fc.back()]) new_fc.push_back(pt_ids[i]); //egy csucsnal lehet hogy tobb el osszefut, nem akarunk egymas utan ugyanolyan pontokat
 				}
 				_faces->emplace_back(faces(0).vertex_container(),new_fc, faces(0).normal_container(),p.normal());
@@ -246,7 +246,7 @@ namespace approx{
 					++it;
 				}
 				if (clipf.size() >= 3){
-					sum += clipf.to_2d().area()*f.to_plane().signed_distance();
+					sum += clipf.to_2d().area()*clipf.to_plane().signed_distance();
 				}
 			}
 
@@ -254,6 +254,11 @@ namespace approx{
 				sum += f_poly[i]->area()*faces(i).to_plane().signed_distance();
 			}
 			return sum / static_cast<T>(3);
+		}
+
+		//Fourier-egyutthato, azaz a metszet es a teljes terfogatanak a hanyadosa
+		T fourier() const {
+			return intersection_volume() / volume();
 		}
 
 		//az i-edik metszet-lenyomat 

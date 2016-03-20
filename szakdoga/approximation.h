@@ -431,7 +431,7 @@ namespace approx{
 			std::vector<Face<T>> new_faces;
 			std::vector<Connection> new_connections;
 			int deleted = 0;
-			for (int i = 0; i < faces.size();++i){
+			for (int i = 0; i < (int)faces.size();++i){
 				if (needed[i]) { //az adott lap kell
 					needed[i] = deleted; //elotte ennyit toroltunk, annyival kell lejjebb vinni
 					new_faces.push_back(std::move(faces[i])); //elrakjuk az uj laptartoba
@@ -442,7 +442,7 @@ namespace approx{
 				}
 			}
 			connections = std::move(new_connections);
-			for (int i = 0; i < connections.size(); ++i) {
+			for (int i = 0; i < (int)connections.size(); ++i) {
 				if (connections[i].other_face >= 0)
 					connections[i].other_face -= needed[connections[i].other_face];
 			}
@@ -465,7 +465,7 @@ namespace approx{
 					
 			std::vector<Vector3<T>> new_vertices, new_normals;
 			deleted = 0;
-			for (int i = 0; i < vertices.size();++i){
+			for (int i = 0; i < (int)vertices.size();++i){
 				if (needed[i]){
 					needed[i] = deleted;
 					new_vertices.push_back(vertices[i]);
@@ -475,7 +475,7 @@ namespace approx{
 				}
 			}
 			deleted = 0;
-			for (int i = 0; i < normals.size(); ++i){
+			for (int i = 0; i < (int)normals.size(); ++i){
 				if (normal_needed[i]){
 					normal_needed[i] = deleted;
 					new_normals.push_back(normals[i]);
@@ -504,7 +504,7 @@ namespace approx{
 		Body<T> approximated_body(InsideHandling mode = InsideHandling::LeaveOut) {
 			garbage_collection();
 			std::vector<int> ind{};
-			for (int i = 0; i < connections.size(); ++i) {
+			for (int i = 0; i < (int)connections.size(); ++i) {
 				if (connections[i].other_atom == -1 || (mode == InsideHandling::AddInside && connections[i].other_atom==-2)) {
 					ind.push_back(i);
 				}
