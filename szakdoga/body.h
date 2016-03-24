@@ -87,6 +87,7 @@ namespace approx{
 		}
 
 		//a test sulypontja a burkolo lapokbol kiszamolva
+		//a hatarolo lapok kozeppontjait atlagolom
 		Vector3<T> centroid() const{
 			int cnt = 0;
 			Vector3<T> center;

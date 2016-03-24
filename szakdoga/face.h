@@ -161,7 +161,7 @@ namespace approx{
 			for (const Vector3<T>& pt : *this){
 				avg += pt;
 			}
-			avg /= size();
+			avg /= static_cast<T>(size());
 			return avg;
 		}
 

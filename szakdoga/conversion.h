@@ -155,7 +155,7 @@ namespace approx{
 			auto base = a.surf_imprints(i)->plane.ortho2d();
 			fac.x_axis = convert(base.first);
 			fac.y_axis = convert(base.second);
-			float dir = dot(a.surf_imprints(i)->plane.normal(), a.faces(i).normal()) < 0 ? -1 : 1;
+			float dir = dot(a.surf_imprints(i)->plane.normal(), a.faces(i).normal()) < 0 ? -1.0f : 1.0f;
 			for (const std::pair<Polygon2<T>, bool>& poly : a.surf_imprints(i)->poly) {
 				if ((dir > 0 && poly.first.is_ccw()) || (dir < 0 && !poly.first.is_ccw())) {
 					for (const Vector2<T>& p : poly.first) {
@@ -168,7 +168,7 @@ namespace approx{
 					}
 				}
 				fac.outer.push_back(poly.second);
-				fac.ranges.push_back(fac.points.size());
+				fac.ranges.push_back((Index)fac.points.size());
 			}
 			result.push_back(fac);
 		}

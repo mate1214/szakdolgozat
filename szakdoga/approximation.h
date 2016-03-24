@@ -509,7 +509,7 @@ namespace approx{
 			for (const AtomType a : _atoms) {
 				fouriers.push_back(a.fourier());
 			}
-			for (int i = 0; i < _atoms.size(); ++i) {
+			for (int i = 0; i < (int)_atoms.size(); ++i) {
 				if (fouriers[i] >= fouriermin) {
 					for (int idx : _atoms[i].indicies()) {
 						int other = connections[idx].other_atom;

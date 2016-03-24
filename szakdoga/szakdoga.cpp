@@ -339,7 +339,7 @@ void approximator_test() {
 		std::cout << "////////////////////////////////////////\n";
 		for (auto& e : res) {
 			std::cout << "==================================\n";
-			for (int ind = 0; ind < e.ranges.size() - 1; ++ind) {
+			for (int ind = 0; ind < (int)e.ranges.size() - 1; ++ind) {
 				std::cout << "---------------------------\n";
 				for (int j = e.ranges[ind]; j < e.ranges[ind + 1]; ++j) {
 					std::cout << e.points[j].x << ", " << e.points[j].y << "\n";
