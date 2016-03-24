@@ -274,7 +274,7 @@ void approximator_test() {
 	approx::Approximator<float> app;
 
 	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
-	if (!app.set_target("test.obj", 0.0f)) {
+	if (!app.set_target("test.obj", 0.5f)) {
 		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
 	}
 
@@ -301,9 +301,9 @@ void approximator_test() {
 	cut.choose_both();
 	p = approx::Plane<float>({ 1,2,1 }, approx::Vector3<float>(15, 30, 30));
 	int ind = 0;
-	cut = app.container().cut(ind, p);
+	//cut = app.container().cut(ind, p);
 	//std::cout << (*cut.negative()) << "\n\n==================================================\n\n" << (*cut.positive()) << "\n";
-	cut.choose_both();
+	//cut.choose_both();
 	app.container().cut(0, approx::Plane<float>({ 1,2,1 }, approx::Vector3<float>(15, 30, 30))).choose_both();
 	app.container().cut(1, approx::Plane<float>({ 3,2,1 }, approx::Vector3<float>(15, 30, 30))).choose_positive();
 	//lekerem az atomok rajzolasi adatait
@@ -315,21 +315,41 @@ void approximator_test() {
 	//tehat az i. atomnal index_ranges[i] az elso es van index_ranges[i+1]-index_ranges[i] darab
 	//GL_TRIANGLES modban mukodnie kell
 
-	for (int i = 0; i < (int)data.index_ranges.size() - 1; ++i) {
+	/*for (int i = 0; i < (int)data.index_ranges.size() - 1; ++i) {
 		std::cout << " -------- Atom" << i << " -------- \n";
 		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
 			std::cout << data.points[ data.indicies[j] ].x << ", "
 				 << data.points[ data.indicies[j] ].y << ", "
 				 << data.points[ data.indicies[j] ].z << "\n";
 		}
-	}
+	}*/
 
 	//hasonlo modon kerheto el a rajzolando celtest is
 	data = app.target_drawinfo();
 
 	//app.container().garbage_collection();
-	ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
 	std::cout << app.container().approximated_body().volume();
+	std::cout << "\n=============================\n";
+	for (auto& a : app.container()) {
+		std::cout << a.volume() << " " << a.intersection_volume() <<" "<< a.fourier() << "\n";
+	}
+
+	for (int i = 0; i < app.container().size(); ++i) {
+		std::vector<PolyFace2D> res = app.atom2dfaces(i);
+		std::cout << "////////////////////////////////////////\n";
+		for (auto& e : res) {
+			std::cout << "==================================\n";
+			for (int ind = 0; ind < e.ranges.size() - 1; ++ind) {
+				std::cout << "---------------------------\n";
+				for (int j = e.ranges[ind]; j < e.ranges[ind + 1]; ++j) {
+					std::cout << e.points[j].x << ", " << e.points[j].y << "\n";
+				}
+			}
+		}
+	}
+
+	ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
+	ObjectWriter<float>::save_obj("approx_all2.obj", app.container().begin(),app.container().end());
 	app.restart();
 
 }
@@ -563,20 +583,44 @@ void real_donut_test(){
 	approx::Approximator<float> app;
 
 	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
-	if (!app.set_target("torus.obj", 0.2f)) {
+	if (!app.set_target("torus2.obj", 0.2f)) {
 		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
 	}
 	std::cout << "target vol: " << app.target().body().volume() << " starting atom vol: " << app.container().atoms(0).volume() <<"\n";
 	app.container().cut(0, approx::Plane<float>({ 0,1,0 }, 0.0f)).choose_both();
-	for (const auto& a : app.container()) {
-		std::cout << "volume " << a.volume() << "  " << a.intersection_volume() << "\n";
-		for (int i = 0; i < (int)a.size(); ++i) {
-			std::cout << "\tface area: " << a.surf_imprints(i)->area() << " ---> " << a.faces(i).normal() << "\n";
-			/*for (auto& f : a.surf_imprints(i)->poly) {
-				std::cout <<"pos: " << f.second << "\n"<< f.first << "\n";
-			}*/
-		}
+
+	auto a = app.container().atoms(1);
+	std::cout << a.intersection_volume() << "\n";
+	for (auto f : a) {
+		std::cout << f << "\n---->normal: " << f.normal() << "\n";
 	}
+
+
+	//for (const auto& a : app.container()) {
+	//	std::cout << "volume " << a.volume() << "  " << a.intersection_volume() << "\n";
+	//	for (int i = 0; i < (int)a.size(); ++i) {
+	//		std::cout << "\tface area: " << a.surf_imprints(i)->area() << " ---> " << a.faces(i).normal() << "\n";
+	//		/*for (auto& f : a.surf_imprints(i)->poly) {
+	//		std::cout <<"pos: " << f.second << "\n"<< f.first << "\n";
+	//		}*/
+	//	}
+	//}
+
+	//std::cout << "=========================================================================\n";
+
+	//app.container().cut(0, approx::Plane<float>({ 1,0,0 }, 0.0f)).choose_both();
+	//for (const auto& a : app.container()) {
+	//	std::cout << "volume " << a.volume() << "  " << a.intersection_volume() << "\n";
+	//	for (int i = 0; i < (int)a.size(); ++i) {
+	//		std::cout << "\tface area: " << a.surf_imprints(i)->area() << " ---> " << a.faces(i).normal() << "\n";
+	//		/*for (auto& f : a.surf_imprints(i)->poly) {
+	//			std::cout <<"pos: " << f.second << "\n"<< f.first << "\n";
+	//		}*/
+	//	}
+	//}
+
+	//std::cout << "volume " << app.container().atoms(1).volume() << "  " << app.container().atoms(1).intersection_volume() << "\n";
+
 	/*for (int i = 0; i < (int)app.container().atoms(0).size(); ++i) {
 		for (auto& f : app.container().atoms(0).surf_imprints(i)->poly) {
 			for (auto& f2 : app.container().atoms(0).surf_imprints(i)->poly) {
@@ -589,6 +633,112 @@ void real_donut_test(){
 	//std::cout << slice[1].first.contains(slice[0].first) << "\n";
 }
 
+void donut_cut_test() {
+	approx::Approximator<float> app;
+
+	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
+	if (!app.set_target("torus2.obj", 0.2f)) {
+		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
+	}
+
+	auto list = app.target().body().cut_surface(approx::Plane<float>({ 0,1,0 }, 0.0f));
+
+	auto p1 = approx::Plane<float>({ 0,1,0 }, 0.0f);
+	auto p = approx::Plane<float>({ 1,0,0 }, 0.0f);
+	auto lin = p1.intersection_line(p);
+	for (auto e : list) {
+		std::cout << "POLY: "<< e.first.area() << "\n";
+		auto cut = e.first.cut_by(lin);
+		std::cout << "first: "  << cut.negative.area() << "\n" << cut.negative 
+				  << "second: " << cut.positive.area() << "\n" << cut.positive << "\n";
+	}
+}
+
+void monster_test() {
+
+	approx::Approximator<float> app;
+
+	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
+	if (!app.set_target("test.obj", 0.5f)) {
+		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
+	}
+
+	ObjectWriter<float>::save_obj("atomtest.obj", app.container().atoms(0));
+
+	app.container().cut(0, approx::Plane<float>({ 0,0,1 }, {0,0,26})).choose_both();
+	std::cout << "cut ->" << app.container().size() << "\n";
+	app.container().cut(1, approx::Plane<float>({ 1,1,0 }, { 25,15,26 })).choose_both();
+	std::cout << "cut ->" << app.container().size() << "\n";
+	app.container().cut(1, approx::Plane<float>({ 1,0,1 }, { 25,15,26 })).choose_both();
+	std::cout << "cut ->" << app.container().size() << "\n";
+	app.container().cut(3, approx::Plane<float>({ 1,1,1 }, { 25,15,26 })).choose_both();
+	std::cout << "cut ->" << app.container().size() << "\n";
+	int i = 0;
+	for (auto& a : app.container()) {
+		std::cout << a.volume() << "\n";
+		if (a.volume() < 0) {
+			std::cout << "\n=========================\n";
+			std::cout << a.good_normals() << "\n";
+			for (auto& f : a) {
+				std::cout << f;
+				std::cout << std::set<Vector3<float>,Less>(f.begin(), f.end()).size() << "\n";
+			}
+			std::cout << "\n=========================\n";
+		}
+		else ++i;
+	}
+	//if(i<app.container().size())
+	ObjectWriter<float>::save_obj("randomout.obj", app.container().begin() + app.container().size()-1, app.container().end());
+
+}
+
+void volume_test() {
+	std::string fn = "atomtest.obj";
+	approx::TargetBody<float> tb;
+	if (!approx::ObjectLoader<float>::load_obj(fn, tb)) {
+		std::cout << "HIBA A BETOLTESNEL\n";
+	}
+	for (const auto& f : tb.body()) {
+		std::cout << f.to_2d().area() << "  *  " << f.to_plane().signed_distance() << " " << dot(f.normal(),f.points(0))
+			<< "\nclnormal: " << cross(f.points(2)-f.points(1),f.points(0)-f.points(1)).normalized() << " normal: " << f.normal() << " + \n";
+	}
+	std::cout << "=========================================\n";
+	if (!approx::ObjectLoader<float>::load_obj(fn, tb)) {
+		std::cout << "HIBA A BETOLTESNEL\n";
+	}
+	Vector3<float> vec = -1.0f * tb.body().centroid();
+	tb.move_by(vec);
+	std::cout << tb.body().volume() << "\n";
+	for (const auto& f : tb.body()) {
+		std::cout << f.to_2d().area() << "  *  " << f.to_plane().signed_distance() << " normal: " << f.normal() <<" + \n";
+	}
+
+	for (float t = 0.1f; t < 1.1f; t += 0.1f) {
+		if (!approx::ObjectLoader<float>::load_obj(fn, tb)) {
+			std::cout << "HIBA A BETOLTESNEL\n";
+		}
+		tb.move_by(t*vec);
+		std::cout << tb.body().volume()<< "\n";
+	}
+	ObjectWriter<float>::save_obj(fn+"buggy_out.obj",tb.body());
+}
+
+
+void plane_test() {
+	float x=70, y=-23, z=47;
+	approx::Plane<float> p1({x,y,z},5),
+						 p2({ -x,-y,-z }, -5);
+	auto base1 = p1.ortho2d(),
+		 base2 = p2.ortho2d();
+	std::cout << base1.first << "     " << base1.second << "\n" << base2.first << "     " << base2.second << "\n";
+}
+
+void drawinfo2d_test() {
+
+
+
+}
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -598,7 +748,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_partition_test();
 	//face_cut_test();
 	//cut_surface_test();
-	//approximator_test();
+	approximator_test();
 	//surf_test();
 	//poly_clip_test();
 	//conversion_test();
@@ -606,8 +756,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	//ccw_test();
 	//donut_test();
 	//line_test();
-	real_donut_test();
-	//coplanar_cut_test();
+	//real_donut_test();
+	//donut_cut_test();
+	//monster_test();
+	//volume_test();
+	//plane_test();
+
 	std::cin.get();
 
 	return 0;

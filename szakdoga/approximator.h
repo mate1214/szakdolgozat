@@ -118,8 +118,8 @@ namespace approx {
 		}
 
 		//az atomokbol eloallo approximacios test vertex adatai rajzolashoz
-		BodyList approx_drawinfo(InsideHandling mode = InsideHandling::LeaveOut) const {
-			return compact_drawinfo(app->approximated_body(mode));
+		BodyList approx_drawinfo(InsideHandling mode = InsideHandling::LeaveOut,T fouriermin=0.5f) const {
+			return compact_drawinfo(app->approximated_body(mode,fouriermin));
 		}
 
 		//a ket meg be nem illesztett atom rajz adatai
@@ -134,6 +134,11 @@ namespace approx {
 			}
 			b1.index_ranges.push_back(b1.indicies.size());
 			return b1;
+		}
+
+		//az adott indexu atom lapjainak es metszetvetuleteinek a kirajzoltatasra hasznalhato vektora
+		std::vector<PolyFace2D> atom2dfaces(int ind) const {
+			return drawinfo2d(app->atoms(ind));
 		}
 
 	};

@@ -115,6 +115,12 @@ namespace approx{
 			}
 		}
 
+		void move_by(const Vector3<T>& v) {
+			for (auto it = vecs.begin(); it != vecs.end(); ++it) {
+				*it += v;
+			}
+		}
+
 		friend class ObjectLoader<T>;
 
 	};

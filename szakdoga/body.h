@@ -41,7 +41,7 @@ namespace approx{
 		}
 
 		//hasznalhato-e a test
-		bool valid() const { return _faces && inds.size(); }
+		bool valid() const { return _faces && inds.size()>1; }
 		//bool konverzio, erteke a valid metoduseval egyezik
 		operator bool() const { return valid(); }
 
@@ -78,7 +78,9 @@ namespace approx{
 		T volume() const {
 			T sum = 0;
 			for (const Face<T>& f : *this){
+				//TODO
 				sum += f.to_2d().area() * dot(f.points(0), f.normal());
+				//sum += f.to_2d().area() * dot(f.center(), f.normal());
 			}
 			sum /= 3;
 			return sum;
@@ -91,7 +93,7 @@ namespace approx{
 			for (const Face<T>& f : *this){
 				center += f.center();
 			}
-			center /= size();
+			center /= static_cast<T>(size());
 			return center;
 		}
 
@@ -152,9 +154,6 @@ namespace approx{
 			sizes.erase(last, sizes.end());
 			std::vector<std::pair<Polygon2<T>, bool>> result;
 			result.reserve(sizes.size());
-
-			std::cout << "asdtest: " << polys[sizes[1].first].contains(polys[sizes[0].first]) << "\n";
-
 			for (int i = 0; i < (int)sizes.size(); ++i) {
 				bool pos = true;
 				for (int j = i + 1; j < (int)sizes.size(); ++j) {
@@ -173,7 +172,7 @@ namespace approx{
 				for (int j = i; j < size(); ++j) {
 					for (const Vector3<T>& p1 : faces(i)) {
 						for (const Vector3<T>& p2 : faces(j)) {
-							Vecotr3<T> d = (p1 - p2);
+							Vector3<T> d = (p1 - p2);
 							if (d.length() > diam.length()) {
 								diam = d;
 							}
@@ -183,7 +182,6 @@ namespace approx{
 			}
 			return diam;
 		}
-
 
 	};
 
