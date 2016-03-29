@@ -45,6 +45,11 @@ namespace approx{
 		//bool konverzio, erteke a valid metoduseval egyezik
 		operator bool() const { return valid(); }
 
+		//egyenloseg vizsgalat
+		bool operator == (const Body& b) const {
+			return _faces == b._faces && inds == b.inds;
+		}
+
 		//mozgatas masik tarolora hivatkozassal
 		Body migrate_to(std::vector<Face<T>>* fcs){
 			return Body(fcs, std::move(inds));

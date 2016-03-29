@@ -678,14 +678,16 @@ void monster_test() {
 		std::cout << a.volume() << "\n";
 		if (a.volume() < 0) {
 			std::cout << "\n=========================\n";
-			std::cout << a.good_normals() << "\n";
+			std::cout << a.bad_normal_ind() << "\n";
 			for (auto& f : a) {
 				std::cout << f;
 				std::cout << std::set<Vector3<float>,Less>(f.begin(), f.end()).size() << "\n";
 			}
 			std::cout << "\n=========================\n";
+			
 		}
 		else ++i;
+		std::cout << a.faces_inside().size() << " " << a.face_indicies_inside().size() << "\n";
 	}
 	//if(i<app.container().size())
 	ObjectWriter<float>::save_obj("randomout.obj", app.container().begin() + app.container().size()-1, app.container().end());
@@ -735,8 +737,6 @@ void plane_test() {
 
 void drawinfo2d_test() {
 
-
-
 }
 
 
@@ -748,7 +748,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_partition_test();
 	//face_cut_test();
 	//cut_surface_test();
-	approximator_test();
+	//approximator_test();
 	//surf_test();
 	//poly_clip_test();
 	//conversion_test();
@@ -758,7 +758,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//line_test();
 	//real_donut_test();
 	//donut_cut_test();
-	//monster_test();
+	monster_test();
 	//volume_test();
 	//plane_test();
 
