@@ -54,7 +54,7 @@ namespace approx{
 		const Vector2<T>& points(size_t i) const { return pts[i]; }
 		Vector2<T>& points(size_t i) { return pts[i]; }
 		
-		//elojeles terulet, elojele seggithet annak eldonteseben hogy cw vagy ccw felsorolasban van megadva
+		//elojeles terulet, elojele segithet annak eldonteseben hogy cw vagy ccw felsorolasban van megadva
 		T signed_area() const {
 			int n = pts.size();
 			T result = 0;
@@ -204,6 +204,21 @@ namespace approx{
 				}
 			}
 			return output;
+		}
+
+
+		Vector2<T> centroid() const {
+			T sa = (-6 * signed_area());
+			T cx = 0,cy=0;
+			int n = size();
+			for (int i = 0; i < n; ++i) {
+				Vector2<T> pi = points(i),
+						   pi1=points((i+1)%n);
+				T mult = pi.x * pi1.y - pi1.x*pi.y;
+				cx += (pi.x + pi1.x) * mult;
+				cy += (pi.y + pi1.y)* mult;
+			}
+			return{ cx/sa,cy/sa };
 		}
 
 	};

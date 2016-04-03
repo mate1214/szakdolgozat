@@ -91,15 +91,22 @@ namespace approx{
 			return sum;
 		}
 
-		//a test sulypontja a burkolo lapokbol kiszamolva
-		//a hatarolo lapok kozeppontjait atlagolom
+		//a test sulypontja 
 		Vector3<T> centroid() const{
-			int cnt = 0;
 			Vector3<T> center;
-			for (const Face<T>& f : *this){
-				center += f.center();
+			for (const Face<T>& f : *this) {
+				Vector3<T> n = f.normal();
+				Vector3<T> a = f.points(0);
+				for (int i = 2; i < f.size(); ++i) {
+					Vector3<T> b = f.points(i - 1),
+							   c = f.points(i);
+					T len = cross(b - a, c - a).length();
+					center.x += n.x*len / 24 * (pow(a.x + b.x, 2) + pow(b.x + c.x, 2) + pow(a.x + c.x, 2));
+					center.y += n.y*len / 24 * (pow(a.y + b.y, 2) + pow(b.y + c.y, 2) + pow(a.y + c.y, 2));
+					center.z += n.z*len / 24 * (pow(a.z + b.z, 2) + pow(b.z + c.z, 2) + pow(a.z + c.z, 2));
+				}
 			}
-			center /= static_cast<T>(size());
+			center /= 2 * volume();
 			return center;
 		}
 

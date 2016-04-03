@@ -54,6 +54,10 @@ namespace approx{
 		Vector2 operator * (T num) const{ return Vector2(x*num, y*num); }
 		Vector2 operator / (T num) const{ return Vector2(x/num, y/num); }
 		
+		Vector2 operator -() const {
+			return Vector2(x*-1, y*-1);
+		}
+
 		//hossz szamitas 2-es norma szerint
 		T length() const { return sqrt(x*x+y*y); }
 		
@@ -119,6 +123,10 @@ namespace approx{
 		}
 		Vector3 operator / (T num) const {
 			return Vector3(x/num, y/num, z/num);
+		}
+
+		Vector3 operator -() const {
+			return Vector3(x*-1, y*-1, z*-1);
 		}
 
 		//2-es norma szerinti hossz

@@ -152,17 +152,20 @@ namespace approx{
 		//fontos: a normalvektor ellentettjet beszurja a taroloba
 		Face reversed() const {
 			std::vector<int> tmpind(inds.rbegin(), inds.rend());
-			return Face(vecs, std::move(tmpind), normals, normal()*-1);
+			return Face(vecs, std::move(tmpind), normals, -normal());
 		}
 
 		//sulypont kiszamolasa
-		Vector3<T> center() const {
-			Vector3<T> avg;
-			for (const Vector3<T>& pt : *this){
-				avg += pt;
-			}
-			avg /= static_cast<T>(size());
-			return avg;
+		Vector3<T> centroid() const {
+			//Vector3<T> avg;
+			//for (const Vector3<T>& pt : *this){
+			//	avg += pt;
+			//}
+			//avg /= static_cast<T>(size());
+			//return avg;
+			Vector2<T> pt = to_2d().centroid();
+			std::pair<Vector3<T>,Vector3<T>> base = to_plane().ortho2d();
+			return pt.x*base.first + pt.y * base.second + to_plane().example_point();
 		}
 
 		//lekepezes a megadott x es y vektorok altal kifeszitett sikra 2 dimenzios lapkent

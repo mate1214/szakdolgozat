@@ -529,6 +529,15 @@ namespace approx{
 			return Body<T>(&faces, ind);
 		}
 
+
+		//eltolt es atmeretezett targetbodynal ha el akarjuk menteni fajlba az eredmenyt,
+		//ezt hivjuk meg eloszor
+		//TODO
+		void final_transform() {
+			Vector3<T> t = target->inverse_transform();
+			T scl = target->inverse_scale();
+		}
+
 	};
 
 }

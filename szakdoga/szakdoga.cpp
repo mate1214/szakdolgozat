@@ -279,6 +279,7 @@ void approximator_test() {
 	}
 
 	std::cout << app.container().atoms(0).faces(0) << "\n";
+	std::cout << app.container().atoms(0).centroid() << "\n";
 
 	//A celtest az app.target().body()-ban erheto el, a body.h-ban bovebb info talalhato rola
 	//es a metodusairol
@@ -694,6 +695,8 @@ void monster_test() {
 
 }
 
+
+/*
 void volume_test() {
 	std::string fn = "atomtest.obj";
 	approx::TargetBody<float> tb;
@@ -723,7 +726,7 @@ void volume_test() {
 		std::cout << tb.body().volume()<< "\n";
 	}
 	ObjectWriter<float>::save_obj(fn+"buggy_out.obj",tb.body());
-}
+}*/
 
 
 void plane_test() {
@@ -739,6 +742,25 @@ void drawinfo2d_test() {
 
 }
 
+void centroid_test() {
+	std::vector<approx::Vector3<float>> vertices{ { 0.0f, 1.0f, 3.0f },{ 1.0f, 0.0f, 3.0f },{ 2.0f, 0.0f, 3.0f },{ 3.0f, 1.0f, 3.0f },{ 2.0f, 3.0f, 3.0f } },
+		normals{ { 0.0f, 0.0f, -1.0f } };
+	std::reverse(vertices.begin(), vertices.end());
+	approx::Face<float> f(&vertices, { 0, 1, 2, 3, 4 }, &normals, 0);
+	std::cout << f.centroid();
+}
+
+
+void randomtest() {
+	std::stringstream ss("5 ");
+	int x, y;
+	char c;
+	ss >> x >> c;
+	if (ss.peek() == '/') {
+		std::cout << "asd";
+	}
+}
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -748,7 +770,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_partition_test();
 	//face_cut_test();
 	//cut_surface_test();
-	//approximator_test();
+	approximator_test();
 	//surf_test();
 	//poly_clip_test();
 	//conversion_test();
@@ -758,10 +780,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	//line_test();
 	//real_donut_test();
 	//donut_cut_test();
-	monster_test();
+	//monster_test();
 	//volume_test();
 	//plane_test();
-
+	//centroid_test();
+	
+	randomtest();
+	
 	std::cin.get();
 
 	return 0;
