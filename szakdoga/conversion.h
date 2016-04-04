@@ -83,7 +83,7 @@ namespace approx{
 				}
 			}
 		}
-		res.index_ranges.push_back((unsigned short)res.indicies.size());
+		res.index_ranges.push_back((Index)res.indicies.size());
 		return res;
 	}
 
