@@ -209,7 +209,7 @@ namespace approx {
 						tmp_normals.push_back(calculated_normal);
 						if (triangulate) {
 							for (int i = 2; i < inds.size(); ++i) {
-								tb.faces.emplace_back(&tb.vecs, std::vector<int>{inds[0], inds[i - 1], inds[i]}, &tb.normals, tmp_normals.transform_index(tmp_normals.size() - 1));
+								tb.faces.emplace_back(&tb.vecs, tmp_vecs.transform_range(std::vector<int>{inds[0], inds[i - 1], inds[i]}), &tb.normals, tmp_normals.transform_index(tmp_normals.size() - 1));
 							}
 						}
 						else {

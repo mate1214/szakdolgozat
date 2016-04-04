@@ -447,11 +447,11 @@ void targetbody_ccw_test() {
 	approx::Approximator<float> app;
 
 	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
-	if (!app.set_target("test.obj", 0.0f)) {
+	if (!app.set_target(/*"gummybear.obj"*/ "shittest.obj", 1.0f)) {
 		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
 	}
 
-	for (const Face<float>& f : app.target().body()) {
+	/*for (const Face<float>& f : app.target().body()) {
 		std::cout << f;
 		auto n = cross(f.points(2) - f.points(1), f.points(0) - f.points(1)).normalized();
 		std::cout << n << "  ~  " << f.normal() << "\n";
@@ -468,8 +468,8 @@ void targetbody_ccw_test() {
 		}
 	}*/
 
-
-
+	std::cout << app.target().body().volume() << "\n";
+	std::cout << app.target().body().centroid() << "\n";
 }
 
 
@@ -770,11 +770,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	//poly_partition_test();
 	//face_cut_test();
 	//cut_surface_test();
-	approximator_test();
+	//approximator_test();
 	//surf_test();
 	//poly_clip_test();
 	//conversion_test();
-	//targetbody_ccw_test();
+	targetbody_ccw_test();
 	//ccw_test();
 	//donut_test();
 	//line_test();
@@ -785,7 +785,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//plane_test();
 	//centroid_test();
 	
-	randomtest();
+	//randomtest();
 	
 	std::cin.get();
 
