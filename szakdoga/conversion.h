@@ -75,7 +75,7 @@ namespace approx {
 		for (const Face<T>& f : body) {
 			if (f.size()) {
 				int k = 2;
-				while (k < f.size() && (sin(f.points(k), f.points(1), f.points(0))  < 0.1f)) {
+				while (k < f.size() && (sin(f.points(k), f.points(1), f.points(0))  < 0.01f)) {
 					++k;
 				}
 				k %= f.size();
@@ -109,7 +109,7 @@ namespace approx {
 			for (const Face<T>& f : *first) {
 				if (f.size()) {
 					int k = 2;
-					while (k < f.size() && (sin(f.points(k), f.points(1), f.points(0))  < 0.1f)) {
+					while (k < f.size() && (sin(f.points(k), f.points(1), f.points(0))  < 0.01f)) {
 						++k;
 					}
 					k %= f.size();
@@ -140,7 +140,7 @@ namespace approx {
 			}
 			if (f.size()) {
 				int k = 2;
-				while (k < f.size() && (sin(f.points(k), f.points(1), f.points(0))  < 0.1f)) {
+				while (k < f.size() && (sin(f.points(k), f.points(1), f.points(0))  < 0.01f)) {
 					++k;
 				}
 				k %= f.size();
