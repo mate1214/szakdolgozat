@@ -447,7 +447,7 @@ void targetbody_ccw_test() {
 	approx::Approximator<float> app;
 
 	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
-	if (!app.set_target(/*"gummybear.obj"*/ "shittest.obj", 1.0f)) {
+	if (!app.set_target("gummybear.obj", 1.0f)) {
 		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
 	}
 

@@ -181,8 +181,6 @@ namespace approx{
 					return atan2(x1, y1) < atan2(x2, y2);
 				});
 
-
-
 				//a rendezett pontokbol minden masodik egyedi bekerul a sokszogre
 				std::vector<int> new_fc{pt_ids[0]};
 				for (int i = 2; i < (int)pt_ids.size(); i += 2){
@@ -287,8 +285,17 @@ namespace approx{
 			f_poly.push_back(p2);
 		}
 
+
+		Vector3<T> avg_point() const {
+			Vector3<T> c;
+			for (const Face<T>& f : *this) {
+				c += f.centroid();
+			}
+			return c / static_cast<T>(size());
+		}
+
 		int bad_normal_ind() const {
-			Vector3<T> cent = centroid();
+			Vector3<T> cent = avg_point();//centroid();
 			int i = 0;
 			for (const Face<T>& f : *this) {
 				if (dot(f.normal(), cent - f.points(0)) > 0)

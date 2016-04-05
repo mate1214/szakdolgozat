@@ -179,6 +179,22 @@ namespace approx{
 		return u.x*v.y - u.y*v.x > 0;
 	}
 
+	template <class T> T sin(const Vector3<T>& v1, const Vector3<T>& v2) {
+		return cross(v1, v2).length() / (v1.length() * v2.length());
+	}
+
+	template <class T> T sin(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& c) {
+		return sin(a - b, c - b);
+	}
+
+	template <class T> T cos(const Vector3<T>& v1, const Vector3<T>& v2) {
+		return dot(v1, v2) / (v1.length() *v2.length());
+	}
+
+	template <class T> T cos(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& c) {
+		return cos(a - b, c - b);
+	}
+
 	//konkret float es double skalarok feletti vektor tipusok
 	typedef Vector2<float> Vector2f;
 	typedef Vector3<float> Vector3f;

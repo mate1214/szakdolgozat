@@ -55,102 +55,6 @@ namespace approx {
 		//vaz metodus a .obj fajlformatum feldolgozasahoz, template parameterei a "javito" tipusok
 		//a javito tipusok dolga, hogy sajat belatasuk szerint osszevonjanak 2 numerikusan egyezonek nyilvanitott vektort
 		//a javitas celja hogy a fajlokbol bekerult testeken vegzett muveletek a numerikus pontossagra minel kevesbe legyenek erzekenyek
-		//template <class Repair1, class Repair2> static bool load_obj_temp(const std::string& filename, TargetBody<T>& tb, Repair1& tmp_vecs, Repair2& tmp_normals,bool triangulate){
-		//	tb.vecs.clear();
-		//	tb.normals.clear();
-		//	tb.faces.clear();
-		//	std::ifstream f(filename);
-		//	if (!f) return exit_cleanup(tb);
-		//	std::vector<Vector3<T>> accum_normals;
-		//	std::string line; //sor a fajlban
-		//	bool vt = false; //van-e textura koordinata a fajlban
-		//	while (std::getline(f, line)){
-		//		std::string::size_type ind = line.find('#');
-		//		if (ind != std::string::npos){
-		//			line.erase(ind);
-		//		}
-		//		if (line.size()){
-		//			std::stringstream stream(line);//a sor darabolasara hasznalt stream
-		//			std::string beg;//sorkezdo szimbolum mely azonositja a sor tartalmat
-		//			T x, y, z; //skalar adatok beolvasasara
-		//			int ind1, ind2, ind3; //beolvasasra hasznalt indexek v,vt,vn
-		//			char sep; //elvalasztojel beolvasashoz
-		//			stream >> beg;
-		//			if (beg == "v"){//vertexpont
-		//				stream >> x >> y >> z;
-		//				if (stream.fail()) return exit_cleanup(tb);
-		//				tmp_vecs.push_back({ x, y, z });
-		//			}
-		//			else if (beg == "vn"){//normalvektor
-		//				//nem ezeket a normalokat fogom hasznalni, de cw ccw ellenorzeshez kellenek
-		//				stream >> x >> y >> z;
-		//				if (stream.fail()) return exit_cleanup(tb);
-		//				accum_normals.push_back({ x, y, z });
-		//			}
-		//			else if (beg == "vt"){//textura koordinata
-		//				//textura koordinatakkal nem foglalkozom, de felirom hogy vannak mert mashogy kell beolvasnom
-		//				vt = true;
-		//			}
-		//			else if (beg == "f"){//lap indexekkel leirva
-		//				std::vector<int> inds;
-		//				Vector3<T> sum_normal, calculated_normal;
-		//				if (vt && accum_normals.size()){ //f v/vt/vn
-		//					while (stream >> ind1 >> sep >> ind2 >> sep >> ind3){
-		//						inds.push_back(ind1 - 1);
-		//						sum_normal += accum_normals[ind3 - 1];
-		//					}
-		//					if ((stream.fail() && !stream.eof()) || inds.size()<3) return exit_cleanup(tb);
-		//					calculated_normal = cross(tmp_vecs[inds[2]] - tmp_vecs[inds[1]], tmp_vecs[inds[0]] - tmp_vecs[inds[1]]).normalized();
-		//					if (dot(calculated_normal, sum_normal) < 0){
-		//						calculated_normal *= -1;
-		//						std::reverse(inds.begin(), inds.end());
-		//					}
-		//				}
-		//				else if (accum_normals.size()){ //f v//vn
-		//					while (stream >> ind1 >> sep >> sep >> ind3){
-		//						inds.push_back(ind1 - 1);
-		//						sum_normal += accum_normals[ind3 - 1];
-		//					}
-		//					if ((stream.fail() && !stream.eof()) || inds.size()<3) return exit_cleanup(tb);
-		//					calculated_normal = cross(tmp_vecs[inds[2]] - tmp_vecs[inds[1]], tmp_vecs[inds[0]] - tmp_vecs[inds[1]]).normalized();
-		//					if (dot(calculated_normal, sum_normal) < 0){
-		//						calculated_normal *= -1;
-		//						std::reverse(inds.begin(), inds.end());
-		//					}
-		//				}
-		//				else if (vt){ //f v/vt - felteszem hogy ccw-ben adtak meg de nem tudom ellenorizni
-		//					while (stream >> ind1 >> sep >> ind2){
-		//						inds.push_back(ind1 - 1);
-		//					}
-		//					if ((stream.fail() && !stream.eof()) || inds.size()<3) return exit_cleanup(tb);
-		//					calculated_normal = cross(tmp_vecs[inds[2]] - tmp_vecs[inds[1]], tmp_vecs[inds[0]] - tmp_vecs[inds[1]]).normalized();
-		//				}
-		//				else { //f v -felteszem hogy ccw-ben van megadva, de nem tudom ellenorizni
-		//					while (stream >> ind1){
-		//						inds.push_back(ind1 - 1);
-		//					}
-		//					if ((stream.fail() && !stream.eof()) || inds.size()<3) return exit_cleanup(tb);
-		//					calculated_normal = cross(tmp_vecs[inds[2]] - tmp_vecs[inds[1]], tmp_vecs[inds[0]] - tmp_vecs[inds[1]]).normalized();
-		//				}
-		//				tmp_normals.push_back(calculated_normal);
-		//				if (triangulate) {
-		//					for (int i = 2; i < inds.size(); ++i) {
-		//						tb.faces.emplace_back(&tb.vecs, std::vector<int>{inds[0], inds[i-1], inds[i]}, &tb.normals, tmp_normals.transform_index(tmp_normals.size() - 1));
-		//					}
-		//				}
-		//				else {
-		//					tb.faces.emplace_back(&tb.vecs, std::move(tmp_vecs.transform_range(inds)), &tb.normals, tmp_normals.transform_index(tmp_normals.size() - 1));
-		//				}
-		//			}
-		//		}
-		//	}
-		//	if (!tb.faces.size()) return exit_cleanup(tb); //ha nincsenek lapjaink azt is ervenytelen esetnek konyveljuk el
-		//	tb.vecs = tmp_vecs.needed_vecs(); //elteszem az osszerendezett pontokat
-		//	tb.normals = tmp_normals.needed_vecs();
-		//	tb.bdy = Body<T>(&tb.faces, std::move(TargetBody<T>::range(tb.faces.size())));
-		//	return true; //minden megfelelo
-		//}
-
 		template <class Repair1, class Repair2> static bool load_obj_temp(const std::string& filename, TargetBody<T>& tb, Repair1& tmp_vecs, Repair2& tmp_normals, bool triangulate) {
 			tb.vecs.clear();
 			tb.normals.clear();
@@ -266,7 +170,13 @@ namespace approx {
 		static void write_obj_face(std::ostream& os, const Face<T>& face){
 			int n = face.normal_index();
 			os << "f ";
-			T sign = dot(face.normal(), cross(face.points(2) - face.points(1), face.points(0) - face.points(1)));
+			int k = 2;
+			while (k < face.size() && (sin(face.points(k), face.points(1), face.points(0))  < 0.1f)) {
+				++k;
+			}
+			k %= face.size();
+			Vector3<T> normal = cross(face.points(k) - face.points(1), face.points(0) - face.points(1));
+			T sign = dot(face.normal(), normal);
 			if (sign > 0) {
 				for (int ind : face.indicies()) {
 					os << ind + 1 << "//" << n + 1 << " ";
