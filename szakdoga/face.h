@@ -349,6 +349,12 @@ namespace approx{
 					pts_added };
 		}
 
+		bool is_ccw() const {
+			bool cc1 = to_2d().is_ccw();
+			std::pair<Vector3<T>, Vector3<T>> base = to_plane().ortho2d();
+			bool cc2 = dot(cross(base.first,base.second), normal()) > 0;
+			return cc1 == cc2;
+		}
 	};
 
 

@@ -74,13 +74,14 @@ namespace approx {
 		res.index_ranges.push_back(0);
 		for (const Face<T>& f : body) {
 			if (f.size()) {
-				int k = 2;
+				/*int k = 2;
 				while (k < f.size() && (sin(f.points(k), f.points(1), f.points(0))  < 0.01f)) {
 					++k;
 				}
 				k %= f.size();
 				Vector3<T> n = cross(f.points(k) - f.points(1), f.points(0) - f.points(1));
-				int prev = dot(n, f.normal()) > 0.0f ? 1 : 0;
+				int prev = dot(n, f.normal()) > 0.0f ? 1 : 0;*/
+				int prev = f.is_ccw() ? 1 : 0;
 				for (int i = 2; i < (int)f.size(); ++i) { //ccw-be sorolom es ugy veszem hogy kinn tudjak majd a normalist szamolni
 					res.indicies.push_back(f.indicies(0));
 					res.indicies.push_back(f.indicies(i - prev));
@@ -108,13 +109,14 @@ namespace approx {
 			res.index_ranges.push_back(res.index_ranges.back());
 			for (const Face<T>& f : *first) {
 				if (f.size()) {
-					int k = 2;
+					/*int k = 2;
 					while (k < f.size() && (sin(f.points(k), f.points(1), f.points(0))  < 0.01f)) {
-						++k;
+					++k;
 					}
 					k %= f.size();
 					Vector3<T> n = cross(f.points(k) - f.points(1), f.points(0) - f.points(1));
-					int prev = dot(n, f.normal()) > 0.0f ? 1 : 0;
+					int prev = dot(n, f.normal()) > 0.0f ? 1 : 0;*/
+					int prev = f.is_ccw() ? 1 : 0;
 					for (int i = 2; i < (int)f.size(); ++i) {
 						res.indicies.push_back(f.indicies(0));
 						res.indicies.push_back(f.indicies(i - prev));
@@ -139,13 +141,14 @@ namespace approx {
 				}
 			}
 			if (f.size()) {
-				int k = 2;
+				/*int k = 2;
 				while (k < f.size() && (sin(f.points(k), f.points(1), f.points(0))  < 0.01f)) {
-					++k;
+				++k;
 				}
 				k %= f.size();
 				Vector3<T> n = cross(f.points(k) - f.points(1), f.points(0) - f.points(1));
-				int prev = dot(n, f.normal()) > 0.0f ? 1 : 0;
+				int prev = dot(n, f.normal()) > 0.0f ? 1 : 0;*/
+				int prev = f.is_ccw() ? 1 : 0;
 				for (int i = 2; i < f.indicies().size(); ++i) {
 					res.indicies.push_back(verts[f.indicies(0)]);
 					res.indicies.push_back(verts[f.indicies(i - prev)]);

@@ -751,16 +751,11 @@ void centroid_test() {
 }
 
 
-void randomtest() {
-	std::stringstream ss("5 ");
-	int x, y;
-	char c;
-	ss >> x >> c;
-	if (ss.peek() == '/') {
-		std::cout << "asd";
-	}
+void ortho_test() {
+	approx::Plane<float> p({ 0,0,1 }, { 1,1,1 });
+	auto base = p.ortho2d();
+	std::cout << dot(cross(base.first, base.second), p.normal());
 }
-
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -774,7 +769,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//surf_test();
 	//poly_clip_test();
 	//conversion_test();
-	targetbody_ccw_test();
+	//targetbody_ccw_test();
 	//ccw_test();
 	//donut_test();
 	//line_test();
@@ -785,8 +780,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//plane_test();
 	//centroid_test();
 	
-	//randomtest();
-	
+	ortho_test();
+
 	std::cin.get();
 
 	return 0;
