@@ -147,7 +147,9 @@ namespace approx{
 						(int)faces.size()-2,
 						(int)faces.size()-1,
 						_atoms[last_cut].surf_imprints(e.second.ind_in_neg_atom),
-						_atoms.back().surf_imprints(e.second.ind_in_pos_atom)
+						_atoms.back().surf_imprints(e.second.ind_in_pos_atom),
+						e.second.pt_ind1,
+						e.second.pt_ind2
 						);
 				}
 				connections[e.first].other_atom = -3;
@@ -201,7 +203,9 @@ namespace approx{
 						(int)faces.size() - 2,
 						(int)faces.size() - 1,
 						_atoms[last_cut].surf_imprints(e.second.ind_in_neg_atom),
-						cut_res.positive->surf_imprints(e.second.ind_in_pos_atom)
+						cut_res.positive->surf_imprints(e.second.ind_in_pos_atom),
+						e.second.pt_ind1,
+						e.second.pt_ind2
 						);
 				}
 				connections[e.first].other_atom = -3;
@@ -254,7 +258,9 @@ namespace approx{
 						(int)faces.size() - 2,
 						(int)faces.size() - 1,
 						cut_res.negative->surf_imprints(e.second.ind_in_neg_atom),
-						_atoms[last_cut].surf_imprints(e.second.ind_in_pos_atom)
+						_atoms[last_cut].surf_imprints(e.second.ind_in_pos_atom),
+						e.second.pt_ind1,
+						e.second.pt_ind2
 						);
 				}
 				connections[e.first].other_atom = -3;

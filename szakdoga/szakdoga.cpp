@@ -757,6 +757,17 @@ void ortho_test() {
 	std::cout << dot(cross(base.first, base.second), p.normal());
 }
 
+void dokucode() {
+	approx::Vector3<float> v1(1.0f, 2.0f, 3.0f); //az (1,2,3) vektor
+	approx::Vector3<float> nullvect; //default inicializacioval nullvektor
+	approx::Vector3<float> v2(-0.7f, 2.43f, 3.3f);
+	approx::Vector3<float> v3 = v1 + v2, v4 = v1 - v2, v5 = -5.0f * v2;
+	approx::Vector3<float> v6 = cross(v1, v2);
+	v3 += v5; v4 -= v3;
+	float skalarszorzat = dot(v1, v2);
+
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//cut_eq_test();
@@ -779,9 +790,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	//volume_test();
 	//plane_test();
 	//centroid_test();
-	
-	ortho_test();
-
+	//ortho_test();
+	dokucode();
+	std::cout << (-1 % 5);
 	std::cin.get();
 
 	return 0;
