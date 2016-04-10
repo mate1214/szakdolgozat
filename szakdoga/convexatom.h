@@ -86,10 +86,14 @@ namespace approx{
 			return *this;
 		}
 
+		//approximalt test
+		const Body<T>* target_body() const { return target; }
+
+		//megadott taroloba masolas
 		ConvexAtom migrate_to(std::vector<Face<T>>* fcs) const {
 			return ConvexAtom(fcs, inds, target, f_poly);
 		}
-
+		//megadott taroloba mozgatas
 		ConvexAtom migrate_to(std::vector<Face<T>>* fcs) {
 			return ConvexAtom(fcs, std::move(inds), target, std::move(f_poly));
 		}
@@ -103,11 +107,11 @@ namespace approx{
 			int neg_cut_face, pos_cut_face; //a negativ illetve pozitiv oldalnak ezek lesznek a vagas menti lapjai
 			
 			struct FaceSplit {
-				int ind_in_neg_atom;
-				int ind_in_pos_atom;
-				int neg_face_ind;
-				int pos_face_ind;
-				int pt_ind1, pt_ind2;
+				int ind_in_neg_atom; //a negativ oldali atomba eso fel lap atom beli indexe
+				int ind_in_pos_atom; //a pozitiv oldali atomba eso fel lap atom beli indexe
+				int neg_face_ind;    //a negativ oldali atomba eso fel lap tarolo beli indexe
+				int pos_face_ind;    //a pozitiv oldali atomba eso fel lap tarolo beli indexe
+				int pt_ind1, pt_ind2;//a vagasnal keletkezett uj csucspontok
 			};
 			
 			std::map<int, FaceSplit> cut_map; //hozzarendeli az elvagott lapokhoz a keletkezett fel lapokat

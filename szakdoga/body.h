@@ -4,7 +4,8 @@
 //
 // Keszitette: Toth Mate
 // Test tipus mely indexekkel hivatkozik a hatarolo lapjaira, valamint kenyelmi fuggvenyeket nyujt.
-// A test kepes meghatarozni terfogatat, kozeppontjat
+// A test kepes meghatarozni terfogatat, kozeppontjat, atmerojet, sikkal valo metszest eldonteni,
+// valamint sikkal valo metszetvetuletet eloallitani.
 // 
 
 #include <vector>

@@ -59,7 +59,7 @@ namespace approx{
 		//a sikkal valo vagas eredmenye
 		struct CutResult {
 			Face<T> positive, //a sik pozitiv oldalra eso resz
-				negative; //a sik negativ oldalra eso resz
+				    negative; //a sik negativ oldalra eso resz
 			std::vector<int> pt_inds; //az elvalasztovonalra eso pontok indexei
 			int points_added; //a hozzaadott pontok szama <= pt_inds.size()
 		};
@@ -70,11 +70,14 @@ namespace approx{
 			calc_normal(ccw);
 		}
 		//konstrukror mely szamolja es beilleszti a normalist, de mozgatast hasznal a megadott pont indexekre
-		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* _normals) : vecs(vertices), inds(ids), normals(_normals) { calc_normal(); }
+		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* _normals)
+			: vecs(vertices), inds(ids), normals(_normals) { calc_normal(); }
 		//megadott normalvektort felhasznalo konstruktor
-		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* normals, int n_id) : vecs(vertices), inds(ids), normals(normals), normal_id(n_id) {}
+		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* normals, int n_id)
+			: vecs(vertices), inds(ids), normals(normals), normal_id(n_id) {}
 		//megadott normalvektort felhasznalo konstruktor, mozgatja a megadott pontindex vektort
-		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* normals, int n_id) : vecs(vertices), inds(ids), normals(normals), normal_id(n_id) {}
+		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* normals, int n_id)
+			: vecs(vertices), inds(ids), normals(normals), normal_id(n_id) {}
 		//megadott de beszurando normalist hasznalo konstruktor
 		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* _normals, const Vector3<T>& normal)
 			: vecs(vertices), inds(ids), normals(_normals), normal_id(normals->size()) {
@@ -358,6 +361,7 @@ namespace approx{
 					pts_added };
 		}
 
+		//pontosan akkor igaz ha CCW koruljarasi iranyban vannak felsorolva a pontjai
 		bool is_ccw() const {
 			bool cc1 = to_2d().is_ccw();
 			std::pair<Vector3<T>, Vector3<T>> base = to_plane().ortho2d();
@@ -365,6 +369,9 @@ namespace approx{
 			return cc1 == cc2;
 		}
 
+		//ha van a es b indexu pontja, beszurja kozejuk az ind indexut,
+		//ha nincs ilyen, nem tesz semmit
+		//visszatérési értéke a 
 		bool insert_index(int a, int b, int ind) {
 			int i = 0;
 			int n = size();
@@ -376,6 +383,8 @@ namespace approx{
 			return true;
 		}
 
+		//megkeresi az adott tarolo beli indexu pont szomszedait a sokszogben, ha megtalalta, a tarolobeli indexeiket adja meg
+		//ha nem talalhato ilyen pont, a visszateresi erteke a {-1,-1} paros
 		std::pair<int,int> neighbours_of(int real_ind) const {
 			int i = 0;
 			int n = size();

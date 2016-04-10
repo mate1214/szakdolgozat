@@ -19,10 +19,11 @@ namespace approx{
 	// Tetszoleges skalar tipussal paramezerezheto ami megfelel a Vector2 elvarasainak,
 	// valamint elvegezheto rajta az "x > 0" es az abszolutertek muvelet.
 	template<class T> class Polygon2{
-		std::vector<Vector2<T>> pts;
-		typedef typename std::vector<Vector2<T>>::const_iterator ConstIterator;
-		typedef typename std::vector<Vector2<T>>::iterator Iterator;
+		std::vector<Vector2<T>> pts; //a pontok felsorolasa
 	public:
+		typedef typename std::vector<Vector2<T>>::const_iterator ConstIterator; //iterator tipus konstans elereshez
+		typedef typename std::vector<Vector2<T>>::iterator Iterator; //iterator tipus mely megengedi a 
+
 		//vektorral megadott konstruktorok
 		Polygon2(const std::vector<Vector2<T>>& p) : pts(p) {}
 		Polygon2(std::vector<Vector2<T>>&& p) : pts(p){}
