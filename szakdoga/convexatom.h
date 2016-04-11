@@ -266,17 +266,20 @@ namespace approx{
 				std::vector<Vector3<T>> tmp_vert, tmp_norm;
 				ConstFaceIterator it = begin();
 				Face<T> clipf = f;
-				while (it != end() && clipf.size() >= 3){
+				//amennyiben a lap pontosan a sikon van, a vetuletet kell beszamitanom, magat a lapot nem, ezzel elkerulve a az ismetlodest
+				bool onplane = f.to_plane().example_point() == it->to_plane().example_point();
+				while (it != end() && clipf.size() >= 3 && !onplane){
 					typename Face<T>::CutResult cut = clipf.cut_by(it->to_plane(),&tmp_vert,&tmp_norm);
+					onplane = cut.points_added == 0 && cut.pt_inds.size() == clipf.size();
 					clipf = cut.negative;
 					++it;
 				}
-				if (clipf.size() >= 3){
+				if (clipf.size() >= 3 && !onplane){
 
-					T x = clipf.to_2d().area();
-					T y = clipf.to_plane().signed_distance();
-					Vector3<T> norm1 = clipf.to_plane().normal(),
-						       norm2 = clipf.normal();
+					//T x = clipf.to_2d().area();
+					//T y = clipf.to_plane().signed_distance();
+					//Vector3<T> norm1 = clipf.to_plane().normal(),
+					//	       norm2 = clipf.normal();
 
 					sum += clipf.to_2d().area()*clipf.to_plane().signed_distance();
 				}

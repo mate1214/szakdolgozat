@@ -545,7 +545,7 @@ void coplanar_cut_test(){
 		face1(&vertices, { 0,1,2 }, &normals, 0);
 	approx::Plane<float> plane({ 0,0,1 }, 2.5f);
 	auto cut1 = face1.cut_by(plane);
-	std::cout << cut1.positive << "\n" << cut1.negative << "\n" << cut1.points_added;
+	std::cout << cut1.positive << "\n" << cut1.negative << "\n" << cut1.points_added << "\n" << cut1.pt_inds.size();
 }
 
 void donut_test() {
@@ -768,6 +768,15 @@ void dokucode() {
 
 }
 
+/*void coplanar_cut_test() {
+	std::vector<Vector3<float>> pts{ {1,1,1}, {1,2,1},{2,sqrtf(2.0f),1} },
+		normals{ {0,0,1} };
+	approx::Face<float> fc(&pts, { 0,1,2 }, &normals, 0);
+	approx::Plane<float> p({ 0,0,1 }, 1);
+	auto cut = fc.cut_by(p);
+	std::cout << cut.points_added << " " << cut.pt_inds.size() << "\n";
+}*/
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//cut_eq_test();
@@ -791,8 +800,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	//plane_test();
 	//centroid_test();
 	//ortho_test();
-	dokucode();
-	std::cout << (-1 % 5);
+	//dokucode();
+	//std::cout << (-1 % 5);
+	coplanar_cut_test();
 	std::cin.get();
 
 	return 0;
