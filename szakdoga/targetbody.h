@@ -133,7 +133,7 @@ namespace approx{
 			trans = -(body().centroid());
 			move_by(trans);
 			Vector3<T> vmin = vecs[0], vmax = vecs[0];
-			for (int i = 1; i < vecs.size();++i) {
+			for (int i = 1; i < (int)vecs.size();++i) {
 				vmin.x = std::min(vmin.x, vecs[i].x);
 				vmin.y = std::min(vmin.y, vecs[i].y);
 				vmin.z = std::min(vmin.z, vecs[i].z);

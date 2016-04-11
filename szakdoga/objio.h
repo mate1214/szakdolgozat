@@ -52,6 +52,7 @@ namespace approx {
 			return (bool)(ss >> nind);
 		}
 
+
 		//vaz metodus a .obj fajlformatum feldolgozasahoz, template parameterei a "javito" tipusok
 		//a javito tipusok dolga, hogy sajat belatasuk szerint osszevonjanak 2 numerikusan egyezonek nyilvanitott vektort
 		//a javitas celja hogy a fajlokbol bekerult testeken vegzett muveletek a numerikus pontossagra minel kevesbe legyenek erzekenyek
@@ -73,8 +74,6 @@ namespace approx {
 					std::stringstream stream(line);//a sor darabolasara hasznalt stream
 					std::string beg;//sorkezdo szimbolum mely azonositja a sor tartalmat
 					T x, y, z; //skalar adatok beolvasasara
-					int ind1, ind2, ind3; //beolvasasra hasznalt indexek v,vt,vn
-					char sep; //elvalasztojel beolvasashoz
 					stream >> beg;
 					if (beg == "v") {//vertexpont
 						stream >> x >> y >> z;
@@ -100,11 +99,15 @@ namespace approx {
 							if (!parse_node(node, vind, nind)) return exit_cleanup(tb);
 							inds.push_back(vind - 1);
 							if (nind > 0) {
-								calculated_normal += accum_normals[nind-1];
+								sum_normal += accum_normals[nind-1];
 							}
 						}
 						if ((stream.fail() && !stream.eof()) || inds.size()<3) return exit_cleanup(tb);
-						calculated_normal = cross(tmp_vecs[inds[2]] - tmp_vecs[inds[1]], tmp_vecs[inds[0]] - tmp_vecs[inds[1]]).normalized();
+						//keresek egy egyenesszogtol tavolabbi belso szoget es annal nezek egy keresztszorzatot hogy jo iranyba alljon a lap
+						int k = 2;
+						while (k < inds.size() && sin(tmp_vecs[inds[0]], tmp_vecs[inds[1]], tmp_vecs[inds[k]]) < 0.01f) ++k;
+						k %= inds.size();
+						calculated_normal = cross(tmp_vecs[inds[k]] - tmp_vecs[inds[1]], tmp_vecs[inds[0]] - tmp_vecs[inds[1]]).normalized();
 						if (dot(calculated_normal, sum_normal) < 0){
 							calculated_normal *= -1;
 							std::reverse(inds.begin(), inds.end());
@@ -112,8 +115,11 @@ namespace approx {
 
 						tmp_normals.push_back(calculated_normal);
 						if (triangulate) {
-							for (int i = 2; i < inds.size(); ++i) {
-								tb.faces.emplace_back(&tb.vecs, tmp_vecs.transform_range(std::vector<int>{inds[0], inds[i - 1], inds[i]}), &tb.normals, tmp_normals.transform_index(tmp_normals.size() - 1));
+							for (int i = 2; i < (int)inds.size(); ++i) {
+								tb.faces.emplace_back(&tb.vecs,
+												 tmp_vecs.transform_range(std::vector<int>{inds[0], inds[i - 1], inds[i]}),
+												 &tb.normals,
+											     tmp_normals.transform_index(tmp_normals.size() - 1));
 							}
 						}
 						else {
@@ -170,14 +176,7 @@ namespace approx {
 		static void write_obj_face(std::ostream& os, const Face<T>& face){
 			int n = face.normal_index();
 			os << "f ";
-			int k = 2;
-			while (k < face.size() && (sin(face.points(k), face.points(1), face.points(0))  < 0.1f)) {
-				++k;
-			}
-			k %= face.size();
-			Vector3<T> normal = cross(face.points(k) - face.points(1), face.points(0) - face.points(1));
-			T sign = dot(face.normal(), normal);
-			if (sign > 0) {
+			if (face.is_ccw()) {
 				for (int ind : face.indicies()) {
 					os << ind + 1 << "//" << n + 1 << " ";
 				}

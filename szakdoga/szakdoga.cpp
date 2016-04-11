@@ -789,7 +789,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//surf_test();
 	//poly_clip_test();
 	//conversion_test();
-	//targetbody_ccw_test();
+	targetbody_ccw_test();
 	//ccw_test();
 	//donut_test();
 	//line_test();
@@ -802,7 +802,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//ortho_test();
 	//dokucode();
 	//std::cout << (-1 % 5);
-	coplanar_cut_test();
+	//coplanar_cut_test();
 	std::cin.get();
 
 	return 0;
