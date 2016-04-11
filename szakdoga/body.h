@@ -129,6 +129,27 @@ namespace approx{
 			return negative && positive;
 		}
 
+		//eldonti hogy az adott sik metszi-e a testet
+		//pontosan akkor igaz, ha a testnek esik a sik pozitiv es negativ oldalara is pontja
+		//numerikus hibakra felkeszitett vizsgalat, csak akkor vesz egyik oldalra esonek
+		//ha a pont siktol vett tavolsaga legalabb minimal
+		bool intersects_plane(const Plane<T>& plane, T minimal) const {
+			bool negative = false, positive = false;
+			ConstFaceIterator it = begin(), endit = end();
+			while (it != endit && (!negative || !positive)) {
+				typename Face<T>::VertexIterator pt = it->begin(),
+					endpt = it->end();
+				while (pt != endpt && (!negative || !positive)) {
+					T sign = plane.classify_point(*pt);
+					negative = negative || (sign < 0 && abs(sign) >= minimal);
+					positive = positive || (sign > 0 && abs(sign) >= minimal);
+					++pt;
+				}
+				++it;
+			}
+			return negative && positive;
+		}
+
 		//a metszo sik sajat koordinatarendszerbe levetitett lapok
 		std::vector<std::pair<Polygon2<T>, bool>> cut_surface(const Plane<T>& plane) const {
 			//a pontokat valos numerikus ertekuk szerint hasznalom
