@@ -85,6 +85,7 @@
     <ClInclude Include="body.h" />
     <ClInclude Include="conversion.h" />
     <ClInclude Include="convexatom.h" />
+    <ClInclude Include="diffvec.h" />
     <ClInclude Include="face.h" />
     <ClInclude Include="geoios.h" />
     <ClInclude Include="objio.h" />
