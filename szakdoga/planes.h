@@ -94,9 +94,9 @@ namespace approx{
 			Vector3<T> up = cross(normal(), p.normal()).normalized();
 			Vector3<T> w = cross(up, normal()).normalized();
 			Vector3<T> tmppt = example_point();
-			T dist = p.classify_point(tmppt);
+			T pdist = p.classify_point(tmppt);
 			T cosine = -dot(p.normal(), w);
-			Vector3<T> pt1 = tmppt + w*(dist / cosine);
+			Vector3<T> pt1 = tmppt + w*(pdist / cosine);
 			Vector2<T> line_normal(dot(p.normal(), base.first), dot(p.normal(), base.second)),
 					   line_point(dot(pt1, base.first), dot(pt1, base.second));
 			return Line<T>(line_normal, line_point);

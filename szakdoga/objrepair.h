@@ -41,7 +41,7 @@ namespace approx{
 
 		//az adott indexrol eldonti valojaban hanyadik elemre mutat
 		int transform_index(int ind) const {
-			return ind_map[id];
+			return ind_map[ind];
 		}
 
 		//a megadott indexsorozatra elvegzi az indextranszformaciot

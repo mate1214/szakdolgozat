@@ -103,7 +103,7 @@ namespace approx {
 						while (k < (int)inds.size() && 
 							std::max(sin(tmp_vecs[inds[0]], tmp_vecs[inds[1]], tmp_vecs[inds[k]]),
 								sin(tmp_vecs[inds[k-2]], tmp_vecs[inds[k-1]], tmp_vecs[inds[k]])) < 0.01f) ++k;
-						if (k == inds.size()) k = 2;
+						if (k == (int)inds.size()) k = 2;
 						if (sin(tmp_vecs[inds[0]], tmp_vecs[inds[1]], tmp_vecs[inds[k]]) > sin(tmp_vecs[inds[k - 2]], tmp_vecs[inds[k - 1]], tmp_vecs[inds[k]])) {
 							calculated_normal = cross(tmp_vecs[inds[k]] - tmp_vecs[inds[1]], tmp_vecs[inds[0]] - tmp_vecs[inds[1]]).normalized();
 						}
@@ -224,14 +224,14 @@ namespace approx {
 			std::ofstream f(filename);
 			std::map<int, int> normals, verts;
 			std::vector<Vector3<T>> w_normals, w_verts;
-			for (const Face<T>& f : b){
-				if (!normals.count(f.normal_index())){
-					w_normals.push_back(f.normal());
-					normals[f.normal_index()] = w_normals.size();
+			for (const Face<T>& face : b){
+				if (!normals.count(face.normal_index())){
+					w_normals.push_back(face.normal());
+					normals[face.normal_index()] = w_normals.size();
 				}
-				for (int i : f.indicies()){
+				for (int i : face.indicies()){
 					if (!verts.count(i)){
-						w_verts.push_back(f.vertex_container()->operator[](i));
+						w_verts.push_back(face.vertex_container()->operator[](i));
 						verts[i] = w_verts.size();
 					}
 				}
