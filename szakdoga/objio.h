@@ -64,7 +64,6 @@ namespace approx {
 			if (!f) return exit_cleanup(tb);
 			std::vector<Vector3<T>> accum_normals;
 			std::string line; //sor a fajlban
-			bool vt = false; //van-e textura koordinata a fajlban
 			while (std::getline(f, line)) {
 				std::string::size_type ind = line.find('#');
 				if (ind != std::string::npos) {
@@ -86,10 +85,6 @@ namespace approx {
 						if (stream.fail()) return exit_cleanup(tb);
 						accum_normals.push_back({ x, y, z });
 					}
-					else if (beg == "vt") {//textura koordinata
-										   //textura koordinatakkal nem foglalkozom, de felirom hogy vannak mert mashogy kell beolvasnom
-						vt = true;
-					}
 					else if (beg == "f") {//lap indexekkel leirva
 						std::vector<int> inds;
 						Vector3<T> sum_normal, calculated_normal;
@@ -105,9 +100,16 @@ namespace approx {
 						if ((stream.fail() && !stream.eof()) || inds.size()<3) return exit_cleanup(tb);
 						//keresek egy egyenesszogtol tavolabbi belso szoget es annal nezek egy keresztszorzatot hogy jo iranyba alljon a lap
 						int k = 2;
-						while (k < inds.size() && sin(tmp_vecs[inds[0]], tmp_vecs[inds[1]], tmp_vecs[inds[k]]) < 0.01f) ++k;
-						k %= inds.size();
-						calculated_normal = cross(tmp_vecs[inds[k]] - tmp_vecs[inds[1]], tmp_vecs[inds[0]] - tmp_vecs[inds[1]]).normalized();
+						while (k < (int)inds.size() && 
+							std::max(sin(tmp_vecs[inds[0]], tmp_vecs[inds[1]], tmp_vecs[inds[k]]),
+								sin(tmp_vecs[inds[k-2]], tmp_vecs[inds[k-1]], tmp_vecs[inds[k]])) < 0.01f) ++k;
+						if (k == inds.size()) k = 2;
+						if (sin(tmp_vecs[inds[0]], tmp_vecs[inds[1]], tmp_vecs[inds[k]]) > sin(tmp_vecs[inds[k - 2]], tmp_vecs[inds[k - 1]], tmp_vecs[inds[k]])) {
+							calculated_normal = cross(tmp_vecs[inds[k]] - tmp_vecs[inds[1]], tmp_vecs[inds[0]] - tmp_vecs[inds[1]]).normalized();
+						}
+						else {
+							calculated_normal = cross(tmp_vecs[inds[k]] - tmp_vecs[inds[k-1]], tmp_vecs[inds[k-2]] - tmp_vecs[inds[k-1]]).normalized();
+						}
 						if (dot(calculated_normal, sum_normal) < 0){
 							calculated_normal *= -1;
 							std::reverse(inds.begin(), inds.end());
@@ -203,7 +205,7 @@ namespace approx {
 			}
 			int id = 0;
 			while (first != last){ //vegigiteralok a testeken es csoportokba szervezve kiiratom oket
-				f << "g atom" << id++ << std::endl;
+				f << "o atom" << id++ << std::endl;
 				for (const Face<T>& fac : *first){
 					write_obj_face(f, fac);
 				}
@@ -238,20 +240,9 @@ namespace approx {
 			write_obj_vector(f, "v", w_verts);
 			f << "#No. normals: " << w_normals.size() << ":" << std::endl;
 			write_obj_vector(f, "vn", w_normals);
+			f << "o approx_body" << std::endl;
 			for (const Face<T>& fac : b){
-				f << "f ";
-				T sign = dot(fac.normal(), cross(fac.points(2) - fac.points(1), fac.points(0) - fac.points(1)));
-				if (sign > 0) { //ccwben van
-					for (int ind : fac.indicies()) {
-						f << verts[ind] << "//" << normals[fac.normal_index()] << " ";
-					}
-				}
-				else { //ccwbe forgatom
-					for (auto it = fac.indicies().rbegin(); it != fac.indicies().rend();++it) {
-						f << verts[*it] << "//" << normals[fac.normal_index()] << " ";
-					}
-				}
-				f << std::endl;
+				write_obj_face(f, fac);
 			}
 		}
 

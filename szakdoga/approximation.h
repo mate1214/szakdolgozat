@@ -542,6 +542,7 @@ namespace approx{
 		void final_transform() {
 			Vector3<T> t = target->inverse_transform();
 			T scl = target->inverse_scale();
+			scl = scl > 0 ? scl : 1;
 			for (Vector3<T>& v : vertices) {
 				v = (v*scl) + t;
 			}

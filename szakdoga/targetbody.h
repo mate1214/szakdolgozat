@@ -92,6 +92,8 @@ namespace approx{
 				faces.push_back(f.migrate_to(&vecs, &normals));
 			}
 			bdy = t.bdy.migrate_to(&faces);
+			scale = t.scale;
+			trans = t.trans;
 			return *this;
 		}
 
@@ -106,10 +108,12 @@ namespace approx{
 				faces.push_back(f.migrate_to(&vecs, &normals));
 			}
 			bdy = std::move(t.bdy.migrate_to(&faces));
+			scale = t.scale;
+			trans = t.trans;
 			return *this;
 		}
 
-		//TODO
+		//a biztos vagasi eredmenyek erdekeben az azonos pontok osszevonasat ellenorzom
 		void ensure_safety() {
 			NullRepair<T> rep,nrep;
 			for (const Vector3<T>& v : vecs) {
@@ -128,7 +132,9 @@ namespace approx{
 			}
 		}
 
-		void transform_to_origo( T cube_size) {
+		//keresre a test sulypontjat az origoba mozditja es a kert elhosszu kockaba
+		//meretezi at a testet
+		void transform_to_origo( T cube_size=-1) {
 			if (trans.length() > 0 || scale != 1) transform_back();
 			trans = -(body().centroid());
 			move_by(trans);
@@ -143,6 +149,7 @@ namespace approx{
 			}
 			Vector3<T> diff = vmax - vmin;
 			T maxdist = std::max(diff.x, std::max(diff.y, diff.z));
+			if (cube_size <= 0) return;
 			scale = cube_size / maxdist;
 			rescale(scale);
 		}

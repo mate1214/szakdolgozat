@@ -62,7 +62,10 @@ namespace approx{
 		Plane(const Vector3<T>& n, const Vector3<T>& p) : HyperPlane<Vector3<T>>(n, p){}
 		Plane(const Vector3<T>& n, T d) : HyperPlane<Vector3<T>>(n, d){}
 		Plane() = delete;
-
+		
+		using HyperPlane < Vector3<T> >::normal;
+		using HyperPlane < Vector3<T> >::example_point;
+		
 		//kiszamol ket meroleges vektort amelyek felhasznalhatoak tengelykent
 		//a sikon fekvo alakzatok ket dimenzioba kepezesenel, ugyelve a numerikus elonyossegre
 		std::pair<Vector3<T>, Vector3<T>> ortho2d() const {
@@ -83,6 +86,8 @@ namespace approx{
 			}			
 		}
 
+		//a masik sikkal elmetszem ezt a sikot, a metszet egyenest
+		//ennek a siknak a koordinatarendszereben adom meg
 		Line<T> intersection_line(const Plane& p) const {
 			if (abs(dot(normal(), p.normal())) > 0.9999f) return Line<T>();
 			std::pair<Vector3<T>, Vector3<T>> base = ortho2d();
