@@ -264,98 +264,6 @@ void face_cut_test(){
 	std::cout << cut3.negative.cut_by(p).positive.cut_by(p).negative;
 }
 
-void approximator_test() {
-
-	//============================================================================================
-	//Approximacio pelda
-	//============================================================================================
-
-	//ez az osztaly tartja szamon az approximaciot
-	approx::Approximator<float> app;
-
-	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
-	if (!app.set_target("test.obj", 0.5f)) {
-		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
-	}
-
-	std::cout << app.container().atoms(0).faces(0) << "\n";
-	std::cout << app.container().atoms(0).centroid() << "\n";
-
-	//A celtest az app.target().body()-ban erheto el, a body.h-ban bovebb info talalhato rola
-	//es a metodusairol
-	std::cout << "A celtest terfogata: " << app.target().body().volume() << "\n";
-
-	//vagosik
-	approx::Plane<float> p = approx::Plane<float>({ 0,0,1 }, approx::Vector3<float>(0.0f, 0.0f, 26.0f));//p({ 1,0,0 }, 15.0f);
-
-	//az app.container() tartalmazza az atomokat es nyujt lehetoseget az approximacios muveletekre
-	//a 0. atomot elvagom az elobb megadott sikkal
-	//a cut egy vagasi eredmeny, a vagast vegrehajtom, de az atomok nem kerulnek be a taroloba
-	Approximation<float>::CutResult cut = app.container().cut(0, p);
-	//mindenfele ugyes okos vizsgalatok a keletkezett atomokon hogy jok-e, pl terfogat ellenorzes
-	//a metszet terfogat meg bugol, de a sima terfogat jol mukodik
-	//a pozitiv es negativ oldal a metszosikhoz kepesti elhelyezkedest jelenti 
-	std::cout << "negativ oldali keletkezett atom terfogata: " << cut.negative()->volume() << "\n";
-	std::cout << "pozitiv oldali keletkezett atom terfogata: " << cut.positive()->volume() << "\n";
-	//cut.undo();
-	std::cout << app.container().size() << "\n";
-	cut.choose_both();
-	p = approx::Plane<float>({ 1,2,1 }, approx::Vector3<float>(15, 30, 30));
-	int ind = 0;
-	//cut = app.container().cut(ind, p);
-	//std::cout << (*cut.negative()) << "\n\n==================================================\n\n" << (*cut.positive()) << "\n";
-	//cut.choose_both();
-	app.container().cut(0, approx::Plane<float>({ 1,2,1 }, approx::Vector3<float>(15, 30, 30))).choose_both();
-	app.container().cut(1, approx::Plane<float>({ 3,2,1 }, approx::Vector3<float>(15, 30, 30))).choose_positive();
-	//lekerem az atomok rajzolasi adatait
-	approx::BodyList data = app.atom_drawinfo();
-	//data.points - vertex adatok
-	//data.indicies - omlesztve az osszes index
-	//data.index_ranges index hatarok:
-	//az [index_ranges[i], indes_ranges[i+1]) intervallum az indexekbol egy atom
-	//tehat az i. atomnal index_ranges[i] az elso es van index_ranges[i+1]-index_ranges[i] darab
-	//GL_TRIANGLES modban mukodnie kell
-
-	/*for (int i = 0; i < (int)data.index_ranges.size() - 1; ++i) {
-		std::cout << " -------- Atom" << i << " -------- \n";
-		for (int j = data.index_ranges[i]; j < data.index_ranges[i + 1]; ++j) {
-			std::cout << data.points[ data.indicies[j] ].x << ", "
-				 << data.points[ data.indicies[j] ].y << ", "
-				 << data.points[ data.indicies[j] ].z << "\n";
-		}
-	}*/
-
-	//hasonlo modon kerheto el a rajzolando celtest is
-	data = app.target_drawinfo();
-
-	//app.container().garbage_collection();
-	std::cout << app.container().approximated_body().volume();
-	std::cout << "\n=============================\n";
-	for (auto& a : app.container()) {
-		std::cout << a.volume() << " " << a.intersection_volume() <<" "<< a.fourier() << "\n";
-	}
-
-	for (int i = 0; i < app.container().size(); ++i) {
-		std::vector<PolyFace2D> res = app.atom2dfaces(i);
-		std::cout << "////////////////////////////////////////\n";
-		for (auto& e : res) {
-			std::cout << "==================================\n";
-			for (int ind = 0; ind < (int)e.ranges.size() - 1; ++ind) {
-				std::cout << "---------------------------\n";
-				for (int j = e.ranges[ind]; j < e.ranges[ind + 1]; ++j) {
-					std::cout << e.points[j].x << ", " << e.points[j].y << "\n";
-				}
-			}
-		}
-	}
-
-	ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
-	ObjectWriter<float>::save_obj("approx_all2.obj", app.container().begin(),app.container().end());
-	app.restart();
-
-}
-
-
 void conversion_test() {
 
 	std::vector<approx::Vector3<float>> vertices, normals;
@@ -450,6 +358,12 @@ void targetbody_ccw_test() {
 	if (!app.set_target("gummybear.obj", 1.0f)) {
 		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
 	}
+	approx::ObjectWriter<float>::save_obj("testout.obj", app.target().body());
+	std::cout << "\n\n";
+	for (auto& f : app.target().body()) {
+		std::cout << dot(f.normal(),cross(f.points(2) - f.points(1),f.points(0)-f.points(1)).normalized())<< "\n";
+	}
+
 
 	/*for (const Face<float>& f : app.target().body()) {
 		std::cout << f;
@@ -468,8 +382,8 @@ void targetbody_ccw_test() {
 		}
 	}*/
 
-	std::cout << app.target().body().volume() << "\n";
-	std::cout << app.target().body().centroid() << "\n";
+	//std::cout << app.target().body().volume() << "\n";
+	//std::cout << app.target().body().centroid() << "\n";
 }
 
 
@@ -776,6 +690,75 @@ void dokucode() {
 	auto cut = fc.cut_by(p);
 	std::cout << cut.points_added << " " << cut.pt_inds.size() << "\n";
 }*/
+
+
+void approximator_test() {
+
+	//ez az osztaly tartja szamon az approximaciot
+	approx::Approximator<float> app;
+
+	//a megadott fajlnevben levo test a celtest, a kezdo kocka atom 0.5-os kerettel veszi korbe
+	if (!app.set_target("test.obj", 0.5f, -1, false)) {
+		std::cout << "HIBA A FAJL BETOLTESENEL!\n";
+		exit(1);
+	}
+	std::cout << "Az elso atom elso lapja:" << std::endl;
+	std::cout << app.container().atoms(0).faces(0) << std::endl;
+	std::cout << app.container().atoms(0).centroid() << std::endl;
+
+	//A celtest az app.target().body()-ban erheto el, a body.h-ban bovebb info talalhato rola
+	//es a metodusairol
+	std::cout << "A celtest terfogata: " << app.target().body().volume() << "\n";
+
+
+	approx::ObjectWriter<float>::save_obj("testout.obj", app.target().body());
+
+
+
+	//vagosik
+	approx::Plane<float> p = approx::Plane<float>({ 0,0,1 }, { 0.0f, 0.0f, 26.0f });
+
+	//az app.container() tartalmazza az atomokat es nyujt lehetoseget az approximacios muveletekre
+	//a 0. atomot elvagom az elobb megadott sikkal
+	//a cut egy vagasi eredmeny, a vagast vegrehajtom, de az atomok nem kerulnek be a taroloba
+	approx::Approximation<float>::CutResult cut = app.container().cut(0, p);
+	//mindenfele vizsgalatok a keletkezett atomokon hogy jok-e, pl terfogat ellenorzes
+	//a pozitiv es negativ oldal a metszosikhoz kepesti elhelyezkedest jelenti
+	if (cut.negative()->valid()) {
+		std::cout << "negativ oldali keletkezett atom terfogata: " << cut.negative()->volume() << std::endl;
+	}
+	else {
+		std::cout << "a negativ oldalon nem keletkezett ervenyes atom!" << std::endl;
+	}
+	if (cut.positive()->valid()) {
+		std::cout << "pozitiv oldali keletkezett atom terfogata: " << cut.positive()->volume() << std::endl;
+	}
+	else {
+		std::cout << "a pozitiv oldalon nem keletkezett ervenyes atom!" << std::endl;
+	}
+	if (cut.choose_both()) {
+		std::cout << "elfogadas sikeres" << std::endl;
+	}
+	else {
+		std::cout << "elfogadas sikertelen" << std::endl;
+	}
+	std::cout << "a tarolo atomjainak szama elfogadasi kiserlet utan: " << app.container().size() << std::endl;
+	int ind = 0;
+	app.container().cut(0, approx::Plane<float>({ 1,2,1 }, { 15, 30, 30 })).choose_both();
+	if (app.container().size() > 1) {
+		app.container().cut(1, approx::Plane<float>({ 3,2,1 }, { 15, 30, 30 })).choose_positive();
+	}
+	std::cout << "approximalt test terfogata " << app.container().approximated_body().volume() << std::endl;
+	std::cout << "fajlok irasa... " << std::endl;
+	approx::ObjectWriter<float>::save_obj("approx.obj", app.container().approximated_body());
+	approx::ObjectWriter<float>::save_obj("approx_all.obj", app.container().begin(), app.container().end());
+	std::cout << "approx.obj es approx_all.obj elkeszult";
+	app.restart();
+
+
+
+}
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
