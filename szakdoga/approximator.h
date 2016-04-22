@@ -29,13 +29,13 @@ namespace approx {
 		//default konstruktor, az approximalo meg nem all keszen a hasznalatra
 		Approximator() {}
 		//az adott fajl celtestnek hasznalasa, adott távolságú hatarolo kockaval indulva
-		Approximator(const std::string& filename,T _border) {
-			set_target(filename,_border);
+		Approximator(const std::string& filename,T _border, T cube=-1, bool triangulate=true) {
+			set_target(filename,_border,cube,triangulate);
 		}
 
 		//a megadott celtest felhasznalasa, adott tavolsagu hatarolo kockaval indulva
-		Approximator(std::unique_ptr<TargetBody<T>>&& target,T _border) {
-			set_target(std::move(target),_border);
+		Approximator(std::unique_ptr<TargetBody<T>>&& target,T _border, T cube = -1) {
+			set_target(std::move(target),_border,cube);
 		}
 
 		//pontosan akkor igaz, ha az approximacios munkafolyamat megkezdheto

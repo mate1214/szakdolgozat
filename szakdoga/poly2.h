@@ -71,6 +71,8 @@ namespace approx{
 			return abs(signed_area());
 		}
 
+		//pontosan akkor igaz, ha a pontos oramutatoval ellenkezo iranyban vannak felsorolva
+		//a pontok szamaban linearis idoigenyu, de mukodik konkav esetre is
 		bool is_ccw() const {
 			return signed_area() < 0;
 		}
