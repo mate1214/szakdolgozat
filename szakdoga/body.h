@@ -7,7 +7,7 @@
 // A test kepes meghatarozni terfogatat, kozeppontjat, atmerojet, sikkal valo metszest eldonteni,
 // valamint sikkal valo metszetvetuletet eloallitani.
 // 
-
+#include <cmath>
 #include <vector>
 #include <algorithm>
 #include "face.h"
@@ -141,8 +141,8 @@ namespace approx{
 					endpt = it->end();
 				while (pt != endpt && (!negative || !positive)) {
 					T sign = plane.classify_point(*pt);
-					negative = negative || (sign < 0 && abs(sign) >= minimal);
-					positive = positive || (sign > 0 && abs(sign) >= minimal);
+					negative = negative || (sign < 0 && std::abs(sign) >= minimal);
+					positive = positive || (sign > 0 && std::abs(sign) >= minimal);
 					++pt;
 				}
 				++it;
