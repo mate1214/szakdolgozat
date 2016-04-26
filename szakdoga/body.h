@@ -29,7 +29,7 @@ namespace approx{
 			bool has_centroid;
 			Vector3<T> centroid;
 
-			Memo() : has_volume(false), has_diameter(false) {}
+			Memo() : has_volume(false), has_diameter(false),has_centroid(false) {}
 			Memo(const Memo&) = default;
 			Memo& operator = (const Memo&) = default;
 
