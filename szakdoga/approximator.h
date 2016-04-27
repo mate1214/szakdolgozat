@@ -113,12 +113,12 @@ namespace approx {
 
 		//.obj formatumba elmenti az atomokat, egy atom egy csoportket jelenik meg a fajlban
 		void save_atoms(const std::string& targetfile) const {
-			ObjectWriter<T>::save_obj(targetfile,*app);
+			ObjectWriter<T>::save_obj(targetfile,*app,tb->inverse_scale(),tb->inverse_transform());
 		}
 
 		//.obj formatumba elmenti az atomokbol letrejovo approximacios testet
 		void save_approximated_body(const std::string& targetfile) const {
-			ObjectWriter<T>::save_obj(targetfile, app->approximated_body());
+			ObjectWriter<T>::save_obj(targetfile, app->approximated_body(), tb->inverse_scale(), tb->inverse_transform());
 		}
 
 		//================================================================================
