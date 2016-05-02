@@ -61,6 +61,7 @@ namespace approx {
 			tb.vecs.clear();
 			tb.normals.clear();
 			tb.faces.clear();
+			tb.transform_back();
 			std::ifstream f(filename);
 			if (!f) return exit_cleanup(tb);
 			std::vector<Vector3<T>> accum_normals;
@@ -220,7 +221,7 @@ namespace approx {
 
 		//az egesz approximacio kiiratasa egyetlen, .obj formatumu fajlba
 		static void save_obj(const std::string& filename, const Approximation<T>& app, T rescale = 1, const Vector3<T>& mov = Vector3<T>()) {
-			save_obj(filename, app.begin(), app.end(),mov,rescale);
+			save_obj(filename, app.begin(), app.end(),rescale,mov);
 		}
 
 		//egyetlen test kiiratasa a fajlba, a kello szelektalas mellett mellett

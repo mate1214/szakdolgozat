@@ -91,9 +91,7 @@ void approximator_test() {
 		std::cout << x << "\n";
 	}
 	std::cout << "===================================\n";
-
-	app.restart();
-
+	app.container().final_transform();
 
 
 }
