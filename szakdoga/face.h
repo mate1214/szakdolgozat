@@ -71,8 +71,8 @@ namespace approx{
 			calc_normal(ccw);
 		}
 		//konstrukror mely szamolja es beilleszti a normalist, de mozgatast hasznal a megadott pont indexekre
-		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* _normals)
-			: vecs(vertices), normals(_normals), inds(ids) { calc_normal(); }
+		Face(std::vector< Vector3<T> >* vertices, std::vector<int>&& ids, std::vector< Vector3<T> >* _normals, bool ccw = true)
+			: vecs(vertices), normals(_normals), inds(ids) { calc_normal(ccw); }
 		//megadott normalvektort felhasznalo konstruktor
 		Face(std::vector< Vector3<T> >* vertices, const std::vector<int>& ids, std::vector< Vector3<T> >* normals, int n_id)
 			: vecs(vertices), normals(normals), inds(ids), normal_id(n_id) {}
