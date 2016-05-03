@@ -24,6 +24,34 @@ namespace approx {
 		std::unique_ptr<Approximation<T>> app;
 		std::unique_ptr<TargetBody<T>> tb;
 		T border;
+		
+		
+		typedef typename Approximation<T>::ConstIterator AtomIter;
+		struct filter {
+			 AtomIter it,end;
+			 T minf;
+			 filter(AtomIter i,AtomIter e,T m) : it(i),end(e),minf(m) {
+				 while (it != end && it->fourier()<minf) ++it;
+			 }
+			 filter operator ++() {
+				 ++it;
+				 while(it!=end && it->fourier()<minf)++it;
+				 return *this;
+			 }
+			 filter operator ++(int) {
+				 filter t = *this;
+				 ++it;
+				 while (it != end && it->fourier()<minf)++it;
+				 return t;
+			 }
+			 bool operator != (const filter& f) const { return it != f.it; }
+			 const ConvexAtom<T>& operator * () const {
+				 return *it;
+			 }
+			 const ConvexAtom<T>* operator -> () const {
+				 return it::operator->();
+			 }
+		};
 
 	public:
 		//default konstruktor, az approximalo meg nem all keszen a hasznalatra
@@ -112,8 +140,15 @@ namespace approx {
 		//================================================================================
 
 		//.obj formatumba elmenti az atomokat, egy atom egy csoportket jelenik meg a fajlban
-		void save_atoms(const std::string& targetfile) const {
-			ObjectWriter<T>::save_obj(targetfile,*app,tb->inverse_scale(),tb->inverse_transform());
+		void save_atoms(const std::string& targetfile, T minf=-1) const {
+			if (minf <= 0) {
+				ObjectWriter<T>::save_obj(targetfile, *app, tb->inverse_scale(), tb->inverse_transform());
+			}
+			else {
+				filter first(app->begin(), app->end(), minf);
+				filter last(app->begin(), app->end(), minf);
+				ObjectWriter<T>::save_obj(targetfile, first, last, tb->inverse_scale(), tb->inverse_transform());
+			}
 		}
 
 		//.obj formatumba elmenti az atomokbol letrejovo approximacios testet

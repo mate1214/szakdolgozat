@@ -21,10 +21,10 @@ void centroid_test() {
 		{3.5f ,5,1.7f },
 		{1.7f ,2,0.9f }
 	}, normals;
-
-	for (auto& v : vecs) {
-		v *= 0.01;
-	}
+	//ha szeretnenk megnezni kisebb testen is...
+	//for (auto& v : vecs) {
+	//	v *= 0.01;
+	//}
 
 	std::vector<approx::Face<float>> faces{
 		approx::Face<float>(&vecs,std::vector<int>{0,1,2},&normals),
