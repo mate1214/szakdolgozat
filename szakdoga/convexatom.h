@@ -230,7 +230,11 @@ namespace approx{
 				}
 				else{//a vagas nem krealt uj lapokat, de lehet hogy egy el vagy pont raesik
 					if (cut.pt_inds.size()){//raeso pont vagy pontok
-						pt_ids.insert(pt_ids.end(), cut.pt_inds.begin(), cut.pt_inds.end());
+						//pt_ids.insert(pt_ids.end(), cut.pt_inds.begin(), cut.pt_inds.end());
+						for (int e : cut.pt_inds) {
+							pt_ids.push_back(e);
+							avg_pt += vc[e];
+						}
 					}
 					if (cut.pt_inds.size() < cut.positive.size()){ //a pozitiv oldalra kerul az egesz lap
 						pos_faces.push_back(indicies(i));
@@ -261,7 +265,7 @@ namespace approx{
 
 				//a rendezett pontokbol minden masodik egyedi bekerul a sokszogre
 				std::vector<int> new_fc{pt_ids[0]};
-				for (int i = 2; i < (int)pt_ids.size(); i += 2){
+				for (int i = 2; i < (int)pt_ids.size(); i++){
 					if(vc[pt_ids[i]] != vc[new_fc.back()]) new_fc.push_back(pt_ids[i]); //egy csucsnal lehet hogy tobb el osszefut, nem akarunk egymas utan ugyanolyan pontokat
 				}
 
@@ -294,7 +298,8 @@ namespace approx{
 					p_cut_f,
 					std::move(cut_map)};
 		}
-
+		
+		
 		//megvizsgalja, hogy a pont bele esik-e
 		bool point_inside(const Vector3<T>& pt) const {
 			for (const Face<T>& f : *this){

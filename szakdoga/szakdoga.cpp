@@ -41,7 +41,7 @@ void centroid_test() {
 
 int main() {
 
-	//approximator_test();
+	approximator_test();
 	centroid_test();
 
 	std::cin.get();

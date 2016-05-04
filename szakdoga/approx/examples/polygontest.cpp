@@ -23,15 +23,14 @@ int main() {
 void extreme_clip_test(){
 	approx::Polygon2<float> clipper({ {1,1}, {3,1}, {3,3}, {1,3} }),
 			toclip({ {2,1}, {5,1}, {5,3}, {2,3} });
-	std::cout << std::boolalpha << approx::ccw<float>({ 1,3 }, { 2,2 }, { 4,3 }) << std::endl;
-
+	std::cout << "clipping with overlapping sides:" << std::endl;
 	auto clipped = clipper.convex_clip(toclip);
 	std::cout << "clipper:" << std::endl << clipper << std::endl
-			  << "toclip:" << std::endl << toclip << std::endl
-			  << "clipper area: " << clipper.area() << std::endl
-			  << "toclip area: " << toclip.area() << std::endl
-			  << "clipped area:" << clipped.area() << std::endl
-			  << "clipped:" << std::endl << clipped;	
+			  << "polygon to clip: " << std::endl << toclip << std::endl
+			  << "area of clipper: " << clipper.area() << std::endl
+			  << "area of polygon to clip: " << toclip.area() << std::endl
+			  << "area of clipped polygon area: " << clipped.area() << std::endl
+			  << "clipped polygon: " << std::endl << clipped;	
 }
 
 void poly_cut_test(){
@@ -51,9 +50,9 @@ void poly_clip_test() {
 
 	auto clipped = clipper.convex_clip(toclip);
 	std::cout << "clipper:" << std::endl << clipper << std::endl
-			  << "toclip:" << std::endl << toclip << std::endl
+			  << "polygon to clip: " << std::endl << toclip << std::endl
 			  << "clipper area: " << clipper.area() << std::endl
-			  << "toclip area: " << toclip.area() << std::endl
-			  << "clipped area:" << clipped.area() << std::endl
-			  << "clipped:" << std::endl << clipped;
+			  << "area of polygon to clip: : " << toclip.area() << std::endl
+			  << "area of clipped polygon:" << clipped.area() << std::endl
+			  << "clipped polygon:" << std::endl << clipped;
 }
