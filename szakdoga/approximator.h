@@ -49,7 +49,7 @@ namespace approx {
 				 return *it;
 			 }
 			 const ConvexAtom<T>* operator -> () const {
-				 return it::operator->();
+				 return it.operator->();
 			 }
 		};
 

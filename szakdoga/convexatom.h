@@ -49,15 +49,15 @@ namespace approx{
 		};
 
 		struct Memo { //a nem valtozo szamitasokat nem kell ujra elvegezni, a bufferelendo dolgokat ebbe a tipusba lehet felvenni
-			bool has_intersection_volume;
-			T intersection_volume;
+			bool has_intersection_volume3;
+			T intersection_volume3;
 
-			Memo() : has_intersection_volume(false) {}
+			Memo() : has_intersection_volume3(false) {}
 			Memo(const Memo&) = default;
 			Memo& operator = (const Memo&) = default;
 
 			void clear() {
-				has_intersection_volume = false;
+				has_intersection_volume3 = false;
 			}
 		};
 
@@ -79,7 +79,7 @@ namespace approx{
 		ConvexAtom(std::vector<Face<T>>* f, std::vector<int>&& i, const Body<T>* targ, std::vector<std::shared_ptr<SurfacePoly>>&& plist, const Memo& m) :
 			Body<T>(f, i), f_poly(plist), target(targ), cache(m) {}
 
-		T calculate_intersection_volume() const {
+		T calculate_intersection_volume_times_three() const {
 			T sum = 0;
 			for (const Face<T>& f : *target) {
 				std::vector<Vector3<T>> tmp_vert, tmp_norm;
@@ -101,8 +101,14 @@ namespace approx{
 			for (int i = 0; i < size(); ++i) {
 				sum += f_poly[i]->area()*faces(i).to_plane().signed_distance();
 			}
-			T res = sum / static_cast<T>(3);
-			return res;
+			return sum;
+		}
+		T intersection_volume_times_three() const {
+			if (!cache.has_intersection_volume3) {
+				cache.intersection_volume3 = calculate_intersection_volume_times_three();
+				cache.has_intersection_volume3 = true;
+			}
+			return cache.intersection_volume3;
 		}
 
 	public:
@@ -322,16 +328,12 @@ namespace approx{
 
 		//metszetterfogat szamitas a celtesttel
 		T intersection_volume() const {
-			if (!cache.has_intersection_volume) {
-				cache.intersection_volume = calculate_intersection_volume();
-				cache.has_intersection_volume = true;
-			}
-			return cache.intersection_volume;
+			return intersection_volume_times_three() / static_cast<T>(3);
 		}
 
 		//Fourier-egyutthato, azaz a metszet es a teljes terfogatanak a hanyadosa
 		T fourier() const {
-			return intersection_volume() / volume();
+			return intersection_volume_times_three() / Body<T>::volume_times_three();
 		}
 
 		//az i-edik metszet-lenyomat 
@@ -397,10 +399,14 @@ namespace approx{
 				std::vector<Vector3<T>> tmp_vert, tmp_norm;
 				ConstFaceIterator it = begin();
 				Face<T> clipf = target->faces(ind);
-				while (it != end() && clipf.size() >= 3) {
-					typename Face<T>::CutResult cut = clipf.cut_by(it->to_plane(), &tmp_vert, &tmp_norm);
-					clipf = cut.negative;
-					++it;
+				
+				bool onplane = false;
+				for (int i = 0; i < size() && clipf.size() >= 3; ++i) {
+					Plane<T> cutplane = f_poly[i]->plane;
+					bool flip = dot(cutplane.normal(), faces(i).normal()) < 0;
+					typename Face<T>::CutResult cut = clipf.cut_by(cutplane, &tmp_vert, &tmp_norm);
+					onplane = onplane || (cut.pt_inds.size() == clipf.size() && (cutplane.normal() == clipf.normal() || cutplane.normal() == -(clipf.normal())));
+					clipf = flip ? cut.positive : cut.negative;
 				}
 				if (clipf.size() >= 3) {
 					res.push_back(ind);
@@ -414,12 +420,15 @@ namespace approx{
 			std::vector<Face<T>> res;
 			for (const Face<T>& f : *target) {
 				std::vector<Vector3<T>> tmp_vert, tmp_norm;
-				ConstFaceIterator it = begin();
+				
 				Face<T> clipf = f;
-				while (it != end() && clipf.size() >= 3) {
-					typename Face<T>::CutResult cut = clipf.cut_by(it->to_plane(), &tmp_vert, &tmp_norm);
-					clipf = cut.negative;
-					++it;
+				bool onplane = false;
+				for (int i = 0; i < size() && clipf.size() >= 3; ++i) {
+					Plane<T> cutplane = f_poly[i]->plane;
+					bool flip = dot(cutplane.normal(), faces(i).normal()) < 0;
+					typename Face<T>::CutResult cut = clipf.cut_by(cutplane, &tmp_vert, &tmp_norm);
+					onplane = onplane || (cut.pt_inds.size() == clipf.size() && (cutplane.normal() == f.normal() || cutplane.normal() == -(f.normal())));
+					clipf = flip ? cut.positive : cut.negative;
 				}
 				if (clipf.size() >= 3) {
 					res.push_back(f);
