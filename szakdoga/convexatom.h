@@ -392,7 +392,7 @@ namespace approx{
 			return -1;
 		}
 
-		//a celtest atomba eso lapindexeinek listaja
+		//a celtest atomba eso, celtestbeli lapindexeinek listaja
 		std::vector<int> face_indicies_inside() const {
 			std::vector<int> res;
 			for (int ind : target->indicies()) {
@@ -415,7 +415,7 @@ namespace approx{
 			return res;
 		}
 
-		//az atomba eso lapok listaja
+		//az atomba eso, celtestbeli lapok listaja
 		std::vector<Face<T>> faces_inside() const {
 			std::vector<Face<T>> res;
 			for (const Face<T>& f : *target) {
@@ -432,6 +432,18 @@ namespace approx{
 				}
 				if (clipf.size() >= 3) {
 					res.push_back(f);
+				}
+			}
+			return res;
+		}
+
+		//az atomba eso, vagasi sik kepzesre erdemesnek tartott lapok a celtestbol 
+		std::vector<Face<T>> safe_cutting_faces_inside(T epsilon) const {
+			std::vector<Face<T>> res = faces_inside();
+			for (int i = 0; i < res.size(); ++i) {
+				if (!intersects_plane(res[i].to_plane(), epsilon)) {
+					res[i] = res.back();
+					res.pop_back();
 				}
 			}
 			return res;

@@ -99,7 +99,7 @@ namespace approx{
 		}
 
 		bool bad_atom(const ConvexAtom<T>& a) {
-			return a.bad_normal_ind() > -1 || a.volume() < 0 || a.fourier() > 1.1f || a.fourier() < -0.01f;
+			return a.bad_normal_ind() > -1 || a.volume() <= 0 || a.fourier() > 1.1f || a.fourier() < -0.01f;
 		}
 
 		bool invalidity_test() {
