@@ -33,9 +33,9 @@ namespace approx {
 			return false;
 		}
 
-		static bool parse_node(const std::string& str, int& vind, int& nind) {
+		static bool parse_node(const std::string& str, int& vind, int& nind,int maxvind,int maxnind) {
 			std::stringstream ss(str);
-			if (!(ss >> vind)) return false;
+			if (!(ss >> vind) || vind < 1 || vind > maxvind) return false;
 			char c;
 			ss >> c;
 			if (ss.eof()) {
@@ -51,7 +51,7 @@ namespace approx {
 				}
 			}
 			ss >> c;
-			return (bool)(ss >> nind);
+			return (bool)(ss >> nind && 0 < nind && nind <=maxnind);
 		}
 
 
@@ -67,6 +67,8 @@ namespace approx {
 			if (!f) return exit_cleanup(tb);
 			std::vector<Vector3<T>> accum_normals;
 			std::string line; //sor a fajlban
+			int maxnind = 0;
+			int maxvind = 0;
 			while (std::getline(f, line)) {
 				std::string::size_type ind = line.find('#');
 				if (ind != std::string::npos) {
@@ -81,12 +83,14 @@ namespace approx {
 						stream >> x >> y >> z;
 						if (stream.fail()) return exit_cleanup(tb);
 						tmp_vecs.push_back({ x, y, z });
+						++maxvind;
 					}
 					else if (beg == "vn") {//normalvektor
 										   //nem ezeket a normalokat fogom hasznalni, de cw ccw ellenorzeshez kellenek
 						stream >> x >> y >> z;
 						if (stream.fail()) return exit_cleanup(tb);
 						accum_normals.push_back({ x, y, z });
+						++maxnind;
 					}
 					else if (beg == "f") {//lap indexekkel leirva
 						std::vector<int> inds;
@@ -94,7 +98,7 @@ namespace approx {
 						std::string node;
 						int vind, nind;
 						while (stream >> node && node.length()) {
-							if (!parse_node(node, vind, nind)) return exit_cleanup(tb);
+							if (!parse_node(node, vind, nind,maxvind,maxnind)) return exit_cleanup(tb);
 							inds.push_back(vind - 1);
 							if (nind > 0) {
 								sum_normal += accum_normals[nind - 1];
