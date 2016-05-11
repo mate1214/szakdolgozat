@@ -17,7 +17,6 @@
 #include "targetbody.h"
 #include "approximation.h"
 #include <map>
-#include "geoios.h"
 
 namespace approx {
 
@@ -105,7 +104,14 @@ namespace approx {
 							}
 						}
 						if ((stream.fail() && !stream.eof()) || inds.size()<3) return exit_cleanup(tb);
-						//keresek egy egyenesszogtol tavolabbi belso szoget es annal nezek egy keresztszorzatot hogy jo iranyba alljon a lap
+
+						inds = tmp_vecs.transform_range(inds);
+						typename std::vector<int>::iterator last = std::unique(inds.begin(), inds.end());
+						inds.erase(last, inds.end());
+
+						if (inds.size() < 3) continue; //egyenesekkel nem jatszunk
+
+						//keresek egy egyenesszogtol tavolabbi belso szoget es annal nezek egy keresztszorzatot hogy jo iranyba alljon a lap						
 						int k = 2;
 						while (k < (int)inds.size() &&
 							std::max(sin(tmp_vecs[inds[0]], tmp_vecs[inds[1]], tmp_vecs[inds[k]]),
@@ -123,7 +129,7 @@ namespace approx {
 							std::reverse(inds.begin(), inds.end());
 						}
 
-						inds = tmp_vecs.transform_range(inds);
+						
 						tmp_normals.push_back(calculated_normal);
 						if (triangulate) {
 							for (int i = 2; i < (int)inds.size(); ++i) {
